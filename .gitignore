@@ -18,7 +18,6 @@
 x64/
 x86/
 bld/
-[Oo]bj/
 [Ll]og/
 
 # Visual Studio 2015 cache/options directory
