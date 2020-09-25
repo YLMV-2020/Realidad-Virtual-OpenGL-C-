@@ -131,7 +131,7 @@ namespace Cogravi
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)WIDTH / (float)HEIGHT, NEAR, FAR);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)4.0f / (float)3.0f, NEAR, FAR);
 			shader.setMat4("model", model);
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);

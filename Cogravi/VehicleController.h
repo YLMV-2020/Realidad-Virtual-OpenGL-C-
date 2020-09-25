@@ -11,9 +11,14 @@ namespace Cogravi
 
 		Vehicle* vehicle;
 
+		GameObject* obj;
+
 		VehicleController(BulletWorldController *worldController)
 		{
 			vehicle = new Vehicle(worldController);
+			obj = (GameObject*)vehicle->vehicleDrawableModels[0];
+			glm::vec3 posVehicle = obj->position;
+			cout << "Posicion: (" << posVehicle.x << "," << posVehicle.y << "," << posVehicle.z << ")\n";
 		}
 
 		void update()
@@ -30,11 +35,11 @@ namespace Cogravi
 		{
 			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 			{
-				vehicle->set_drive_engine_vel(-1);
+				vehicle->set_drive_engine_vel(-5);
 			}
 			else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 			{
-				vehicle->set_drive_engine_vel(1);
+				vehicle->set_drive_engine_vel(5);
 			}
 			else
 			{
