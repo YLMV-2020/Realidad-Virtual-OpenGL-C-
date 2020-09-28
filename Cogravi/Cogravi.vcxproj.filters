@@ -179,6 +179,9 @@
     <ClInclude Include="DynamicGameObject.h">
       <Filter>Archivos de encabezado\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="InputProcessor.h">
+      <Filter>Archivos de encabezado\Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\model.frag">

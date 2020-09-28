@@ -1,8 +1,6 @@
 #ifndef VEHICLE_ATTRIBUTES_HEADER
 #define VEHICLE_ATTRIBUTES_HEADER
 
-#include "Model.h"
-
 namespace Cogravi
 {
 	class VehicleAttributes
@@ -17,6 +15,9 @@ namespace Cogravi
 
 		std::vector<btHinge2Constraint*> vehicle_Engines; //Vector con los 4 motores de las ruedas
 		std::vector<Model*> vehicleDrawableModels; //Vector con todos los modelos del vehiculo
+		
+
+
 
 	};
 }

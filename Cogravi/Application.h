@@ -11,6 +11,7 @@ namespace Cogravi
 
         GameObject* model;
         DynamicGameObject* animation;
+        InputProcessor* input;
 
         static Application* Instance()
         {
@@ -95,20 +96,24 @@ namespace Cogravi
 
             mousePos = [&](double xpos, double ypos)
             {
-                if (firstMouse)
-                {
-                    lastX = xpos;
-                    lastY = ypos;
-                    firstMouse = false;
-                }
+                //if (firstMouse)
+                //{
+                //    lastX = xpos;
+                //    lastY = ypos;
+                //    firstMouse = false;
+                //}
 
-                float xoffset = xpos - lastX;
-                float yoffset = lastY - ypos;
+                //float xoffset = xpos - lastX;
+                //float yoffset = lastY - ypos;
 
-                lastX = xpos;
-                lastY = ypos;
+                //lastX = xpos;
+                //lastY = ypos;
                 //if (!mouseCursorDisabled)
-                    //camera->ProcessMouseMovement(xoffset, yoffset);
+                //{
+                //    //camera->ProcessMouseMovement(xoffset, yoffset);
+                //    camera->calculateAngleAroundPlayer(xoffset);
+                //    camera->calculatePitch(yoffset);
+                //}
             };
 
             desplazar = [&](float xoffset, float yoffset)
@@ -149,14 +154,14 @@ namespace Cogravi
                 debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
             }
 
-            //if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            //    //camera->ProcessKeyboard(FORWARD, Application::deltaTime);
-            //if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            //    //camera->ProcessKeyboard(BACKWARD, Application::deltaTime);
-            //if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            //    //camera->ProcessKeyboard(LEFT, Application::deltaTime);
-            //if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            //    //camera->ProcessKeyboard(RIGHT, Application::deltaTime);
+            /*if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+                camera->ProcessKeyboard(FORWARD, Application::deltaTime);
+            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+                camera->ProcessKeyboard(BACKWARD, Application::deltaTime);
+            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+                camera->ProcessKeyboard(LEFT, Application::deltaTime);
+            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+                camera->ProcessKeyboard(RIGHT, Application::deltaTime);*/
         }
 
         void addModels()
@@ -210,7 +215,8 @@ namespace Cogravi
             t.type = "texture_diffuse";
             textures.push_back(t);
 
-            animation = new DynamicGameObject(glm::vec3(30, 0, -30), glm::vec3(0, 0, 0), glm::vec3(0.1, 0.1, 0.1), "assets/animations/player/player.dae", textures, *util->myShaders[ShaderType::MODEL_DYNAMIC]);
+            animation = new DynamicGameObject(glm::vec3(20.0f, 0.0f, -20.0f), glm::vec3(0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/player/player.dae", textures, *util->myShaders[ShaderType::MODEL_DYNAMIC]);
+
         }
 
         void inicializarScene()
@@ -242,10 +248,9 @@ namespace Cogravi
             
             vehicle = new VehicleController(bulletWorldController);
 
-            camera = new Camera();
-            camera->init(WIDTH, HEIGHT, 45, CameraModes::FIRST_PERSON);
+            camera = new Camera(vehicle->vehicle->vehicleDrawableModels[0]->body);
 
-            camera->setMode(CameraModes::THIRD_PERSON);
+            input = new InputProcessor(window, camera);
 
             textures.push_back(Util::loadTexture("assets\\textures\\awesomeface.png"));
             textures.push_back(Util::loadTexture("assets\\textures\\tienda.png"));
@@ -588,7 +593,8 @@ namespace Cogravi
             glm::mat4 ViewMatrix = camera->GetViewMatrix();
 
             bulletWorldController->physics_step(60.0f);
-            //bulletWorldController->physics_step(ImGui::GetIO().Framerate);
+
+            camera->update(bulletWorldController->dynamicsWorld);
 
             entradaTeclado();
             player->update(window);
@@ -598,10 +604,8 @@ namespace Cogravi
             vehicle->updateInput(window);
             vehicle->update();
 
-            btTransform trans;
-            vehicle->vehicle->vehicleDrawableModels[0]->body->getMotionState()->getWorldTransform(trans);
-
-            camera->update(bulletWorldController->dynamicsWorld, trans);
+            input->processInput();
+            animation->update();
 
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
             {
@@ -640,15 +644,11 @@ namespace Cogravi
                         t.setIdentity();
                         t.setOrigin(btVector3(pos.getX(), modelSelect->shapeScalar.y + 0.1f, pos.getZ()));
 
-                        if (index >= 0 && index < 100)
+                        if (index >= 0)
                         {
                             modelSelect->body->setWorldTransform(t);
                             //modelSelect->position = glm::vec3(pos.getX(), pos.getY(), pos.getZ());
                             //modelSelect->body->applyForce(btVector3(0, 1, 0), btVector3(5, 1, 0));
-                        }
-                        if (index >= 100)
-                        {
-                            modelSelect = NULL;
                         }
                     }
                 }
@@ -680,7 +680,7 @@ namespace Cogravi
 
             debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
             bulletWorldController->dynamicsWorld->debugDrawWorld();
-
+            debugDrawer->col = glm::vec3(0, 1, 0);
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -778,10 +778,8 @@ namespace Cogravi
             ImGui::Text("Vendor: %s", (const char*)glGetString(GL_VENDOR));
             ImGui::Text("GPU: %s", GPU);
             ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-            ImGui::Text("FPS X: %.1f", ImGui::GetFrameCount);
             ImGui::Separator();
             ImGui::Text("Collision Objects: %d", bulletWorldController->dynamicsWorld->getNumCollisionObjects());
-            ImGui::ColorEdit3("Debug Color", glm::value_ptr(debugDrawer->col));
 
             if (ImGui::ImageButton((void*)textures[1], ImVec2(100, 100)))
             {
@@ -1006,18 +1004,21 @@ namespace Cogravi
             ImGui::DragFloat3("Position", glm::value_ptr(camera->Position));
             ImGui::DragFloat3("Front", glm::value_ptr(camera->Front));
             ImGui::DragFloat3("Up", glm::value_ptr(camera->Up));
-            //ImGui::DragFloat3("Right", glm::value_ptr(camera->Right));
-            //ImGui::DragFloat3("WorldUp", glm::value_ptr(camera->WorldUp));
+           /* ImGui::DragFloat3("Right", glm::value_ptr(camera->Right));
+            ImGui::DragFloat3("WorldUp", glm::value_ptr(camera->WorldUp));
 
             ImGui::Text("Camera Configuration");
 
             ImGui::DragFloat("Near", &NEAR);
             ImGui::DragFloat("Far", &FAR);
 
-            /*ImGui::DragFloat("Yaw", &camera->Yaw);
+            ImGui::DragFloat("Yaw", &camera->Yaw);
             ImGui::DragFloat("Pitch", &camera->Pitch);
             ImGui::DragFloat("Zoom", &camera->Zoom);
-            ImGui::DragFloat("Speed", &camera->MovementSpeed);*/
+            ImGui::DragFloat("Speed", &camera->MovementSpeed);
+
+            ImGui::DragFloat("angleAroundPlayer", &camera->angleAroundPlayer);*/
+            //angleAroundPlayer
 
             ImGui::End();
         }

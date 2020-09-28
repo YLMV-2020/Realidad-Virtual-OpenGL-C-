@@ -44,6 +44,7 @@ using namespace std;
 #include "AnimationController.h"
 #include "PlayerController.h"
 #include "VehicleController.h"
+#include "InputProcessor.h"
 
 
 using namespace Cogravi;

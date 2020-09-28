@@ -11,14 +11,9 @@ namespace Cogravi
 
 		Vehicle* vehicle;
 
-		GameObject* obj;
-
 		VehicleController(BulletWorldController *worldController)
 		{
 			vehicle = new Vehicle(worldController);
-			obj = (GameObject*)vehicle->vehicleDrawableModels[0];
-			glm::vec3 posVehicle = obj->position;
-			cout << "Posicion: (" << posVehicle.x << "," << posVehicle.y << "," << posVehicle.z << ")\n";
 		}
 
 		void update()
