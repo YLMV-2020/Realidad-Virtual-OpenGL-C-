@@ -1,19 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/fwd.hpp>
-#include <btBulletDynamicsCommon.h>
-#include "BulletWorldController.h"
-
-
 enum class CameraType 
 {
     FIRST_PERSON,
@@ -37,7 +24,10 @@ public:
     float farOffset;
     float zoomSpeed;
 
-    float fov;
+    float FOV = 45.0f;
+    float NEAR = 0.1f;
+    float FAR = 1000.0f;
+
     float yaw; //angulo de giro en Z
     float pitch; //angulo de giro en Y
 
@@ -48,18 +38,18 @@ public:
 
     Camera(btRigidBody* target)
     {
-        this->upOffset = 15.0f;
         this->Up = glm::vec3(0, 1, 0);
         this->Front = glm::vec3(0.0f, 0.0f, -1.0f);
-        this->Position = glm::vec3(0.0f, 0.0f, 0.75f);
+        this->Position = glm::vec3(5.0f, 10.0f, 10.75f);
+
+        this->upOffset = 15.0f;
         this->farOffset = 30.0f;
         this->zoomSpeed = 0.5f;
-        this->fov = 45.0f;
 
-        this->projection = glm::perspective(glm::radians(fov), (float)4.0f / (float)3.0f, 0.1f, 10000.0f);
+        this->projection = glm::perspective(glm::radians(FOV), (float)4.0f / (float)3.0f, NEAR, FAR);
         this->view = glm::lookAt(Position, Position + Front, Up);  
 
-        this->mode = CameraType::THIRD_PERSON;
+        this->mode = CameraType::FIRST_PERSON;
         this->target = target;
     }
 

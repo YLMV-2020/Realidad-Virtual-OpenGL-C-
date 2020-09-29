@@ -169,6 +169,7 @@
     <ClInclude Include="PlayerAttributes.h" />
     <ClInclude Include="PlayerCamera.h" />
     <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Util.h" />

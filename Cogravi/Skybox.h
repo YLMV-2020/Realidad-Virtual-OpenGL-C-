@@ -1,12 +1,6 @@
 #ifndef SKYBOX_HEADER
 #define SKYBOX_HEADER
 
-#include <iostream>
-#include <vector>
-
-#include <Util/shader.h>
-#include "Camera.h"
-
 using namespace std;
 
 float cubeVertices[] = {
@@ -131,12 +125,11 @@ namespace Cogravi
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)4.0f / (float)3.0f, NEAR, FAR);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)4.0f / (float)3.0f, camera.NEAR, camera.FAR);
 			shader.setMat4("model", model);
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
 			shader.setVec3("cameraPos", camera.Position);
-
 
 			// draw skybox as last
 			glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -153,7 +146,7 @@ namespace Cogravi
 			glDepthFunc(GL_LESS);
 		}
 
-		void Render(Cogravi::Avatar& avatar)
+		void render(Cogravi::Avatar& avatar)
 		{
 			// draw scene as normal
 			shader.use();

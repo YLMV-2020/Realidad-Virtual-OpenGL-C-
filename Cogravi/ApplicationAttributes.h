@@ -6,10 +6,8 @@
 const int WIDTH = 1280;
 const int HEIGHT = 800;
 
-float NEAR = 0.1f;
-float FAR = 1000.0f;
-
 #include <functional>
+//#include <WinSock2.h> servidores :v
 #include <GL/glew.h> 
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -21,8 +19,6 @@ float FAR = 1000.0f;
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <Util/Shader.h>
-
 #include <iostream>
 using namespace std;
 
@@ -31,6 +27,7 @@ using namespace std;
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "Shader.h"
 #include "Util.h"
 #include "BulletWorldController.h"
 #include "Camera.h"
@@ -56,12 +53,6 @@ namespace Cogravi
 	public:
 
         GLFWwindow* window;
-
-        float lastX;
-        float lastY;
-
-        bool mouseCursorDisabled = true;
-        bool firstMouse = true;
 
         bool isEngine = true;
         bool isPc = false;
@@ -99,6 +90,7 @@ namespace Cogravi
         AnimationController* animations;
 
         VehicleController* vehicle;
+        InputProcessor* input;
 
         //VR
         int WIDTH_VR = 1920;

@@ -182,6 +182,9 @@
     <ClInclude Include="InputProcessor.h">
       <Filter>Archivos de encabezado\Application</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Archivos de encabezado\Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\model.frag">

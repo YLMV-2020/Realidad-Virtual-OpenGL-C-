@@ -1,13 +1,6 @@
 #ifndef TERRAIN_HEADER
 #define TERRAIN_HEADER
 
-#include <gl/glew.h>
-
-#include <Util/shader.h>
-//#include <Util/camera.h>
-
-#include "BulletWorldController.h"
-
 namespace Cogravi
 {
 	class Terrain
@@ -57,12 +50,12 @@ namespace Cogravi
 			configShader();
 		}
 
-		void Render(Camera &camera)
+		void render(Camera &camera)
 		{
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)4.0f / (float)3.0f, NEAR, FAR);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)4.0f / (float)3.0f, camera.NEAR, camera.FAR);
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
 
@@ -73,7 +66,7 @@ namespace Cogravi
 			glBindVertexArray(0);
 		}
 
-		void Render(Avatar& avatar)
+		void render(Avatar& avatar)
 		{
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);

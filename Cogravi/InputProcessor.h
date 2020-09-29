@@ -10,41 +10,27 @@ namespace Cogravi
         GLFWwindow* window;
         Camera* camera;
 
-        const unsigned char* buttons;
-        const unsigned char* buttonsTwo;
-        const float* axes;
-        const float* axesTwo;
-        int count;
-        int countTwo;
-        int axesCount;
-        int axesCountTwo;
-
         int lastX;
         int lastY;
 
-        bool firstMouse;
-        bool isWireframe;
-        bool isReleased;
+        bool firstMouse = true;
+        bool isWireframe = false;
+        bool isReleased = false;
+        bool mouseCursorDisabled = true;
 
-        InputProcessor(GLFWwindow* window, Camera* camara): 
-            window(window),
-            camera(camara),
-            firstMouse(true),
-            isReleased(false),
-            isWireframe(false)
+        InputProcessor(GLFWwindow* window, Camera* camera) 
         {
+            this->window = window;
+            this->camera = camera;
 
             glfwGetWindowSize(window, &lastX, &lastY);
             lastX = lastX / 2;
             lastY = lastY / 2;
 
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
 
-        void processMouse()
+        void processMouse(double xpos, double ypos)
         {
-            GLdouble xpos, ypos;
-            glfwGetCursorPos(window, &xpos, &ypos);
 
             if (abs(xpos - lastX) < 2.f && abs(ypos - lastY) < 2.f)
             {
@@ -63,6 +49,14 @@ namespace Cogravi
             lastX = xpos;
             lastY = ypos;
 
+            if (!mouseCursorDisabled)
+            {
+                processMouseMovement(xoffset, yoffset);
+            }
+        }
+
+        void processMouseMovement(float xoffset, float yoffset)
+        {
             float sensitivity = 0.1f; // change this value to your liking
             xoffset *= sensitivity;
             yoffset *= sensitivity;
@@ -86,12 +80,6 @@ namespace Cogravi
 
         void processInput()
         {
-            buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
-            axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-            buttonsTwo = glfwGetJoystickButtons(GLFW_JOYSTICK_2, &countTwo);
-            axesTwo = glfwGetJoystickAxes(GLFW_JOYSTICK_2, &axesCountTwo);
-
-            processMouse();
 
             float cameraSpeed = 1.f;
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
