@@ -31,6 +31,8 @@ public:
     float yaw; //angulo de giro en Z
     float pitch; //angulo de giro en Y
 
+    float speed = 1.0f;
+
     CameraType mode;
 
     glm::mat4 projection;
@@ -40,6 +42,7 @@ public:
     {
         this->Up = glm::vec3(0, 1, 0);
         this->Front = glm::vec3(0.0f, 0.0f, -1.0f);
+
         this->Position = glm::vec3(5.0f, 10.0f, 10.75f);
 
         this->upOffset = 15.0f;

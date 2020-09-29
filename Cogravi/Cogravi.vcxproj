@@ -167,7 +167,6 @@
     <ClInclude Include="ModelAttributes.h" />
     <ClInclude Include="ModelController.h" />
     <ClInclude Include="PlayerAttributes.h" />
-    <ClInclude Include="PlayerCamera.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />

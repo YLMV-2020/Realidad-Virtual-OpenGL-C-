@@ -122,9 +122,6 @@
     <ClInclude Include="Debug.h">
       <Filter>Archivos de encabezado\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerCamera.h">
-      <Filter>Archivos de encabezado\Player</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerController.h">
       <Filter>Archivos de encabezado\Player</Filter>
     </ClInclude>

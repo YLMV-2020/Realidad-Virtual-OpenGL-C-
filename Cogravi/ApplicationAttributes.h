@@ -36,7 +36,6 @@ using namespace std;
 #include "Terrain.h"
 #include "Skybox.h"
 #include "DebugDrawer.h"
-#include "PlayerCamera.h"
 #include "ModelController.h"
 #include "AnimationController.h"
 #include "PlayerController.h"
@@ -66,8 +65,8 @@ namespace Cogravi
         float lastFrame;
         float animationTime;
 
-        unsigned int framebufferEngine;
-        unsigned int textureEngine;
+        GLuint framebufferEngine;
+        GLuint textureEngine;
 
         long long frameIndex = 0;
 
@@ -75,7 +74,12 @@ namespace Cogravi
         ImVec2 display;
 
         Camera* camera;
-        vector<GLuint> textures;
+        vector<GLuint> textureFloors;
+
+        vector<GLuint> textureSkyboxs;
+        vector<GLuint> textureObjects;
+
+        vector<GLuint> texturesImGui;
 
         Terrain* terrain;
         Skybox* skybox;

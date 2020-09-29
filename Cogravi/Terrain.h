@@ -11,12 +11,15 @@ namespace Cogravi
 		Shader shader;
 
 		unsigned int floorTexture;
-		unsigned int planeVAO, planeVBO;
+		unsigned int VAO, VBO;
 
 		glm::vec3 volumen;
 		float repeat;
 
 		float planeVertices[30];
+
+		int slices = 10;
+		int lenght;
 
 		Terrain(string model, glm::vec3 volumen, float repeat, Shader shader, BulletWorldController* bulletWorldController)
 		{
@@ -48,6 +51,7 @@ namespace Cogravi
 
 			configTerrain();
 			configShader();
+			//grid();
 		}
 
 		void render(Camera &camera)
@@ -59,11 +63,23 @@ namespace Cogravi
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
 
-			glBindVertexArray(planeVAO);
+			glBindVertexArray(VAO);
 			glBindTexture(GL_TEXTURE_2D, floorTexture);
 			shader.setMat4("model", glm::mat4(1.0f));
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			glBindVertexArray(0);
+
+			//glEnable(GL_DEPTH_TEST);
+
+		/*	glBindVertexArray(VAO);
+
+			shader.setMat4("model", glm::mat4(1.0f));
+			glDrawElements(GL_LINES, lenght, GL_UNSIGNED_INT, NULL);
+
+			glBindVertexArray(0);*/
+
+			//glDisable(GL_DEPTH_TEST);
+
 		}
 
 		void render(Avatar& avatar)
@@ -75,20 +91,66 @@ namespace Cogravi
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
 
-			glBindVertexArray(planeVAO);
+			glBindVertexArray(VAO);
 			glBindTexture(GL_TEXTURE_2D, floorTexture);
 			shader.setMat4("model", glm::mat4(1.0f));
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			glBindVertexArray(0);
 		}
-
-
 		
+
+		void grid()
+		{
+			std::vector<glm::vec3> vertices;
+			std::vector<glm::uvec4> indices;
+
+			for (int j = 0; j <= slices; ++j) {
+				for (int i = 0; i <= slices; ++i) {
+					float x = (float)i / (float)slices;
+					float y = 0;
+					float z = (float)j / (float)slices;
+					vertices.push_back(glm::vec3(x, y, z));
+				}
+			}
+
+			for (int j = 0; j < slices; ++j) {
+				for (int i = 0; i < slices; ++i) {
+
+					int row1 = j * (slices + 1);
+					int row2 = (j + 1) * (slices + 1);
+
+					indices.push_back(glm::uvec4(row1 + i, row1 + i + 1, row1 + i + 1, row2 + i + 1));
+					indices.push_back(glm::uvec4(row2 + i + 1, row2 + i, row2 + i, row1 + i));
+
+				}
+			}
+
+			glGenVertexArrays(1, &VAO);
+			glBindVertexArray(VAO);
+
+			GLuint vbo;
+			glGenBuffers(1, &vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), glm::value_ptr(vertices[0]), GL_STATIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+			GLuint ibo;
+			glGenBuffers(1, &ibo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(glm::uvec4), glm::value_ptr(indices[0]), GL_STATIC_DRAW);
+
+			glBindVertexArray(0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+			lenght = (GLuint)indices.size() * 4;
+		}
 
 		void configTerrain()
 		{
-			glDeleteVertexArrays(1, &planeVAO);
-			glDeleteBuffers(1, &planeVBO);
+			glDeleteVertexArrays(1, &VAO);
+			glDeleteBuffers(1, &VBO);
 
 			planeVertices[0] = volumen.x;
 			planeVertices[1] = volumen.y;
@@ -126,10 +188,10 @@ namespace Cogravi
 			planeVertices[28] = repeat;
 			planeVertices[29] = repeat;
 
-			glGenVertexArrays(1, &planeVAO);
-			glGenBuffers(1, &planeVBO);
-			glBindVertexArray(planeVAO);
-			glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+			glGenVertexArrays(1, &VAO);
+			glGenBuffers(1, &VBO);
+			glBindVertexArray(VAO);
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);

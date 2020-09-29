@@ -15,8 +15,13 @@ namespace Cogravi
 
         bool firstMouse = true;
         bool isWireframe = false;
-        bool isReleased = false;
         bool mouseCursorDisabled = true;
+
+        //static InputProcessor* Instance()
+        //{
+        //    static InputProcessor instance;
+        //    return &instance;
+        //}
 
         InputProcessor(GLFWwindow* window, Camera* camera) 
         {
@@ -31,11 +36,10 @@ namespace Cogravi
 
         void processMouse(double xpos, double ypos)
         {
-
-            if (abs(xpos - lastX) < 2.f && abs(ypos - lastY) < 2.f)
+           /* if (abs(xpos - lastX) < 2.f && abs(ypos - lastY) < 2.f)
             {
                 return;
-            }
+            }*/
 
             if (firstMouse)
             {
@@ -50,9 +54,7 @@ namespace Cogravi
             lastY = ypos;
 
             if (!mouseCursorDisabled)
-            {
                 processMouseMovement(xoffset, yoffset);
-            }
         }
 
         void processMouseMovement(float xoffset, float yoffset)
@@ -80,8 +82,7 @@ namespace Cogravi
 
         void processInput()
         {
-
-            float cameraSpeed = 1.f;
+            float cameraSpeed = camera->speed;
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
                 camera->setPosition(camera->getPosition() + cameraSpeed * camera->getFront());
             if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -90,39 +91,6 @@ namespace Cogravi
                 camera->setPosition(camera->getPosition() - glm::normalize(glm::cross(camera->getFront(), camera->getUp())) * cameraSpeed);
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
                 camera->setPosition(camera->getPosition() + glm::normalize(glm::cross(camera->getFront(), camera->getUp())) * cameraSpeed);
-            if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-            {
-                switch (camera->getMode())
-                {
-                case CameraType::FIRST_PERSON:
-                    camera->setMode(CameraType::THIRD_PERSON);
-                    break;
-                case CameraType::THIRD_PERSON:
-                    camera->setMode(CameraType::FIRST_PERSON);
-                }
-            }
-            if (isReleased)
-            {
-                if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-                {
-                    if (!isWireframe)
-                    {
-                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                        isWireframe = true;
-                    }
-                    else
-                    {
-                        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); 
-                        isWireframe = false;
-                    }
-                    isReleased = false;
-                }
-            }
-            if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE)
-            {
-                isReleased = true;
-            }
-
         }
 		
 

@@ -20,7 +20,7 @@ namespace Cogravi
 
         Application()
         {
-
+           
             if (glfwInit() == GL_FALSE) return;
 
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -85,6 +85,31 @@ namespace Cogravi
                     debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
                 }
 
+                if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+                {
+                    switch (camera->getMode())
+                    {
+                    case CameraType::FIRST_PERSON:
+                        camera->setMode(CameraType::THIRD_PERSON);
+                        break;
+                    case CameraType::THIRD_PERSON:
+                        camera->setMode(CameraType::FIRST_PERSON);
+                    }
+                }
+
+                if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+                {
+                    if (!input->isWireframe)
+                    {
+                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+                    }
+                    else
+                    {
+                        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    }
+                    input->isWireframe = !input->isWireframe;
+                }
 
             };
 
@@ -116,6 +141,7 @@ namespace Cogravi
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
                     input->mouseCursorDisabled = !input->mouseCursorDisabled;
+
                     if (input->mouseCursorDisabled)
                         input->firstMouse = true;
                 }
@@ -183,6 +209,30 @@ namespace Cogravi
 
         }
 
+        void loadTexturesImGui()
+        {
+            texturesImGui.push_back(Util::loadTexture("assets\\textures\\awesomeface.png"));
+        }
+
+        void loadTextureObjects()
+        {
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\tienda.png"));
+        }
+
+        void loadTextureSkyboxs()
+        {
+            textureSkyboxs.push_back(Util::loadTexture("assets\\skyboxs\\nubes\\nubes_nx.jpg"));
+            textureSkyboxs.push_back(Util::loadTexture("assets\\skyboxs\\blue\\blue_nx.png"));
+            textureSkyboxs.push_back(Util::loadTexture("assets\\skyboxs\\rainbow\\rainbow_nx.png"));
+            textureSkyboxs.push_back(Util::loadTexture("assets\\skyboxs\\Lan\\Lan_nx.jpg"));
+            textureSkyboxs.push_back(Util::loadTexture("assets\\skyboxs\\bosque\\bosque_nx.png"));
+        }
+
+        void loadTextureFloors()
+        {
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\wall.jpg"));
+        }
+
         void inicializarScene()
         {
             util = Util::Instance();
@@ -216,14 +266,13 @@ namespace Cogravi
 
             input = new InputProcessor(window, camera);
 
-            textures.push_back(Util::loadTexture("assets\\textures\\awesomeface.png"));
-            textures.push_back(Util::loadTexture("assets\\textures\\tienda.png"));
-            textures.push_back(Util::loadTexture("assets\\skyboxs\\nubes\\nubes_nx.jpg"));
-            textures.push_back(Util::loadTexture("assets\\skyboxs\\blue\\blue_nx.png"));
-            textures.push_back(Util::loadTexture("assets\\skyboxs\\rainbow\\rainbow_nx.png"));
-            textures.push_back(Util::loadTexture("assets\\skyboxs\\Lan\\Lan_nx.jpg"));
-            textures.push_back(Util::loadTexture("assets\\skyboxs\\bosque\\bosque_nx.png"));
-            textures.push_back(Util::loadTexture("assets\\textures\\wall.jpg"));
+            
+            loadTextureFloors();
+            loadTextureObjects();
+            loadTexturesImGui();
+            loadTextureSkyboxs();
+           
+           
 
             txt.clear();
              t.id = Util::loadTexture("assets/objects/medieval_house/medieval_house_diff.png");
@@ -636,7 +685,7 @@ namespace Cogravi
             animations->render(*camera, animationTime);
             model->render(*camera);
             animation->render(*camera, animationTime);
-            //vehicle->render(*camera);
+            vehicle->render(*camera);
 
             debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
             bulletWorldController->dynamicsWorld->debugDrawWorld();
@@ -647,7 +696,6 @@ namespace Cogravi
             DockSpace(NULL);           
             
             settingsImGui();
-            inspectorImGui(modelSelect);
             renderImGui();
             lightingImGui();
             terrainImGui();
@@ -656,6 +704,7 @@ namespace Cogravi
             projectImGui();
             vehicleImGui();
             playerImGui();
+            inspectorImGui(modelSelect);
 
 
             // Rendering
@@ -743,7 +792,7 @@ namespace Cogravi
             ImGui::Separator();
             ImGui::Text("Collision Objects: %d", bulletWorldController->dynamicsWorld->getNumCollisionObjects());
 
-            if (ImGui::ImageButton((void*)textures[1], ImVec2(100, 100)))
+            if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(100, 100)))
             {
                 isEngine = false;
                 isPc = true;
@@ -756,7 +805,7 @@ namespace Cogravi
                 debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
             }
             ImGui::SameLine(120);
-            if (ImGui::ImageButton((void*)textures[2], ImVec2(100, 100)))
+            if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(100, 100)))
             {
                 if (ovr)
                 {
@@ -873,7 +922,7 @@ namespace Cogravi
             ImGui::Begin("Project", NULL);
 
 
-            if (ImGui::ImageButton((void*)textures[1], ImVec2(100, 100)))
+            if (ImGui::ImageButton((void*)textureObjects[0], ImVec2(100, 100)))
             {
                 vector<Texture> textures;
                 Texture t;
@@ -889,31 +938,31 @@ namespace Cogravi
         {
             ImGui::Begin("Skybox", NULL);
 
-            if (ImGui::ImageButton((void*)textures[2], ImVec2(100, 100)))
+            if (ImGui::ImageButton((void*)textureSkyboxs[0], ImVec2(100, 100)))
             {
                 skybox->loadSkybox("nubes", "jpg");
             }
 
             ImGui::SameLine(125);
 
-            if (ImGui::ImageButton((void*)textures[3], ImVec2(100, 100)))
+            if (ImGui::ImageButton((void*)textureSkyboxs[1], ImVec2(100, 100)))
             {
                 skybox->loadSkybox("blue", "png");
             }
 
             ImGui::SameLine(250);
 
-            if (ImGui::ImageButton((void*)textures[4], ImVec2(100, 100)))
+            if (ImGui::ImageButton((void*)textureSkyboxs[2], ImVec2(100, 100)))
             {
                 skybox->loadSkybox("rainbow", "png");
             }
 
-            if (ImGui::ImageButton((void*)textures[5], ImVec2(100, 100)))
+            if (ImGui::ImageButton((void*)textureSkyboxs[3], ImVec2(100, 100)))
             {
                 skybox->loadSkybox("Lan", "jpg");
             }
 
-            if (ImGui::ImageButton((void*)textures[6], ImVec2(100, 100)))
+            if (ImGui::ImageButton((void*)textureSkyboxs[4], ImVec2(100, 100)))
             {
                 skybox->loadSkybox("bosque", "png");
             }
@@ -948,9 +997,9 @@ namespace Cogravi
             }
 
             ImGui::Separator();
-            if (ImGui::ImageButton((void*)textures[7], ImVec2(100, 100)))
+            if (ImGui::ImageButton((void*)textureFloors[0], ImVec2(100, 100)))
             {
-                terrain->floorTexture = textures[7];
+                terrain->floorTexture = textureFloors[0];
             }
             ImGui::Separator();
 
@@ -979,7 +1028,7 @@ namespace Cogravi
                 camera->projection = glm::perspective(glm::radians(camera->FOV), (float)4.0f / (float)3.0f, camera->NEAR, camera->FAR);
             }
 
-
+            ImGui::DragFloat("Speed", &camera->speed, 0.01f);
 
 
 
