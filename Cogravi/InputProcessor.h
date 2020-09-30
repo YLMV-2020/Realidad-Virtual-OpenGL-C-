@@ -13,9 +13,9 @@ namespace Cogravi
         int lastX;
         int lastY;
 
-        bool firstMouse = true;
+        bool firstMouse = false;
         bool isWireframe = false;
-        bool mouseCursorDisabled = true;
+        bool mouseCursorDisabled = false;
 
         //static InputProcessor* Instance()
         //{

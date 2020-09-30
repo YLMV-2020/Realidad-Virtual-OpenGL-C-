@@ -30,28 +30,38 @@ namespace Cogravi
 		{
 			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 			{
-				vehicle->set_drive_engine_vel(-5);
+				cout << "Km: " << vehicle->car->getCurrentSpeedKmHour() << "\n";
+				vehicle->car->getRigidBody()->applyCentralImpulse(btVector3(0, 1, 0));
+				if (vehicle->car->getCurrentSpeedKmHour() < 150.f)
+				{
+					//vehicle->car->setBrake(20, 1);
+					//vehicle->car->getRigidBody()->applyCentralImpulse(btVector3(0, 0, 30));
+					vehicle->car->applyEngineForce(-20, 0);
+					vehicle->car->applyEngineForce(-20, 1);
+				}
+
+
 			}
 			else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 			{
-				vehicle->set_drive_engine_vel(5);
+				
 			}
 			else
 			{
-				vehicle->set_drive_engine_vel(0);
+				
 			}
 
 			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 			{
-				vehicle->set_steer_engine_vel(1);
+				
 			}
 			else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 			{
-				vehicle->set_steer_engine_vel(-1);
+				
 			}
 			else
 			{
-				vehicle->set_steer_engine_vel(0);
+				
 			}
 			
 		}

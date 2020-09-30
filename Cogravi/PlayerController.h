@@ -9,81 +9,99 @@ namespace Cogravi
 	{
 	public:			
 
-		PlayerController(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture> textures, Shader shader, BulletWorldController*& bulletWorldController, DebugDrawer*& debugDrawer) 
+		PlayerController(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture> textures, Shader shader, BulletWorldController*& bulletWorldController) 
 			//Animation(position, rotation, scale, path, textures, shader)
+		{		
+
+			addBodyPhysicsCapsule(bulletWorldController);
+
+			/*ghostObject = new btPairCachingGhostObject();
+			ghostObject->setCollisionShape(shape);
+			ghostObject->setUserPointer(this);
+			ghostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
+			bulletWorldController->dynamicsWorld->addCollisionObject(ghostObject, btBroadphaseProxy::KinematicFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
+			tested = new btKinematicCharacterController(ghostObject, shape, 1);
+			bulletWorldController->dynamicsWorld->addCharacter(tested);*/
+		}
+
+		void addBodyPhysicsCapsule(BulletWorldController* worldController)
 		{
+			btCapsuleShape* nshape = new btCapsuleShape(btScalar(1.0f), btScalar(1.0f));
+			this->shape = nshape;
+			bodyPhysicsConfiguration(worldController);
+		}
 
-			this->bulletWorldController = bulletWorldController;
-			this->debugDrawer = debugDrawer;
-
-			/*addBodyPhysicsCapsule(-1, bulletWorldController);
-			shape->setLocalScaling(btVector3(0.35f, 0.6f, 0.0f));*/
-
+		void bodyPhysicsConfiguration(BulletWorldController* worldController)
+		{
 			btTransform transform;
 			transform.setIdentity();
-			transform.setOrigin(btVector3(position.x, position.y, position.z));
-			transform.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, 1));
+			transform.setOrigin(btVector3(-30, 5.0f, 15.f));
+			transform.setRotation(btQuaternion(0, 0, 0, 1));
 
-			m_pCollisionShape = new btCapsuleShape(1, 1);
+			//Calculamos la inercia del modelo
+			btVector3 inertia(0, 0, 0);
+			shape->calculateLocalInertia(70, inertia);
 
-			m_pMotionState = new btDefaultMotionState(transform);
+			//Configuramos las propiedades básicas de construcción del cuerpo
 
-			btVector3 intertia;
-			m_pCollisionShape->calculateLocalInertia(1, intertia);
+			btDefaultMotionState* state = new btDefaultMotionState(transform);
+			btRigidBody::btRigidBodyConstructionInfo info(70, state, shape, inertia);
 
-			btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(1, m_pMotionState, m_pCollisionShape, intertia);
+			//Establecemos los parámetros que recibidos como parámetro
+			body = new btRigidBody(info);
+			body->setRestitution(1);
+			body->setUserIndex(200);
+			body->setLinearFactor(btVector3(1, 1, 1));
 
-			// No friction, this is done manually
-			rigidBodyCI.m_friction = 0.0f;
-			//rigidBodyCI.m_additionalDamping = true;
-			//rigidBodyCI.m_additionalLinearDampingThresholdSqr= 1.0f;
-			//rigidBodyCI.m_additionalLinearDampingThresholdSqr = 0.5f;
-			rigidBodyCI.m_restitution = 0.0f;
+			body->setSleepingThresholds(0.0, 0.0);
+			body->setAngularFactor(0.0);
 
-			rigidBodyCI.m_linearDamping = 0.0f;
+			//Por defecto, todos los modelos están bloqueados en el espacio en X,Z así como sus ejes de rotación
+			//body->setAngularFactor(btVector3(1, 1, 1));
+			body->setGravity(btVector3(0, 1, 0));
 
-			m_pRigidBody = new btRigidBody(rigidBodyCI);
+			body->setActivationState(DISABLE_DEACTIVATION);
 
-			// Keep upright
-			m_pRigidBody->setAngularFactor(0.0f);
+			//Añadimos el cuerpo al mundo dinámico
+			worldController->dynamicsWorld->addRigidBody(body);
 
-			m_pRigidBody->setActivationState(DISABLE_DEACTIVATION);
-
-			bulletWorldController->dynamicsWorld->addRigidBody(m_pRigidBody);
-
-			m_pGhostObject = new btPairCachingGhostObject();
-
-			m_pGhostObject->setCollisionShape(m_pCollisionShape);
-			m_pGhostObject->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
-
-			character = new btKinematicCharacterController(m_pGhostObject, m_pCollisionShape, 1);
-			character->debugDraw(debugDrawer);
-
-			bulletWorldController->dynamicsWorld->addCollisionObject(m_pGhostObject, btBroadphaseProxy::KinematicFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
-			bulletWorldController->dynamicsWorld->addAction(character);
-			bulletWorldController->dynamicsWorld->addCharacter(character);
-			//bulletWorldController->dynamicsWorld->addVehicle
-			
 		}
 
 		void update(GLFWwindow* window)
 		{
+			// Synch ghost with actually object
+			//m_pGhostObject->getWorldTransform().getOrigin().setY(m_pGhostObject->getWorldTransform().getOrigin().getY() - 0.01f);
+
+			// Update transform
+			//m_pMotionState->getWorldTransform(m_motionTransform);
+
+			btTransform T;
+
+			T = body->getCenterOfMassTransform();
+
+			//T.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, 1));
+			T.setRotation(btQuaternion(glm::radians(rotation.x), glm::radians(rotation.y), glm::radians(rotation.z), 1));
+
+			body->setCenterOfMassTransform(T);
 
 			if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 			{
+				//ghostObject->setWorldTransform(body->getWorldTransform());
+
+				////cout << "Saltando\n";
+				////body->applyCentralImpulse(btVector3(0, 70, 0));
+				//tested->jump(btVector3(0, 70, 0));
+				//if (ghostObject->isKinematicObject()) cout << "Yes\n";
+				body->applyCentralImpulse(btVector3(0, 30, 0));
 				if (isFloor)
 				{
-					character->updateAction(bulletWorldController->dynamicsWorld, 1);
-					character->jump(btVector3(0, 20, 0));
-					//character->jump(btVector3(0, 10, 0));
-					//m_pRigidBody->applyCentralImpulse(btVector3(0.0f, m_jumpImpulse, 0.0f));
-					this->upwardsSpeed = JUMP_POWER;
+					//this->upwardsSpeed = JUMP_POWER;
 					isFloor = false;
 				}
 			}
-
 			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 			{
+				body->applyCentralImpulse(btVector3(position.x*200, 0, position.z*200));
 				this->currentSpeed = RUN_SPEED;
 			}
 			else if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
@@ -92,6 +110,7 @@ namespace Cogravi
 			}
 			else 
 			{
+				body->applyCentralImpulse(btVector3(0, 0, 0));
 				this->currentSpeed = 0.0f;
 			}
 
@@ -108,43 +127,28 @@ namespace Cogravi
 				this->currentTurnSpeed = 0.0f;
 			}
 
-			//m_pGhostObject->setWorldTransform(m_pRigidBody->getWorldTransform());
-			
-			
-			/*float height = body->getWorldTransform().getOrigin().getY();
-			float heightTarget = height > position.y ? height : position.y + 1;
-
-			btTransform target;
-
-			target.setIdentity();
-			target.setOrigin(btVector3(position.x, position.y + 1, position.z));
-
-			btQuaternion quat;
-			quat.setEulerZYX(btScalar(glm::radians(rotation.z)), btScalar(glm::radians(rotation.y)), btScalar(glm::radians(rotation.x)));
-			target.setRotation(btQuaternion(quat));
-
-			body->setWorldTransform(target);*/
-
 		}
 		
 		void move(float deltaTime)
 		{
-			/*rotation += glm::vec3(0, currentTurnSpeed * deltaTime, 0);
+			rotation += glm::vec3(0, currentTurnSpeed * deltaTime, 0);
 			float distance = currentSpeed * deltaTime;
 
 			float dx = distance * glm::sin(glm::radians(rotation.y));
 			float dz = distance * glm::cos(glm::radians(rotation.y));
 
-			position += glm::vec3(dx, 0, dz);
+			cout << "DX: " << dx << "\n";
+
+			position = glm::vec3(dx, 0, dz);
 			upwardsSpeed += GRAVITY * deltaTime;
-			position += glm::vec3(0, upwardsSpeed * deltaTime, 0);
+			//position += glm::vec3(0, upwardsSpeed * deltaTime, 0);
 
 			if (position.y <= TERRAIN_HEIGHT)
 			{
 				upwardsSpeed = 0.0f;
 				position.y = TERRAIN_HEIGHT;
 				isFloor = true;
-			}*/
+			}
 		}
 	
 		~PlayerController()

@@ -88,7 +88,7 @@ namespace Cogravi
         DebugDrawer* debugDrawer;
 
         Util* util;
-        PlayerController* player;
+        //PlayerController* player;
 
         ModelController* models;
         AnimationController* animations;

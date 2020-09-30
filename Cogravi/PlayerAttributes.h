@@ -14,11 +14,11 @@ namespace Cogravi
 	{
 	public:
 
-		BulletWorldController* bulletWorldController;
-		DebugDrawer* debugDrawer;
+		glm::vec3 position;
+		glm::vec3 rotation;
 
 		float RUN_SPEED = 10.0f;
-		float TURN_SPEED = 160.0f;
+		float TURN_SPEED = 180.0f;
 		float GRAVITY = -50.0f;
 		float JUMP_POWER = 20.0f;
 
@@ -30,57 +30,17 @@ namespace Cogravi
 
 		bool isFloor = true;
 		bool isJump = false;
+
+		btRigidBody* body;
+		btCapsuleShape* shape;
+
+		btPairCachingGhostObject* ghostObject;
+		//btBoxShape* convexShape = new btBoxShape(btVector3(1, 1, 1));
+
+		//For now only a simple test that it initializes correctly.
+		btKinematicCharacterController* tested;
+
 		
-		btKinematicCharacterController* character;
-		btConvexShape* m_pCollisionShape;
-		btDefaultMotionState* m_pMotionState;
-		btRigidBody* m_pRigidBody;
-		btPairCachingGhostObject* m_pGhostObject;
-
-		bool m_onGround;
-		//bool m_onJumpableGround; // A bit lower contact than just onGround
-		bool m_hittingWall;
-
-		float m_bottomYOffset;
-		float m_bottomRoundedRegionYOffset;
-
-		float m_stepHeight;
-
-		btTransform m_motionTransform;
-
-		glm::vec3 m_manualVelocity;
-		std::vector<glm::vec3> m_surfaceHitNormals;
-
-		btVector3 m_previousPosition;
-
-		float m_jumpRechargeTimer;
-
-		void ParseGhostContacts();
-
-		void UpdatePosition();
-		void UpdateVelocity();
-
-
-		float m_deceleration;
-		float m_maxSpeed;
-		float m_jumpImpulse = 50;
-
-		float m_jumpRechargeTime;
-
-		void Walk(const glm::vec2 dir);
-
-		// Ignores y
-		void Walk(const glm::vec3 dir);
-
-		void Update();
-
-		void Jump();
-
-		glm::vec3 GetPosition() const;
-		glm::vec3 GetVelocity() const;
-
-		bool IsOnGround() const;
-
 	};
 }
 #endif

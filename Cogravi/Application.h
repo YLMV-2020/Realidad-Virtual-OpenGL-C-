@@ -31,6 +31,8 @@ namespace Cogravi
             window = glfwCreateWindow(WIDTH, HEIGHT, "Computacion Grafica y Visual", NULL, NULL);
             if (!window) return;
 
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
             glfwMakeContextCurrent(window);
 
             if (GLenum err = glewInit()) return;
@@ -258,11 +260,11 @@ namespace Cogravi
             t.type = "texture_diffuse";
             txt.push_back(t);
 
-            player = new PlayerController(glm::vec3(25.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.01f, 0.01f, 0.01f), "assets/animations/player/player.dae", txt, *util->myShaders[ShaderType::MODEL_DYNAMIC], bulletWorldController, debugDrawer);
+            //player = new PlayerController(glm::vec3(25.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.01f, 0.01f, 0.01f), "assets/animations/player/player.dae", txt, *util->myShaders[ShaderType::MODEL_DYNAMIC], bulletWorldController);
             
             vehicle = new VehicleController(bulletWorldController);
 
-            camera = new Camera(vehicle->vehicle->vehicleDrawableModels[0]->body);
+            camera = new Camera(vehicle->vehicle->body);
 
             input = new InputProcessor(window, camera);
 
@@ -603,11 +605,12 @@ namespace Cogravi
             glm::mat4 ViewMatrix = camera->GetViewMatrix();
 
             bulletWorldController->physics_step(ImGui::GetIO().Framerate);
+            //bulletWorldController->physics_step(60.f);
 
             camera->update(bulletWorldController->dynamicsWorld);
 
-            player->update(window);
-            player->move(deltaTime);
+            //player->update(window);
+            //player->move(deltaTime);
             models->update();
             animations->update();
             vehicle->updateInput(window);
