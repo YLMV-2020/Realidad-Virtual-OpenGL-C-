@@ -10,7 +10,7 @@ namespace Cogravi
     public:
 
         GameObject* model;
-        DynamicGameObject* animation;
+        //DynamicGameObject* animation;
         
         static Application* Instance()
         {
@@ -158,56 +158,20 @@ namespace Cogravi
 
         void addModels()
         {
-            vector<Texture> textures;
-            Texture t;
-           /* t.id = Util::loadTexture("assets/objects/medieval_house/medieval_house_diff.png");
-            t.type = "texture_diffuse";
-            textures.push_back(t);
-            t.id = Util::loadTexture("assets/objects/medieval_house/medieval_house_spec.png");
-            t.type = "texture_specular";
-            textures.push_back(t);
-            t.id = Util::loadTexture("assets/objects/medieval_house/medieval_house_normals.png");
-            t.type = "texture_normal";
-            textures.push_back(t);
-            models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/objects/medieval_house/house.obj", textures, *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);*/
-            
-            //vector<Texture> textures;
-            //Texture t;
-            textures.clear();
-            t.id = Util::loadTexture("assets/objects/cyborg/cyborg_diffuse.png");
-            t.type = "texture_diffuse";
-            textures.push_back(t);
-            t.id = Util::loadTexture("assets/objects/cyborg/cyborg_specular.png");
-            t.type = "texture_specular";
-            textures.push_back(t);
-            t.id = Util::loadTexture("assets/objects/cyborg/cyborg_normal.png");
-            t.type = "texture_normal";
-            textures.push_back(t);
-            models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/cyborg/cyborg.obj", textures, *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
 
-            textures.clear();
-            t.id = Util::loadTexture("assets/objects/stallTexture.png");
-            t.type = "texture_diffuse";
-            textures.push_back(t);
-            models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/stall.obj", textures, *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
-
-            textures.clear();
-            t.id = Util::loadTexture("assets/objects/fuente/fuente_diffuse.png");
-            t.type = "texture_diffuse";
-            textures.push_back(t);
-            models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.01f, 0.01f, 0.01f), "assets/objects/fuente/fuente.obj", textures, *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController); 
+          
             
         }
 
         void addAnimations()
         {
-            vector<Texture> textures;
+            /*vector<Texture> textures;
             Texture t;
             t.id = Util::loadTexture("assets/animations/player/maria_diffuse.png");
             t.type = "texture_diffuse";
             textures.push_back(t);
 
-            animation = new DynamicGameObject(glm::vec3(20.0f, 0.0f, -20.0f), glm::vec3(0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/player/player.dae", textures, *util->myShaders[ShaderType::MODEL_DYNAMIC]);
+            animation = new DynamicGameObject(glm::vec3(20.0f, 0.0f, -20.0f), glm::vec3(0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/player/player.dae", textures, *util->myShaders[ShaderType::MODEL_DYNAMIC]);*/
 
         }
 
@@ -242,8 +206,7 @@ namespace Cogravi
           
             avatar = new Avatar();
 
-            models = new ModelController();
-            animations = new AnimationController();
+
 
             terrain = new Terrain("assets\\textures\\marble.jpg", glm::vec3(100, -0.01f, 100), 10.0f, *util->myShaders[ShaderType::TERRAIN], bulletWorldController);
             skybox = new Skybox("nubes", "jpg", *util->myShaders[ShaderType::CUBE_MAP], *util->myShaders[ShaderType::SKYBOX]);
@@ -262,9 +225,8 @@ namespace Cogravi
 
             //player = new PlayerController(glm::vec3(25.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.01f, 0.01f, 0.01f), "assets/animations/player/player.dae", txt, *util->myShaders[ShaderType::MODEL_DYNAMIC], bulletWorldController);
             
-            vehicle = new VehicleController(bulletWorldController);
 
-            camera = new Camera(vehicle->vehicle->body);
+            camera = new Camera(NULL);
 
             input = new InputProcessor(window, camera);
 
@@ -274,19 +236,8 @@ namespace Cogravi
             loadTexturesImGui();
             loadTextureSkyboxs();
            
-           
 
-            txt.clear();
-             t.id = Util::loadTexture("assets/objects/medieval_house/medieval_house_diff.png");
-             t.type = "texture_diffuse";
-             txt.push_back(t);
-             t.id = Util::loadTexture("assets/objects/medieval_house/medieval_house_spec.png");
-             t.type = "texture_specular";
-             txt.push_back(t);
-             t.id = Util::loadTexture("assets/objects/medieval_house/medieval_house_normals.png");
-             t.type = "texture_normal";
-             txt.push_back(t);
-             model = new GameObject(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/objects/medieval_house/house.obj", txt, *util->myShaders[ShaderType::MODEL_STATIC]);
+             model = new GameObject(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC]);
 
 
             addModels();
@@ -431,14 +382,12 @@ namespace Cogravi
             glm::mat4 ViewMatrix = camera->GetViewMatrix();
 
             bulletWorldController->physics_step(60.0f);
-
-            models->update();
-            animations->update();
+        
 
             skybox->render(*camera);
             terrain->render(*camera);
-            models->render(*camera);
-            animations->render(*camera, animationTime);
+            /*models->render(*camera);
+            animations->render(*camera, animationTime);*/
 
             debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
             bulletWorldController->dynamicsWorld->debugDrawWorld();
@@ -450,9 +399,6 @@ namespace Cogravi
         {
             if (ovr)
             {
-                /*ImGui_ImplOpenGL3_NewFrame();
-                ImGui_ImplGlfw_NewFrame();
-                ImGui::NewFrame();*/
 
                 // Call ovr_GetRenderDesc each frame to get the ovrEyeRenderDesc, as the returned values (e.g. HmdToEyeOffset) may change at runtime.
                 ovrEyeRenderDesc eyeRenderDesc[2];
@@ -470,11 +416,9 @@ namespace Cogravi
                 avatar->Prerender(ovr);
                 bulletWorldController->physics_step(60.f);
 
-                /*avatar->Update();*/
-                animations->update();
-                models->update();
-
-                //DockSpace(NULL);
+                ////avatar->Update();
+                //animations->update();
+                //models->update();
 
                 // Render each eye
                 for (int eye = 0; eye < 2; ++eye)
@@ -501,8 +445,8 @@ namespace Cogravi
                     skybox->render(*avatar);
                     terrain->render(*avatar);
 
-                    animations->render(*avatar, animationTime);
-                    models->render(*avatar);
+               /*     animations->render(*avatar, animationTime);
+                    models->render(*avatar);*/
 
                     debugDrawer->SetMatrices(avatar->view, avatar->proj);
                     bulletWorldController->dynamicsWorld->debugDrawWorld();
@@ -546,46 +490,6 @@ namespace Cogravi
                 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
                 glBlitFramebuffer(0, HEIGHT_VR, WIDTH_VR, 0, 0, 0, WIDTH_VR, HEIGHT_VR, GL_COLOR_BUFFER_BIT, GL_NEAREST);
                 glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
-                //ImGui::Begin("Render", NULL);
-                //ImDrawList* drawList = ImGui::GetWindowDrawList();
-                //displayRender = ImGui::GetWindowSize();
-                //display = ImGui::GetCursorScreenPos();
-                ////ImGui::Separator();
-
-                //
-                //drawList->AddImage(
-                //    (void*)eyeDepthBuffers[0], display,
-                //    ImVec2(display.x + displayRender.x / 2, display.y + displayRender.y), ImVec2(0, 1), ImVec2(1, 0)
-                //);
-
-
-                //drawList->AddImage(
-                //    (void*)eyeDepthBuffers[1], ImVec2(display.x + displayRender.x / 2, display.y),
-                //    ImVec2(display.x + displayRender.x, display.y + displayRender.y), ImVec2(0, 1), ImVec2(1, 0)
-                //);
-                //
-
-
-
-                //ImGui::End();
-
-                //// Rendering
-                //ImGui::Render();
-                //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-                //ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-                //if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-                //{
-                //    GLFWwindow* backup_current_context = glfwGetCurrentContext();
-                //    ImGui::UpdatePlatformWindows();
-                //    ImGui::RenderPlatformWindowsDefault();
-                //    glfwMakeContextCurrent(backup_current_context);
-                //}
-                //    
-                
-
             }
         }
 
@@ -611,20 +515,19 @@ namespace Cogravi
 
             //player->update(window);
             //player->move(deltaTime);
-            models->update();
-            animations->update();
-            vehicle->updateInput(window);
-            vehicle->update();
+            /*models->update();
+            animations->update();*/
+
 
             input->processInput();
-            animation->update();
+            //animation->update();
 
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
             {
                 glm::vec3 out_origin;
                 glm::vec3 out_direction;
                 bulletWorldController->screenPosToWorldRay(
-                    dx, displayRender.y - dy,
+                    mouse.x, displayRender.y - mouse.y,
                     displayRender.x, displayRender.y,
                     ViewMatrix,
                     ProjectionMatrix,
@@ -684,19 +587,18 @@ namespace Cogravi
             skybox->render(*camera);
             terrain->render(*camera);
             //player->render(*camera, animationTime);
-            models->render(*camera);
-            animations->render(*camera, animationTime);
+           /* models->render(*camera);
+            animations->render(*camera, animationTime);*/
             model->render(*camera);
-            animation->render(*camera, animationTime);
-            vehicle->render(*camera);
-
+            //animation->render(*camera, animationTime);
+           
             debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
             bulletWorldController->dynamicsWorld->debugDrawWorld();
             debugDrawer->col = glm::vec3(0, 1, 0);
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-            DockSpace(NULL);           
+            DockSpace();           
             
             settingsImGui();
             renderImGui();
@@ -705,8 +607,7 @@ namespace Cogravi
             cameraImGui();
             skyboxImGui();
             projectImGui();
-            vehicleImGui();
-            playerImGui();
+
             inspectorImGui(modelSelect);
 
 
@@ -753,12 +654,14 @@ namespace Cogravi
 
         Model* getModel(int index)
         {
-            return models->getModel(index);
+            //return models->getModel(index);
+            return NULL;
         }
 
         Animation* getAnimation(int index)
         {
-            return animations->getAnimation(index);
+            //return animations->getAnimation(index);
+            return NULL;
         }
 
         void settingsImGui()
@@ -873,7 +776,7 @@ namespace Cogravi
                 }
                 if (ImGui::Button("Eliminar", ImVec2(50, 50)))
                 {
-                    models->removeModel(modelSelect, bulletWorldController);
+                    //models->removeModel(modelSelect, bulletWorldController);
                 }
             }
 
@@ -886,35 +789,19 @@ namespace Cogravi
             ImDrawList* drawList = ImGui::GetWindowDrawList();
             displayRender = ImGui::GetWindowSize();
             display = ImGui::GetCursorScreenPos();
-            //ImGui::Separator();
 
-            if (isVr) {
-                drawList->AddImage(
-                    (void*)textureEngine, display,
-                    ImVec2(display.x + displayRender.x / 2, display.y + displayRender.y), ImVec2(0, 1), ImVec2(1, 0)
-                );
 
-                drawList->AddImage(
-                    (void*)textureEngine, ImVec2(display.x + displayRender.x / 2, display.y),
-                    ImVec2(display.x + displayRender.x, display.y + displayRender.y), ImVec2(0, 1), ImVec2(1, 0)
-                );
-            }
+            drawList->AddImage(
+                (void*)textureEngine, display,
+                ImVec2(display.x + displayRender.x, display.y + displayRender.y), ImVec2(0, 1), ImVec2(1, 0)
+            );
 
-            if (isEngine)
-            {
-                drawList->AddImage(
-                    (void*)textureEngine, display,
-                    ImVec2(display.x + displayRender.x, display.y + displayRender.y), ImVec2(0, 1), ImVec2(1, 0)
-                );
-            }
+            ImVec2 mousePosition = ImGui::GetMousePos();
+            ImVec2 sceenPosition = ImGui::GetCursorScreenPos();
+            ImVec2 scroll = ImVec2(ImGui::GetScrollX(), ImGui::GetScrollY());
 
-            ImVec2 mo = ImGui::GetMousePos();
-            ImVec2 sc = ImGui::GetCursorScreenPos();
-            float crX = ImGui::GetScrollX();
-            float crY = ImGui::GetScrollY();
-            //MousePos.x - GetCursorScreenPos().x - GetScrollX()
-            dx = mo.x - sc.x - crX;
-            dy = mo.y - sc.y - crY;
+            this->mouse = ImVec2(mousePosition.x - sceenPosition.x - scroll.x, mousePosition.y - sceenPosition.y - scroll.y);
+
             ImGui::End();
 
 
@@ -932,7 +819,7 @@ namespace Cogravi
                 t.id = Util::loadTexture("assets/objects/stallTexture.png");
                 t.type = "texture_diffuse";
                 textures.push_back(t);
-                models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/stall.obj", textures, *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
+                //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/stall.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController, textures);
             }
             ImGui::End();
         }
@@ -1038,21 +925,9 @@ namespace Cogravi
             ImGui::End();
         }
 
-        void vehicleImGui()
-        {
-            ImGui::Begin("Vehicle", NULL);
-            ImGui::Text("Vehicle");
-            ImGui::End();
-        }
-        
-        void playerImGui()
-        {
-            ImGui::Begin("Player", NULL);
-            ImGui::Text("Player");
-            ImGui::End();
-        }
+       
 
-        void DockSpace(bool* p_open)
+        void DockSpace()
         {
             static bool opt_fullscreen = true;
             static bool opt_padding = false;
@@ -1080,7 +955,7 @@ namespace Cogravi
 
             if (!opt_padding)
                 ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-            ImGui::Begin("DockSpace Demo", p_open, window_flags);
+            ImGui::Begin("DockSpace Demo", NULL, window_flags);
             if (!opt_padding)
                 ImGui::PopStyleVar();
 
@@ -1110,14 +985,9 @@ namespace Cogravi
                 {
                     ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
                     ImGui::MenuItem("Padding", NULL, &opt_padding);
-                    ImGui::Separator();
+                    //ImGui::Separator();
 
-                    if (ImGui::MenuItem("Flag: NoSplit", "", (dockspace_flags & ImGuiDockNodeFlags_NoSplit) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_NoSplit; }
-                    if (ImGui::MenuItem("Flag: NoResize", "", (dockspace_flags & ImGuiDockNodeFlags_NoResize) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_NoResize; }
-                    if (ImGui::MenuItem("Flag: NoDockingInCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingInCentralNode) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_NoDockingInCentralNode; }
-                    if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar; }
-                    if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
-                    ImGui::Separator();
+                    
 
                     ImGui::EndMenu();
                 }

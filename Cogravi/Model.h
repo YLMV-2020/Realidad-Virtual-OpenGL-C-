@@ -9,8 +9,8 @@ namespace Cogravi
 	{
 	public:		
 	
-		Model(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>& textures, Shader shader) :
-			GameObject(position, rotation, scale, path, textures, shader)
+		Model(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, vector<Texture> textures = {}) :
+			GameObject(position, rotation, scale, path, shader, textures)
 		{
 			
 			this->translate = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -47,7 +47,7 @@ namespace Cogravi
 			draw(shader);
 		}
 
-		void render(Avatar& avatar) override
+		void render(Avatar& avatar) 
 		{
 			shader.use();
 

@@ -172,9 +172,6 @@
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Util.h" />
-    <ClInclude Include="Vehicle.h" />
-    <ClInclude Include="VehicleAttributes.h" />
-    <ClInclude Include="VehicleController.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\animation.frag" />

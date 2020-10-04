@@ -31,7 +31,7 @@ public:
     float yaw; //angulo de giro en Z
     float pitch; //angulo de giro en Y
 
-    float speed = 1.0f;
+    float speed = 0.10f;
 
     CameraType mode;
 

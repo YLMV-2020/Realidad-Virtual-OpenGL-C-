@@ -74,13 +74,13 @@ namespace Cogravi
 			transform.setRotation(btQuaternion(0, 0, 0, 1));
 
 			//Calculamos la inercia del modelo
-			btVector3 inertia(1, 1, 1);
-			shape->calculateLocalInertia(1, inertia);
+			btVector3 inertia(0, 0, 0);
+			shape->calculateLocalInertia(100000, inertia);
 
 			//Configuramos las propiedades básicas de construcción del cuerpo
 
 			btDefaultMotionState* state = new btDefaultMotionState(transform);
-			btRigidBody::btRigidBodyConstructionInfo info(1, state, shape, inertia);
+			btRigidBody::btRigidBodyConstructionInfo info(100000, state, shape, inertia);
 
 			//Establecemos los parámetros que recibidos como parámetro
 			body = new btRigidBody(info);
@@ -92,7 +92,7 @@ namespace Cogravi
 			//body->setAngularFactor(0.0);
 
 			//Por defecto, todos los modelos están bloqueados en el espacio en X,Z así como sus ejes de rotación
-			body->setAngularFactor(btVector3(0, 1, 0));
+			/*body->setAngularFactor(btVector3(0, 1, 0));*/
 			body->setGravity(btVector3(0, 1, 0));
 
 			body->setActivationState(DISABLE_DEACTIVATION);

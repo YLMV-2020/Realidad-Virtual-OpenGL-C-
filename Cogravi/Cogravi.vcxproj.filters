@@ -43,9 +43,6 @@
     <Filter Include="Archivos de encabezado\Camera">
       <UniqueIdentifier>{799c16f0-8141-46c4-9608-cabb97360b44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Archivos de encabezado\Vehicle">
-      <UniqueIdentifier>{242e8be0-75c9-4b88-8ae9-18370bb469f5}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OVR_PlatformLoader.cpp">
@@ -160,15 +157,6 @@
     </ClInclude>
     <ClInclude Include="PlayerAttributes.h">
       <Filter>Archivos de encabezado\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Vehicle.h">
-      <Filter>Archivos de encabezado\Vehicle</Filter>
-    </ClInclude>
-    <ClInclude Include="VehicleAttributes.h">
-      <Filter>Archivos de encabezado\Vehicle</Filter>
-    </ClInclude>
-    <ClInclude Include="VehicleController.h">
-      <Filter>Archivos de encabezado\Vehicle</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Archivos de encabezado\Model</Filter>

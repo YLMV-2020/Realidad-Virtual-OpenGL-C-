@@ -21,15 +21,21 @@ namespace Cogravi {
         Shader shader;
 
         vector<Texture> textures;
+        vector<Texture> textures_loaded;
         vector<MeshM> meshes;
 
-		GameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>& textures, Shader shader)
+		string directory;
+		bool texturesAssimp;
+
+		GameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, vector<Texture>textures = {})
 		{
 			this->position = position;
 			this->rotation = rotation;
 			this->scale = scale;
 			this->shader = shader;
 
+			texturesAssimp = textures.size();
+		
 			this->textures = textures;
 
 			loadModel(path);
@@ -48,7 +54,7 @@ namespace Cogravi {
 			shader.use();
 
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)4.0f / (float)3.0f, camera.NEAR, camera.FAR);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
 
 			transform = glm::mat4(1.0f);
 
@@ -70,32 +76,7 @@ namespace Cogravi {
 			draw(shader);
 		}
 
-		virtual void render(Avatar& avatar)
-		{
-			shader.use();
-
-			glm::mat4 view = avatar.view;
-			glm::mat4 projection = avatar.proj;
-
-			transform = glm::mat4(1.0f);
-
-			transform = glm::translate(transform, position);
-
-			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-			transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-
-			transform = glm::scale(transform, scale);
-
-			shader.setVec3("lightPos", glm::vec3(2, 4, 0));
-			shader.setVec3("viewPos", glm::vec3(avatar.position.x, avatar.position.y, avatar.position.z));
-
-			shader.setMat4("model", transform);
-			shader.setMat4("view", view);
-			shader.setMat4("projection", projection);
-
-			draw(shader);
-		}
+		
 
 		virtual void update()
 		{
@@ -111,6 +92,7 @@ namespace Cogravi {
 				cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
 				return;
 			}
+			directory = path.substr(0, path.find_last_of('/'));
 
 			processNode(scene->mRootNode, scene);
 		}
@@ -132,6 +114,7 @@ namespace Cogravi {
 		{
 			vector<Vertex> vertices;
 			vector<unsigned int> indices;
+			vector<Texture> textures;
 
 			for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 			{
@@ -180,7 +163,53 @@ namespace Cogravi {
 
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
+			if (!texturesAssimp) 
+			{
+				vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+				textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+				vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+				textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+				std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+				std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+				textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+			}
+
 			return MeshM(vertices, indices, textures);
+		}
+
+		vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
+		{
+			vector<Texture> textures;
+			for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+			{
+				aiString str;
+				mat->GetTexture(type, i, &str);
+
+				bool skip = false;
+				for (unsigned int j = 0; j < textures_loaded.size(); j++)
+				{
+					if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+					{
+						textures.push_back(textures_loaded[j]);
+						skip = true;
+						break;
+					}
+				}
+				if (!skip)
+				{
+					Texture texture;
+					texture.id = Util::TextureFromFile(str.C_Str(), this->directory);
+					texture.type = typeName;
+					texture.path = str.C_Str();
+					textures.push_back(texture);
+					textures_loaded.push_back(texture);
+				}
+			}
+			return textures;
 		}
 
     };

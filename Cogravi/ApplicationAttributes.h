@@ -57,7 +57,7 @@ namespace Cogravi
         bool isPc = false;
         bool isVr = false;
 
-        float dx, dy;
+        ImVec2 mouse;
 
         float startFrame;
         float deltaTime;
@@ -88,12 +88,7 @@ namespace Cogravi
         DebugDrawer* debugDrawer;
 
         Util* util;
-        //PlayerController* player;
 
-        ModelController* models;
-        AnimationController* animations;
-
-        VehicleController* vehicle;
         InputProcessor* input;
 
         //VR

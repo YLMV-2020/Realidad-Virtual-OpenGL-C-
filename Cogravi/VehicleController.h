@@ -36,6 +36,7 @@ namespace Cogravi
 				{
 					//vehicle->car->setBrake(20, 1);
 					//vehicle->car->getRigidBody()->applyCentralImpulse(btVector3(0, 0, 30));
+					vehicle->car->updateVehicle(100);
 					vehicle->car->applyEngineForce(-20, 0);
 					vehicle->car->applyEngineForce(-20, 1);
 				}
