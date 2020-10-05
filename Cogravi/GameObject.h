@@ -25,7 +25,8 @@ namespace Cogravi {
         vector<MeshM> meshes;
 
 		string directory;
-		bool texturesAssimp;
+		bool textureAssimp;
+
 
 		GameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, vector<Texture>textures = {})
 		{
@@ -33,10 +34,10 @@ namespace Cogravi {
 			this->rotation = rotation;
 			this->scale = scale;
 			this->shader = shader;
-
-			texturesAssimp = textures.size();
 		
 			this->textures = textures;
+
+			this->textureAssimp = this->textures.size() == 0 ? true : false;
 
 			loadModel(path);
 		}
@@ -163,7 +164,7 @@ namespace Cogravi {
 
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-			if (!texturesAssimp) 
+			if (textureAssimp)
 			{
 				vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 				textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -176,9 +177,13 @@ namespace Cogravi {
 
 				std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
 				textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+				return MeshM(vertices, indices, textures);
+			}
+			else
+			{
+				return MeshM(vertices, indices, this->textures);
 			}
 
-			return MeshM(vertices, indices, textures);
 		}
 
 		vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)

@@ -70,9 +70,9 @@ namespace Cogravi
         {
             teclado = [&](int key, int sancode, int action, int mods)
             {
-                if (key == GLFW_KEY_S)
+                if (key == GLFW_KEY_G)
                 {
-
+                    models->getModel(0)->body->applyCentralImpulse(btVector3(0, 20, 0));
                 }
 
                 if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -157,6 +157,12 @@ namespace Cogravi
         {
             //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
             //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
+            vector<Texture> txt;
+            Texture D;
+            D.type = "texture_diffuse";
+            D.id = Util::loadTexture("assets/objects/fuente/fuente_diffuse.png");
+            txt.push_back(D);
+
             models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
            
             //btTriangleIndexVertexArray();

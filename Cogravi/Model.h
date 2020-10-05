@@ -11,7 +11,7 @@ namespace Cogravi
 	
 		Model(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, vector<Texture> textures = {}) :
 			GameObject(position, rotation, scale, path, shader, textures)
-		{		
+		{
 			this->translate = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 
@@ -26,9 +26,9 @@ namespace Cogravi
 
 			transform = glm::mat4(1.0f);
 			
-			//transform = transform * physics_matrix;
+			transform = transform * physics_matrix;
 			//transform = glm::translate(transform, glm::vec3(position.x , position.y , position.z ));
-			transform = glm::translate(transform, glm::vec3(position.x + translate.x, position.y + translate.y, position.z + translate.z));
+			//transform = glm::translate(transform, glm::vec3(position.x + translate.x, position.y + translate.y, position.z + translate.z));
 
 			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -96,7 +96,6 @@ namespace Cogravi
 
 				for (int i = 0; i < indices.size() / 3; i++)
 				{
-
 					int index0 = indices[3 * i];
 					int index1 = indices[3 * i + 1];
 					int index2 = indices[3 * i + 2];

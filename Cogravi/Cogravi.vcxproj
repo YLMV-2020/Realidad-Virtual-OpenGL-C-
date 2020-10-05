@@ -142,6 +142,7 @@
     <ClInclude Include="AnimationAttributes.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="ApplicationAttributes.h" />
+    <ClInclude Include="Aula.h" />
     <ClInclude Include="Avatar.h" />
     <ClInclude Include="AvatarUtil.h" />
     <ClInclude Include="BulletWorldController.h" />
