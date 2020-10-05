@@ -11,8 +11,7 @@ namespace Cogravi
 	
 		Model(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, vector<Texture> textures = {}) :
 			GameObject(position, rotation, scale, path, shader, textures)
-		{
-			
+		{		
 			this->translate = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 
@@ -84,44 +83,68 @@ namespace Cogravi
 			physics_transform.getOpenGLMatrix(glm::value_ptr(physics_matrix));
 			position = glm::vec3(physics_matrix[3][0], 0, physics_matrix[3][2]);
 		}
+
+		void addBodyPhysicsMesh(int userIndex, BulletWorldController* worldController)
+		{
+			this->userIndex = userIndex;
+			btTriangleMesh *trimesh = new btTriangleMesh();
+
+			for (int j = 0; j < meshes.size(); j++)
+			{
+				vector<GLuint> indices = meshes[j].indices;
+				vector<Vertex> vertex = meshes[j].vertices;
+
+				for (int i = 0; i < indices.size() / 3; i++)
+				{
+
+					int index0 = indices[3 * i];
+					int index1 = indices[3 * i + 1];
+					int index2 = indices[3 * i + 2];
+
+					btVector3 vertex0(vertex[index0].Position.x, vertex[index0].Position.y, vertex[index0].Position.z);
+					btVector3 vertex1(vertex[index1].Position.x, vertex[index1].Position.y, vertex[index1].Position.z);
+					btVector3 vertex2(vertex[index2].Position.x, vertex[index2].Position.y, vertex[index2].Position.z);
+
+					trimesh->addTriangle(vertex0, vertex1, vertex2);
+				}
+			}
+
+			this->shape = new btConvexTriangleMeshShape(trimesh);
+			bodyPhysicsConfiguration(worldController);
+		}
 		
 		void addBodyPhysicsBox(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			btCollisionShape* nshape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
-			this->shape = nshape;
+			this->shape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
 			bodyPhysicsConfiguration(worldController);
 		}
 
 		void addBodyPhysicsSphere(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			btCollisionShape* nshape = new btSphereShape(btScalar(1));
-			this->shape = nshape;
+			this->shape = new btSphereShape(btScalar(1));
 			bodyPhysicsConfiguration(worldController);
 		}
 
 		void addBodyPhysicsCapsule(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			btCollisionShape* nshape = new btCapsuleShape(btScalar(1.0f), btScalar(0.2f));
-			this->shape = nshape;
+			this->shape = new btCapsuleShape(btScalar(1.0f), btScalar(0.2f));
 			bodyPhysicsConfiguration(worldController);
 		}
 
 		void addBodyPhysicsCylinder(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			btCollisionShape* nshape = new btCylinderShape(btVector3(1.0f, 1.0f, 1.0f));
-			this->shape = nshape;
+			this->shape = new btCylinderShape(btVector3(1.0f, 1.0f, 1.0f));
 			bodyPhysicsConfiguration(worldController);
 		}
 
 		void addBodyPhysicsCone(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			btCollisionShape* nshape = new btConeShape(btScalar(1.0f), btScalar(1.0f));
-			this->shape = nshape;
+			this->shape = new btConeShape(btScalar(1.0f), btScalar(1.0f));
 			bodyPhysicsConfiguration(worldController);
 		}
 
@@ -155,12 +178,6 @@ namespace Cogravi
 
 			//Añadimos el cuerpo al mundo dinámico
 			worldController->dynamicsWorld->addRigidBody(body);
-			//worldController->dynamicsWorld->removeRigidBody();
-
-			//Guardamos la información del modelo en vectores de punteros
-			//worldController->rigidBodies.push_back(body);
-			//worldController->motionStates.push_back(state);
-			//worldController->collisionShapes.push_back(shape);
 
 		}
 

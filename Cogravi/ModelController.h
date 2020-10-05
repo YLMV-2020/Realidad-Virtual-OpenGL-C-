@@ -44,7 +44,8 @@ namespace Cogravi {
         void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, BulletWorldController* worldController, vector<Texture> textures = {})
         {
             Model* model = new Model(position, rotation, scale, path, shader, textures);
-            model->addBodyPhysicsBox(models.size(), worldController);
+            //model->addBodyPhysicsBox(models.size(), worldController);
+            model->addBodyPhysicsMesh(models.size(), worldController);
             models.push_back(model);
         }
 

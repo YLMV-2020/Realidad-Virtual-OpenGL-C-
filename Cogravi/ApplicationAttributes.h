@@ -91,6 +91,8 @@ namespace Cogravi
 
         InputProcessor* input;
 
+        ModelController* models;
+
         //VR
         int WIDTH_VR = 1920;
         int HEIGHT_VR = 986;

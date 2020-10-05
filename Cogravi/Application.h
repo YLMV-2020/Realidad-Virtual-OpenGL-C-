@@ -8,9 +8,6 @@ namespace Cogravi
     class Application :public ApplicationAttributes
     {
     public:
-
-        GameObject* model;
-        //DynamicGameObject* animation;
         
         static Application* Instance()
         {
@@ -158,20 +155,18 @@ namespace Cogravi
 
         void addModels()
         {
-
-          
+            //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
+            //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
+            models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
+           
+            //btTriangleIndexVertexArray();
+            //btBvhTriangleMeshShape();
+            //btConvexDecomposition()
             
         }
 
         void addAnimations()
         {
-            /*vector<Texture> textures;
-            Texture t;
-            t.id = Util::loadTexture("assets/animations/player/maria_diffuse.png");
-            t.type = "texture_diffuse";
-            textures.push_back(t);
-
-            animation = new DynamicGameObject(glm::vec3(20.0f, 0.0f, -20.0f), glm::vec3(0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/player/player.dae", textures, *util->myShaders[ShaderType::MODEL_DYNAMIC]);*/
 
         }
 
@@ -206,8 +201,6 @@ namespace Cogravi
           
             avatar = new Avatar();
 
-
-
             terrain = new Terrain("assets\\textures\\marble.jpg", glm::vec3(100, -0.01f, 100), 10.0f, *util->myShaders[ShaderType::TERRAIN], bulletWorldController);
             skybox = new Skybox("nubes", "jpg", *util->myShaders[ShaderType::CUBE_MAP], *util->myShaders[ShaderType::SKYBOX]);
 
@@ -217,28 +210,17 @@ namespace Cogravi
             bulletWorldController->dynamicsWorld->setDebugDrawer(debugDrawer);
             debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
 
-            vector<Texture> txt;
-            Texture t;
-            t.id = Util::loadTexture("assets/animations/player/maria_diffuse.png");
-            t.type = "texture_diffuse";
-            txt.push_back(t);
-
-            //player = new PlayerController(glm::vec3(25.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.01f, 0.01f, 0.01f), "assets/animations/player/player.dae", txt, *util->myShaders[ShaderType::MODEL_DYNAMIC], bulletWorldController);
-            
-
             camera = new Camera(NULL);
 
             input = new InputProcessor(window, camera);
 
-            
+            models = new ModelController();
+
             loadTextureFloors();
             loadTextureObjects();
             loadTexturesImGui();
             loadTextureSkyboxs();
-           
-
-             model = new GameObject(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC]);
-
+                    
 
             addModels();
             addAnimations();
@@ -517,6 +499,7 @@ namespace Cogravi
             //player->move(deltaTime);
             /*models->update();
             animations->update();*/
+            models->update();
 
 
             input->processInput();
@@ -589,7 +572,7 @@ namespace Cogravi
             //player->render(*camera, animationTime);
            /* models->render(*camera);
             animations->render(*camera, animationTime);*/
-            model->render(*camera);
+            models->render(*camera);
             //animation->render(*camera, animationTime);
            
             debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
@@ -654,8 +637,8 @@ namespace Cogravi
 
         Model* getModel(int index)
         {
-            //return models->getModel(index);
-            return NULL;
+            return models->getModel(index);
+            //return NULL;
         }
 
         Animation* getAnimation(int index)
@@ -923,9 +906,7 @@ namespace Cogravi
 
 
             ImGui::End();
-        }
-
-       
+        }   
 
         void DockSpace()
         {

@@ -31,9 +31,6 @@
     <Filter Include="Archivos de encabezado\AvatarVR">
       <UniqueIdentifier>{fbea3dc8-a093-436d-b986-c2f9daa36fec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Archivos de encabezado\Player">
-      <UniqueIdentifier>{c68d57ce-b346-488b-85a1-b9ba5d7cf9ea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Archivos de encabezado\BulletPhysics">
       <UniqueIdentifier>{523a8307-c778-4fd2-848e-47f7e639196b}</UniqueIdentifier>
     </Filter>
@@ -119,9 +116,6 @@
     <ClInclude Include="Debug.h">
       <Filter>Archivos de encabezado\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerController.h">
-      <Filter>Archivos de encabezado\Player</Filter>
-    </ClInclude>
     <ClInclude Include="BulletWorldController.h">
       <Filter>Archivos de encabezado\BulletPhysics</Filter>
     </ClInclude>
@@ -154,9 +148,6 @@
     </ClInclude>
     <ClInclude Include="AnimationAttributes.h">
       <Filter>Archivos de encabezado\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerAttributes.h">
-      <Filter>Archivos de encabezado\Player</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Archivos de encabezado\Model</Filter>
