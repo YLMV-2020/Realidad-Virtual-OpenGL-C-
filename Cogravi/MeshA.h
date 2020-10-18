@@ -80,8 +80,8 @@ namespace Cogravi {
             {
                 glActiveTexture(GL_TEXTURE0 + i);
 
-                string number;
-                string name = textures[i].type;
+                /*string number;
+                TextureType type = textures[i].type;
                 if (name == "texture_diffuse")
                 {
                     number = to_string(diffuse_nr++);
@@ -89,10 +89,10 @@ namespace Cogravi {
                 else if (name == "texture_specular")
                 {
                     number = to_string(specular_nr++);
-                }
+                }*/
 
-                glBindTexture(GL_TEXTURE_2D, textures[i].id);
-                glUniform1i(glGetUniformLocation(shader.ID, ("material." + name + number).c_str()), i);
+               /* glBindTexture(GL_TEXTURE_2D, textures[i].id);
+                glUniform1i(glGetUniformLocation(shader.ID, ("material." + name + number).c_str()), i);*/
 
                 //cout << "added in shader : " << ("material." + name + number).c_str() << endl;
             }

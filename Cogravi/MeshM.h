@@ -32,14 +32,7 @@ namespace Cogravi {
 
         ~MeshM()
         {
-            /*for (Texture& texture : textures)
-            {
-                glDeleteTextures(1, &texture.id);
-            }
 
-            glDeleteVertexArrays(1, &VAO);
-            glDeleteBuffers(1, &VBO);
-            glDeleteBuffers(1, &EBO);*/
         }
 
         void draw(Shader shader)
@@ -53,17 +46,15 @@ namespace Cogravi {
             {
                 glActiveTexture(GL_TEXTURE0 + i);
                 string number;
-                string name = textures[i].type;
-                if (name == "texture_diffuse")
-                    number = std::to_string(diffuseNr++);
-                else if (name == "texture_specular")
-                    number = std::to_string(specularNr++); 
-                else if (name == "texture_normal")
-                    number = std::to_string(normalNr++); 
-                else if (name == "texture_height")
-                    number = std::to_string(heightNr++); 
+                TextureType type = textures[i].type;
+                /* if (name == TextureType::DIFFUSE)
+                     number = std::to_string(diffuseNr++);
+                 else if (name == TextureType::SPECULAR)
+                     number = std::to_string(specularNr++);
+                 else if (name == TextureType::NORMAL)
+                     number = std::to_string(normalNr++); */
 
-                glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
+                glUniform1i(glGetUniformLocation(shader.ID, ("material." + Util::Instance()->typeTexture[type]).c_str()), i);
 
                 glBindTexture(GL_TEXTURE_2D, textures[i].id);
             }

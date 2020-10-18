@@ -40,7 +40,9 @@ using namespace std;
 #include "AnimationController.h"
 #include "PlayerController.h"
 #include "VehicleController.h"
+#include "Aula.h"
 #include "InputProcessor.h"
+#include "Lighting.h"
 
 
 using namespace Cogravi;
@@ -92,6 +94,12 @@ namespace Cogravi
         InputProcessor* input;
 
         ModelController* models;
+
+        Lighting* luz;
+
+        bool isLightDirectional = false;
+        bool isLightPoint = false;
+        bool isLightSpot = false;
 
         //VR
         int WIDTH_VR = 1920;

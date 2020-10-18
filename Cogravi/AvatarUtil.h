@@ -17,9 +17,7 @@
 #include <map>
 #include <chrono>
 
-
 using namespace OVR;
-
 
 /************************************************************************************
 * Constants
@@ -36,103 +34,8 @@ static int _loadingAssets;
 static float _elapsedSeconds;
 static std::map<ovrAvatarAssetID, void*> _assetMap;
 
-
-/************************************************************************************
-* GL helpers
-************************************************************************************/
-//
-//enum {
-//	VERTEX,
-//	FRAGMENT,
-//	SHADER_COUNT
-//};
-
-//static GLuint _compileProgramFromSource(const char vertexShaderSource[], const char fragmentShaderSource[], size_t errorBufferSize, char* errorBuffer) {
-//	const GLenum types[SHADER_COUNT] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-//	const char* sources[SHADER_COUNT] = { vertexShaderSource, fragmentShaderSource };
-//	GLint shaders[SHADER_COUNT]{ 0, 0 };
-//	bool success = true;
-//
-//	// Compile all of the shader program objects
-//	for (int i = 0; i < SHADER_COUNT; ++i) {
-//		shaders[i] = glCreateShader(types[i]);
-//		glShaderSource(shaders[i], 1, &sources[i], NULL);
-//		glCompileShader(shaders[i]);
-//
-//		GLint compileSuccess;
-//		glGetShaderiv(shaders[i], GL_COMPILE_STATUS, &compileSuccess);
-//		if (!compileSuccess) {
-//			glGetShaderInfoLog(shaders[i], (GLsizei)errorBufferSize, NULL, errorBuffer);
-//			success = false;
-//			break;
-//		}
-//	}
-//
-//	// Create and link the program
-//	GLuint program = 0;
-//	if (success) {
-//		program = glCreateProgram();
-//		for (int i = 0; i < SHADER_COUNT; ++i) {
-//			glAttachShader(program, shaders[i]);
-//		}
-//		glLinkProgram(program);
-//
-//		GLint linkSuccess;
-//		glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess);
-//		if (!linkSuccess) {
-//			glGetProgramInfoLog(program, (GLsizei)errorBufferSize, NULL, errorBuffer);
-//			glDeleteProgram(program);
-//			program = 0;
-//		}
-//	}
-//	for (int i = 0; i < SHADER_COUNT; ++i) {
-//		if (shaders[i]) {
-//			glDeleteShader(shaders[i]);
-//		}
-//	}
-//	return program;
-//}
-//
-//static GLuint _compileProgramFromFiles(const char vertexShaderPath[], const char fragmentShaderPath[], size_t errorBufferSize, char* errorBuffer) {
-//	const char* fileSources[SHADER_COUNT] = { vertexShaderPath, fragmentShaderPath };
-//	char* fileBuffers[SHADER_COUNT] = { NULL, NULL };
-//	bool success = true;
-//
-//	// Load each of the shader files
-//	for (int i = 0; i < SHADER_COUNT; ++i) {
-//
-//		//RDM: Note: provide path to shaders
-//		std::string fullPath = "assets\\shaders\\";//SDL_GetBasePath();
-//
-//		fullPath += fileSources[i];
-//		FILE* file = fopen(fullPath.c_str(), "rb");
-//		if (!file) {
-//			strncpy(errorBuffer, "Failed to open shader files.", errorBufferSize);
-//			success = false;
-//			break;
-//		}
-//		fseek(file, 0, SEEK_END);
-//		long offset = ftell(file);
-//		fseek(file, 0, SEEK_SET);
-//		fileBuffers[i] = (char*)malloc(offset + 1);
-//		fread(fileBuffers[i], 1, offset, file);
-//		fileBuffers[i][offset] = '\0';
-//	}
-//
-//	// Compile the program
-//	GLuint program = 0;
-//	if (success) {
-//		program = _compileProgramFromSource(fileBuffers[VERTEX], fileBuffers[FRAGMENT], errorBufferSize, errorBuffer);
-//	}
-//
-//	// Clean up the loaded data
-//	for (int i = 0; i < SHADER_COUNT; ++i) {
-//		if (fileBuffers[i]) {
-//			free(fileBuffers[i]);
-//		}
-//	}
-//	return program;
-//}
+static vector<glm::vec3> vertex;
+static vector<GLuint> indices;
 
 
 /************************************************************************************
@@ -262,6 +165,12 @@ static MeshData* _loadMesh(const ovrAvatarMeshAssetData* data)
 	glGenVertexArrays(1, &mesh->vertexArray);
 	glGenBuffers(1, &mesh->vertexBuffer);
 	glGenBuffers(1, &mesh->elementBuffer);
+	//cout << "x: " << data->vertexBuffer->x << "\n";
+	//cout << "y: " << data->vertexBuffer->y << "\n";
+	//cout << "z: " << data->vertexBuffer->z << "\n";
+	vertex.push_back(glm::vec3(data->vertexBuffer->x, data->vertexBuffer->y, data->vertexBuffer->z));
+	indices.push_back((int)data->indexBuffer);
+	
 
 	// Bind the vertex buffer and assign the vertex data
 	glBindVertexArray(mesh->vertexArray);

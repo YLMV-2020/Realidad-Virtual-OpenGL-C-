@@ -36,7 +36,7 @@ namespace Cogravi
 
         void processMouse(double xpos, double ypos)
         {
-           /* if (abs(xpos - lastX) < 2.f && abs(ypos - lastY) < 2.f)
+            /*if (abs(xpos - lastX) < 2.f && abs(ypos - lastY) < 2.f)
             {
                 return;
             }*/

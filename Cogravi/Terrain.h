@@ -54,31 +54,21 @@ namespace Cogravi
 			//grid();
 		}
 
-		void render(Camera &camera)
+		void render(Camera& camera, glm::vec3 ambient)
 		{
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)4.0f / (float)3.0f, camera.NEAR, camera.FAR);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
+			shader.setVec3("ambient", ambient);
 
 			glBindVertexArray(VAO);
 			glBindTexture(GL_TEXTURE_2D, floorTexture);
 			shader.setMat4("model", glm::mat4(1.0f));
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			glBindVertexArray(0);
-
-			//glEnable(GL_DEPTH_TEST);
-
-		/*	glBindVertexArray(VAO);
-
-			shader.setMat4("model", glm::mat4(1.0f));
-			glDrawElements(GL_LINES, lenght, GL_UNSIGNED_INT, NULL);
-
-			glBindVertexArray(0);*/
-
-			//glDisable(GL_DEPTH_TEST);
 
 		}
 

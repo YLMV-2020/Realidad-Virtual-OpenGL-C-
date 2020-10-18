@@ -49,7 +49,7 @@ public:
         this->farOffset = 30.0f;
         this->zoomSpeed = 0.5f;
 
-        this->projection = glm::perspective(glm::radians(FOV), (float)4.0f / (float)3.0f, NEAR, FAR);
+        this->projection = glm::perspective(glm::radians(FOV), (float)WIDTH / (float)HEIGHT, NEAR, FAR);
         this->view = glm::lookAt(Position, Position + Front, Up);  
 
         this->mode = CameraType::FIRST_PERSON;

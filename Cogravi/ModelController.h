@@ -29,21 +29,21 @@ namespace Cogravi {
                 model->update();
         }
 
-        void render(Camera& camera)
+        void render(Camera& camera, Shader& shader)
         {
             for (Model*& model : models)
-                model->render(camera);
+                model->render(camera, shader);
         }
 
-        void render(Avatar& avatar)
+        void render(Avatar& avatar, Shader& shader)
         {
             for (Model*& model : models)
-                model->render(avatar);
+                model->render(avatar, shader);
         }
 
-        void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, BulletWorldController* worldController, vector<Texture> textures = {})
+        void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, BulletWorldController* worldController, vector<Texture> textures = {})
         {
-            Model* model = new Model(position, rotation, scale, path, shader, textures);
+            Model* model = new Model(position, rotation, scale, path, textures);
             //model->addBodyPhysicsBox(models.size(), worldController);
             model->addBodyPhysicsMesh(models.size(), worldController);
             models.push_back(model);

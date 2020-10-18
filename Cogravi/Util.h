@@ -16,10 +16,23 @@ namespace Cogravi {
         AVATAR
     };
 
+    enum TextureType
+    {
+        DIFFUSE,
+        SPECULAR,
+        NORMAL
+    };
+
     struct Texture {
         GLuint id;
-        string type;
+        TextureType type;
         string path;
+        Texture() {}
+        Texture(GLuint id, TextureType type)
+        {
+            this->id = id;
+            this->type = type;
+        }
     };
 
     class Util
@@ -34,10 +47,12 @@ namespace Cogravi {
         }
 
         map<ShaderType, Shader*> myShaders;
+        map<TextureType, string> typeTexture;
 
         Util()
         {
             inicializarShaders();
+            loadTextureType();
         }
 
         void inicializarShaders()
@@ -50,15 +65,22 @@ namespace Cogravi {
             myShaders[ShaderType::AVATAR] = new Shader("assets/shaders/avatar.vert", "assets/shaders/avatar.frag");
         }
 
+        void loadTextureType()
+        {
+            typeTexture[TextureType::DIFFUSE] = "diffuse";
+            typeTexture[TextureType::NORMAL] = "normal";
+            typeTexture[TextureType::SPECULAR] = "specular";
+        }
+
         // -------------------------------------------------------
-        // order:
-        // +X (right)
-        // -X (left)
-        // +Y (top)
-        // -Y (bottom)
-        // +Z (front) 
-        // -Z (back)
-        // -------------------------------------------------------
+       // order:
+       // +X (right)
+       // -X (left)
+       // +Y (top)
+       // -Y (bottom)
+       // +Z (front) 
+       // -Z (back)
+       // -------------------------------------------------------
 
         static GLuint loadCubemap(vector<std::string> faces)
         {
@@ -97,25 +119,32 @@ namespace Cogravi {
             return textureID;
         }
 
-        static GLuint loadTexture(char const* path)
+        static GLuint loadTexture(char const* path, bool gammaCorrection = false)
         {
             GLuint textureID;
             glGenTextures(1, &textureID);
 
-            int width, height, nrComponents;
-            unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+            int width, height, nrChannels;
+            unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
             if (data)
             {
-                GLenum format;
-                if (nrComponents == 1)
-                    format = GL_RED;
-                else if (nrComponents == 3)
-                    format = GL_RGB;
-                else if (nrComponents == 4)
-                    format = GL_RGBA;
+                GLenum internalFormat;
+                GLenum dataFormat;
+                if (nrChannels == 1)
+                    internalFormat = dataFormat = GL_RED;
+                else if (nrChannels == 3)
+                {
+                    internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
+                    dataFormat = GL_RGB;
+                }
+                else if (nrChannels == 4)
+                {
+                    internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+                    dataFormat = GL_RGBA;
+                }
 
                 glBindTexture(GL_TEXTURE_2D, textureID);
-                glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
                 glGenerateMipmap(GL_TEXTURE_2D);
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -127,8 +156,7 @@ namespace Cogravi {
             }
             else
             {
-                std::cout << "Es aca perro\n";
-                std::cout << "Texture failed to load at path: " << path << std::endl;
+                std::cout << "Failed to load texture: " << path << std::endl;
                 stbi_image_free(data);
             }
 

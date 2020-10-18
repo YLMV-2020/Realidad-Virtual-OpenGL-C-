@@ -9,15 +9,15 @@ namespace Cogravi
 	{
 	public:		
 	
-		Model(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, vector<Texture> textures = {}) :
-			GameObject(position, rotation, scale, path, shader, textures)
+		Model(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture> textures = {}) :
+			GameObject(position, rotation, scale, path, textures)
 		{
 			this->translate = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 
 		~Model(){}
 
-		void render(Camera& camera) override
+		void render(Camera& camera, Shader& shader) override
 		{
 			shader.use();
 
@@ -46,7 +46,7 @@ namespace Cogravi
 			draw(shader);
 		}
 
-		void render(Avatar& avatar) 
+		void render(Avatar& avatar, Shader& shader)
 		{
 			shader.use();
 
@@ -182,6 +182,7 @@ namespace Cogravi
 
 		void changeBodyPhysics(BulletWorldController* worldController)
 		{
+			//worldController->dynamicsWorld->add
 			worldController->dynamicsWorld->removeRigidBody(body);
 			body = NULL;
 			shape = NULL;

@@ -18,7 +18,6 @@ namespace Cogravi {
         glm::vec3 scale;
 
 		glm::mat4 transform;
-        Shader shader;
 
         vector<Texture> textures;
         vector<Texture> textures_loaded;
@@ -28,12 +27,11 @@ namespace Cogravi {
 		bool textureAssimp;
 
 
-		GameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, vector<Texture>textures = {})
+		GameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>textures = {})
 		{
 			this->position = position;
 			this->rotation = rotation;
 			this->scale = scale;
-			this->shader = shader;
 		
 			this->textures = textures;
 
@@ -50,7 +48,7 @@ namespace Cogravi {
 				meshes[i].draw(shader);
 		}
 
-		virtual void render(Camera& camera)
+		virtual void render(Camera& camera, Shader &shader)
 		{
 			shader.use();
 
@@ -69,6 +67,34 @@ namespace Cogravi {
 
 			shader.setVec3("lightPos", glm::vec3(2, 4, 0));
 			shader.setVec3("viewPos", camera.Position);
+
+			shader.setMat4("model", transform);
+			shader.setMat4("view", view);
+			shader.setMat4("projection", projection);
+
+			draw(shader);
+		}
+
+		virtual void render(Avatar& avatar, Shader& shader)
+		{
+			shader.use();
+
+			glm::mat4 projection = avatar.proj;
+			glm::mat4 view = avatar.view;
+
+			transform = glm::mat4(1.0f);
+
+			transform = glm::translate(transform, position);
+
+			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+			transform = glm::scale(transform, scale);
+
+			shader.setVec3("lightPos", glm::vec3(2, 4, 0));
+			glm::vec3 posAvatar = glm::vec3(avatar.position.x, avatar.position.y, avatar.position.z);
+			shader.setVec3("viewPos", posAvatar);
 
 			shader.setMat4("model", transform);
 			shader.setMat4("view", view);
@@ -166,17 +192,17 @@ namespace Cogravi {
 
 			if (textureAssimp)
 			{
-				vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+				vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
 				textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-				vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+				vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
 				textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-				std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+				std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
 				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-				std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-				textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+				//std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+				//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 				return MeshM(vertices, indices, textures);
 			}
 			else
@@ -186,7 +212,7 @@ namespace Cogravi {
 
 		}
 
-		vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
+		vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType typeName)
 		{
 			vector<Texture> textures;
 			for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)

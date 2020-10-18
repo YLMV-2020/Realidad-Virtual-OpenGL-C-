@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\include\OVR;$(SolutionDir)\include\OVRAvatarSDK;$(SolutionDir)\include\OVRPlatform;$(SolutionDir)\include\BulletPhysics;$(SolutionDir)\include\imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\include\OVR;$(SolutionDir)\include\OVRAvatarSDK;$(SolutionDir)\include\OVRPlatform;$(SolutionDir)\include\BulletPhysics;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -160,6 +160,7 @@
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="InputProcessor.h" />
+    <ClInclude Include="Lighting.h" />
     <ClInclude Include="MeshA.h" />
     <ClInclude Include="MeshM.h" />
     <ClInclude Include="Model.h" />

@@ -78,7 +78,7 @@ namespace Cogravi {
 		{
 			shader.use();
 
-			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)4.0f / (float)3.0f, camera.NEAR, camera.FAR);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
 			glm::mat4 view = camera.GetViewMatrix();
 
 			transform = glm::mat4(1.0f);

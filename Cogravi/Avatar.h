@@ -31,20 +31,18 @@ namespace Cogravi
 		Quatf leftHandRotation;
 		Quatf rightHandRotation;
 
-		Avatar()
+		btRigidBody* body[2];
+		btCollisionShape* shape[2];
+
+		Avatar(BulletWorldController *worldController)
 		{
-			position = Vector3f(0.0f, 1.7f, 0.0f);
+			position = Vector3f(0.0f, 1.0f, 0.0f);
+			addBodyPhysicsBox(worldController);
 		}
 
-		void Init() {
-
-			// Compile the reference shaders
-			char errorBuffer[512];
-
-			
+		void Init() 
+		{
 			_skinnedMeshProgram = Util::Instance()->myShaders[ShaderType::AVATAR]->ID;
-
-			//_skinnedMeshProgram = _compileProgramFromFiles("avatar.vert", "avatar.frag", sizeof(errorBuffer), errorBuffer);
 
 			//RDM: Note: don't use Platform for now
 			//ovrPlatformInitializeWindows(MIRROR_SAMPLE_APP_ID);
@@ -174,6 +172,99 @@ namespace Cogravi
 
 			//RDM: Note: revert - make sure hand mesh is drawn the right side up
 			glFrontFace(GL_CW);
+		}
+
+		void Update()
+		{
+
+			btTransform transform;
+			transform.setIdentity();
+			transform.setOrigin(btVector3(leftHandPosition.x, leftHandPosition.y, leftHandPosition.z));
+
+			btQuaternion quat;
+			quat.setEulerZYX(btScalar(leftHandRotation.z), btScalar(leftHandRotation.y), btScalar(leftHandRotation.x));
+			transform.setRotation(btQuaternion(quat));
+
+			body[0]->setWorldTransform(transform);
+
+			transform.setIdentity();
+			transform.setOrigin(btVector3(rightHandPosition.x, rightHandPosition.y, rightHandPosition.z));
+
+			quat.setEulerZYX(btScalar(rightHandRotation.z), btScalar(rightHandRotation.y), btScalar(rightHandRotation.x));
+			transform.setRotation(btQuaternion(quat));
+
+			body[1]->setWorldTransform(transform);
+
+
+		}
+
+		void addBodyPhysicsBox( BulletWorldController* worldController)
+		{
+			this->shape[0] = new btBoxShape(btVector3(0.05f, 0.05f, 0.05f));
+			this->shape[1] = new btBoxShape(btVector3(0.05f, 0.05f, 0.05f));
+			bodyPhysicsConfiguration(worldController);
+		}
+
+		void addBodyPhysicsMesh(int index, BulletWorldController* worldController)
+		{
+			this->userIndex = userIndex;
+			btTriangleMesh* trimesh = new btTriangleMesh();
+
+			for (int i = 0; i < indices.size() / 3; i++)
+			{
+				int index0 = indices[3 * i];
+				int index1 = indices[3 * i + 1];
+				int index2 = indices[3 * i + 2];
+
+				btVector3 vertex0(vertex[index0].x, vertex[index0].y, vertex[index0].z);
+				btVector3 vertex1(vertex[index1].x, vertex[index1].y, vertex[index1].z);
+				btVector3 vertex2(vertex[index2].x, vertex[index2].y, vertex[index2].z);
+
+				trimesh->addTriangle(vertex0, vertex1, vertex2);
+			}		
+			
+
+			this->shape[index] = new btConvexTriangleMeshShape(trimesh);
+		}
+
+		void bodyPhysicsConfiguration(BulletWorldController* worldController)
+		{
+			btTransform transform;
+			transform.setIdentity();
+			transform.setOrigin(btVector3(0, 0, 0));
+
+			btQuaternion quat;
+			quat.setEulerZYX(btScalar(glm::radians(0.0f)), btScalar(glm::radians(0.0f)), btScalar(glm::radians(0.0f)));
+			transform.setRotation(btQuaternion(quat));
+
+			//Calculamos la inercia del modelo
+			btVector3 inertia(0, 0, 0);
+
+			for (int i = 0; i < 2; i++)
+			{
+				//addBodyPhysicsMesh(i, worldController);
+				shape[i]->calculateLocalInertia(10, inertia);
+
+				//Configuramos las propiedades básicas de construcción del cuerpo
+
+				btDefaultMotionState* state = new btDefaultMotionState(transform);
+				btRigidBody::btRigidBodyConstructionInfo info(10, state, shape[i], inertia);
+
+				//Establecemos los parámetros que recibidos como parámetro
+				body[i] = new btRigidBody(info);
+				body[i]->setRestitution(1.0f);
+				//body[i]->setUserIndex(this->userIndex);
+				body[i]->setLinearFactor(btVector3(1.0f, 1.0f, 1.0f));
+
+				//Por defecto, todos los modelos están bloqueados en el espacio en X,Z así como sus ejes de rotación
+				body[i]->setAngularFactor(btVector3(0, 0, 0));
+				body[i]->setGravity(btVector3(0, 1, 0));
+
+				body[i]->setActivationState(DISABLE_DEACTIVATION);
+
+				//Añadimos el cuerpo al mundo dinámico
+				worldController->dynamicsWorld->addRigidBody(body[i]);
+			}
 		}
 
 

@@ -119,25 +119,24 @@ namespace Cogravi
 			configShader();
 		}
 
-		void render(Camera &camera)
+		void render(Camera& camera, glm::vec3 ambient)
 		{
-
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)4.0f / (float)3.0f, camera.NEAR, camera.FAR);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
 			shader.setMat4("model", model);
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
 			shader.setVec3("cameraPos", camera.Position);
 
-			// draw skybox as last
-			glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+			glDepthFunc(GL_LEQUAL);
 			skyboxShader.use();
-			view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+			view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 			skyboxShader.setMat4("view", view);
 			skyboxShader.setMat4("projection", projection);
-			// skybox cube
+			skyboxShader.setVec3("ambient", ambient);
+
 			glBindVertexArray(skyboxVAO);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);

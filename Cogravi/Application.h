@@ -8,6 +8,8 @@ namespace Cogravi
     class Application :public ApplicationAttributes
     {
     public:
+
+        Shader* shaderModel;
         
         static Application* Instance()
         {
@@ -156,14 +158,9 @@ namespace Cogravi
         void addModels()
         {
             //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
-            //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
-            vector<Texture> txt;
-            Texture D;
-            D.type = "texture_diffuse";
-            D.id = Util::loadTexture("assets/objects/fuente/fuente_diffuse.png");
-            txt.push_back(D);
+            //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
 
-            models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
+            //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
            
             //btTriangleIndexVertexArray();
             //btBvhTriangleMeshShape();
@@ -199,16 +196,17 @@ namespace Cogravi
         {
             textureFloors.push_back(Util::loadTexture("assets\\textures\\wall.jpg"));
         }
-
+        Aula* aula;
         void inicializarScene()
         {
             util = Util::Instance();
             bulletWorldController = new BulletWorldController();
           
-            avatar = new Avatar();
+            avatar = new Avatar(bulletWorldController);
+            aula = new Aula(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/aula/aula.obj", bulletWorldController);
 
             terrain = new Terrain("assets\\textures\\marble.jpg", glm::vec3(100, -0.01f, 100), 10.0f, *util->myShaders[ShaderType::TERRAIN], bulletWorldController);
-            skybox = new Skybox("nubes", "jpg", *util->myShaders[ShaderType::CUBE_MAP], *util->myShaders[ShaderType::SKYBOX]);
+            skybox = new Skybox("bosque", "png", *util->myShaders[ShaderType::CUBE_MAP], *util->myShaders[ShaderType::SKYBOX]);
 
             debugDrawer = new DebugDrawer();
             debugDrawer->setDebugMode(0);
@@ -218,6 +216,8 @@ namespace Cogravi
 
             camera = new Camera(NULL);
 
+            luz = Lighting::Instance();
+
             input = new InputProcessor(window, camera);
 
             models = new ModelController();
@@ -226,6 +226,8 @@ namespace Cogravi
             loadTextureObjects();
             loadTexturesImGui();
             loadTextureSkyboxs();
+
+            shaderModel = util->myShaders[ShaderType::MODEL_STATIC];
                     
 
             addModels();
@@ -372,8 +374,8 @@ namespace Cogravi
             bulletWorldController->physics_step(60.0f);
         
 
-            skybox->render(*camera);
-            terrain->render(*camera);
+           /* skybox->render(*camera);
+            terrain->render(*camera);*/
             /*models->render(*camera);
             animations->render(*camera, animationTime);*/
 
@@ -404,9 +406,9 @@ namespace Cogravi
                 avatar->Prerender(ovr);
                 bulletWorldController->physics_step(60.f);
 
-                ////avatar->Update();
+                avatar->Update();
                 //animations->update();
-                //models->update();
+                models->update();
 
                 // Render each eye
                 for (int eye = 0; eye < 2; ++eye)
@@ -427,7 +429,7 @@ namespace Cogravi
                     glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
                     //glEnable(GL_FRAMEBUFFER_SRGB);
 
-                    ovrMatrix4f ovrProjection = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.01f, 1000.0f, ovrProjection_None);
+                    ovrMatrix4f ovrProjection = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], camera->NEAR, camera->FAR, ovrProjection_None);
 
                     avatar->Render(eyeRenderPose[eye], ovrProjection);
                     skybox->render(*avatar);
@@ -435,6 +437,7 @@ namespace Cogravi
 
                /*     animations->render(*avatar, animationTime);
                     models->render(*avatar);*/
+                    aula->render(*avatar,*shaderModel);
 
                     debugDrawer->SetMatrices(avatar->view, avatar->proj);
                     bulletWorldController->dynamicsWorld->debugDrawWorld();
@@ -476,6 +479,7 @@ namespace Cogravi
                 // Blit mirror texture to back buffer
                 glBindFramebuffer(GL_READ_FRAMEBUFFER, mirrorFBO);
                 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+                
                 glBlitFramebuffer(0, HEIGHT_VR, WIDTH_VR, 0, 0, 0, WIDTH_VR, HEIGHT_VR, GL_COLOR_BUFFER_BIT, GL_NEAREST);
                 glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
             }
@@ -487,6 +491,7 @@ namespace Cogravi
             static int index = 0;
             static Model* modelSelect = NULL;
             static Animation* animationSelect = NULL;
+            static btCollisionShape* aulaSelect = NULL;
             
 
             ImGui_ImplOpenGL3_NewFrame();
@@ -496,20 +501,14 @@ namespace Cogravi
             glm::mat4 ProjectionMatrix = camera->GetProjectionMatrix();
             glm::mat4 ViewMatrix = camera->GetViewMatrix();
 
-            bulletWorldController->physics_step(ImGui::GetIO().Framerate);
-            //bulletWorldController->physics_step(60.f);
+            //bulletWorldController->physics_step(ImGui::GetIO().Framerate);
+            bulletWorldController->physics_step(60.f);
 
             camera->update(bulletWorldController->dynamicsWorld);
-
-            //player->update(window);
-            //player->move(deltaTime);
-            /*models->update();
-            animations->update();*/
             models->update();
 
 
             input->processInput();
-            //animation->update();
 
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
             {
@@ -536,7 +535,8 @@ namespace Cogravi
                         index = (int)RayCallback.m_collisionObject->getUserIndex();
                         if (index >= 0 && index < 100)
                         {
-                            modelSelect = getModel(index);
+                            //modelSelect = getModel(index);
+                            aulaSelect = aula->shape[index];
                         }
                         presionado = true;
                     }
@@ -563,28 +563,31 @@ namespace Cogravi
             }
 
             glBindFramebuffer(GL_FRAMEBUFFER, framebufferEngine);
-            glEnable(GL_DEPTH_TEST);
+            {
+                glEnable(GL_DEPTH_TEST);
 
-            glDepthMask(GL_TRUE);
-            //glEnable(GL_CULL_FACE);
-            //glCullFace(GL_BACK);
-            //glFrontFace(GL_CW);
+                glDepthMask(GL_TRUE);
+                //glEnable(GL_CULL_FACE);
+                //glCullFace(GL_BACK);
+                //glFrontFace(GL_CW);
 
-            glClearColor(0, 0, 0, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glClearColor(0, 0, 0, 0);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            skybox->render(*camera);
-            terrain->render(*camera);
-            //player->render(*camera, animationTime);
-           /* models->render(*camera);
-            animations->render(*camera, animationTime);*/
-            models->render(*camera);
-            //animation->render(*camera, animationTime);
-           
-            debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
-            bulletWorldController->dynamicsWorld->debugDrawWorld();
-            debugDrawer->col = glm::vec3(0, 1, 0);
+                skybox->render(*camera, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
+                terrain->render(*camera, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
+                //player->render(*camera, animationTime);
+               /* models->render(*camera);
+                animations->render(*camera, animationTime);*/
+                models->render(*camera, *shaderModel);
+                aula->render(*camera, *shaderModel);
+                //animation->render(*camera, animationTime);
 
+                debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
+                bulletWorldController->dynamicsWorld->debugDrawWorld();
+                debugDrawer->col = glm::vec3(0, 1, 0);
+
+            }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             DockSpace();           
@@ -596,6 +599,8 @@ namespace Cogravi
             cameraImGui();
             skyboxImGui();
             projectImGui();
+            animationImGui();
+            aulaImGui(aulaSelect);
 
             inspectorImGui(modelSelect);
 
@@ -653,6 +658,26 @@ namespace Cogravi
             return NULL;
         }
 
+        void aulaImGui(btCollisionShape* shape)
+        {
+            ImGui::Begin("Aula", NULL);
+            if (shape != NULL)
+            {
+                
+
+               
+                if (ImGui::DragFloat3("Size", glm::value_ptr(aula->shapeScalar), 0.1f))
+                {
+                    aula->changeScalar(shape);
+                }
+
+
+            }
+
+           
+            ImGui::End();
+        }
+
         void settingsImGui()
         {
             ImGui::Begin("Settings ");
@@ -687,7 +712,7 @@ namespace Cogravi
             ImGui::Separator();
             ImGui::Text("Collision Objects: %d", bulletWorldController->dynamicsWorld->getNumCollisionObjects());
 
-            if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(100, 100)))
+            /*if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(100, 100)))
             {
                 isEngine = false;
                 isPc = true;
@@ -698,17 +723,18 @@ namespace Cogravi
                 glViewport(0, 0, w, h);
 
                 debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
-            }
+            }*/
             ImGui::SameLine(120);
             if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(100, 100)))
             {
                 if (ovr)
                 {
+                    glfwSetWindowSize(window, WIDTH_VR, HEIGHT_VR);
                     isEngine = false;
                     isPc = false;
                     isVr = true;
                 }
-                debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
+                //debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
             }
             ImGui::SameLine(240);
 
@@ -804,9 +830,8 @@ namespace Cogravi
             if (ImGui::ImageButton((void*)textureObjects[0], ImVec2(100, 100)))
             {
                 vector<Texture> textures;
-                Texture t;
-                t.id = Util::loadTexture("assets/objects/stallTexture.png");
-                t.type = "texture_diffuse";
+                Texture t(Util::loadTexture("assets/objects/stallTexture.png"), TextureType::DIFFUSE);
+
                 textures.push_back(t);
                 //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/stall.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController, textures);
             }
@@ -854,7 +879,122 @@ namespace Cogravi
         void lightingImGui()
         {
             ImGui::Begin("Lighting", NULL);
-            ImGui::Text("Luz");
+
+            shaderModel->use();
+            shaderModel->setVec3("viewPos", camera->Position);
+            shaderModel->setFloat("material.shininess", 32.0f);
+
+            if (isLightDirectional)
+            {
+                ImGui::Text("Luz Direccional");
+
+                ImGui::DragFloat3("Direccion", glm::value_ptr(luz->luzDireccional.direction), 0.001f, 0.0f, 1.0f);
+                ImGui::ColorEdit3("Ambiental", glm::value_ptr(luz->luzDireccional.ambient));
+                ImGui::ColorEdit3("Difusa", glm::value_ptr(luz->luzDireccional.diffuse));
+                ImGui::ColorEdit3("Especular", glm::value_ptr(luz->luzDireccional.specular));
+
+                ImGui::Separator();
+
+                shaderModel->setVec3("dirLight.direction", luz->luzDireccional.direction);
+                shaderModel->setVec3("dirLight.ambient", luz->luzDireccional.ambient);
+                shaderModel->setVec3("dirLight.diffuse", luz->luzDireccional.diffuse);
+                shaderModel->setVec3("dirLight.specular", luz->luzDireccional.specular);
+            }
+
+            if (isLightPoint)
+            {
+                for (int i = 0; i < luz->luzPuntual.size(); i++)
+                {
+                    ImGui::Text("Luz Puntual %d", i + 1);
+
+                    ImGui::DragFloat3((to_string(i + 1) + ".Position").c_str(), glm::value_ptr(luz->getSol(i)->position), 0.05f);
+                    if (ImGui::ColorEdit3((to_string(i + 1) + ".Ambiental").c_str(), glm::value_ptr(luz->luzPuntual[i].ambient)))
+                    {
+                        //luz->updateSol(i, luz->luzPuntual[i].ambient);
+                        shaderModel->use();
+                    }
+                    ImGui::ColorEdit3((to_string(i + 1) + ".Difusa").c_str(), glm::value_ptr(luz->luzPuntual[i].diffuse));
+                    ImGui::ColorEdit3((to_string(i + 1) + ".Especular").c_str(), glm::value_ptr(luz->luzPuntual[i].specular));
+                    ImGui::DragFloat((to_string(i + 1) + ".Linear").c_str(), &luz->luzPuntual[i].linear, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat((to_string(i + 1) + ".Quadratic").c_str(), &luz->luzPuntual[i].quadratic, 0.001f, 0.0f, 1.0f);
+
+                    if (ImGui::Button((to_string(i + 1) + ".Eliminar").c_str()))
+                    {
+                        luz->deleteSol(i);
+                        shaderModel->setInt("sizePointLights", luz->sizeSol());
+                        break;
+                    }
+
+                    shaderModel->setVec3("pointLights[" + to_string(i) + "].position", luz->getSol(i)->position);
+                    shaderModel->setVec3("pointLights[" + to_string(i) + "].ambient", luz->luzPuntual[i].ambient);
+                    shaderModel->setVec3("pointLights[" + to_string(i) + "].diffuse", luz->luzPuntual[i].diffuse);
+                    shaderModel->setVec3("pointLights[" + to_string(i) + "].specular", luz->luzPuntual[i].specular);
+                    shaderModel->setFloat("pointLights[" + to_string(i) + "].constant", luz->luzPuntual[i].constant);
+                    shaderModel->setFloat("pointLights[" + to_string(i) + "].linear", luz->luzPuntual[i].linear);
+                    shaderModel->setFloat("pointLights[" + to_string(i) + "].quadratic", luz->luzPuntual[i].quadratic);
+
+                    ImGui::Separator();
+                }
+            }
+
+            if (isLightSpot)
+            {
+
+                ImGui::Text("Luz Focal");
+
+                ImGui::DragFloat3("Position F", glm::value_ptr(camera->Position), 0.05f);
+                ImGui::DragFloat3("Direction F", glm::value_ptr(camera->Front), 0.05f);
+                ImGui::ColorEdit3("Ambiental F", glm::value_ptr(luz->luzFocal.ambient));
+                ImGui::ColorEdit3("Difusa F", glm::value_ptr(luz->luzFocal.diffuse));
+                ImGui::ColorEdit3("Especular F", glm::value_ptr(luz->luzFocal.specular));
+                ImGui::DragFloat("Constant F", &luz->luzFocal.constant, 0.001f, 0.0f, 256.0f);
+                ImGui::DragFloat("Linear F", &luz->luzFocal.linear, 0.001f, 0.0f, 256.0f);
+                ImGui::DragFloat("Quadratic F", &luz->luzFocal.quadratic, 0.001f, 0.0f, 256.0f);
+                ImGui::DragFloat("OuterCutOff F", &luz->luzFocal.outerCutOff, 0.05f, 0.0f, 256.0f);
+                ImGui::DragFloat("CutOff F", &luz->luzFocal.cutOff, 0.05f, 0.0f, luz->luzFocal.outerCutOff);
+
+                shaderModel->setVec3("spotLight.position", camera->Position);
+                shaderModel->setVec3("spotLight.direction", camera->Front);
+                shaderModel->setVec3("spotLight.ambient", luz->luzFocal.ambient);
+                shaderModel->setVec3("spotLight.diffuse", luz->luzFocal.diffuse);
+                shaderModel->setVec3("spotLight.specular", luz->luzFocal.specular);
+                shaderModel->setFloat("spotLight.constant", luz->luzFocal.constant);
+                shaderModel->setFloat("spotLight.linear", luz->luzFocal.linear);
+                shaderModel->setFloat("spotLight.quadratic", luz->luzFocal.quadratic);
+                shaderModel->setFloat("spotLight.cutOff", glm::cos(glm::radians(luz->luzFocal.cutOff)));
+                shaderModel->setFloat("spotLight.outerCutOff", glm::cos(glm::radians(luz->luzFocal.outerCutOff)));
+            }
+            ImGui::End();
+        }
+
+        void animationImGui()
+        {
+            ImGui::Begin("Animation", NULL);
+
+            if (ImGui::Checkbox("Luz Direccional", &isLightDirectional))
+            {
+                shaderModel->setBool("isLightDirectional", isLightDirectional);
+            }
+            if (ImGui::Checkbox("Luz Puntual", &isLightPoint))
+            {
+                shaderModel->setBool("isLightPoint", isLightPoint);
+            }
+            if (ImGui::Checkbox("Luz Focal", &isLightSpot))
+            {
+                shaderModel->setBool("isLightSpot", isLightSpot);
+            }
+
+            if (isLightPoint)
+            {
+                if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(50, 50)))
+                {
+                    luz->addSol(glm::vec3(camera->Position.x, 10.0f, camera->Position.z), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+                    shaderModel->setInt("sizePointLights", luz->sizeSol());
+                }
+            }
+
+            ImGui::Separator();
+
             ImGui::End();
         }
 
