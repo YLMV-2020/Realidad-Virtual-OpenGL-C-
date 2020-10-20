@@ -11,9 +11,12 @@ namespace Cogravi
 
         Shader* shaderModel;
         Shader* shaderAnimation;
+        Shader* shaderAnimation1;
 
+        vector<Skeletal*> skeletal;
         DynamicGameObject* animation;
-        
+        //DynamicGameObject* animation;
+
         static Application* Instance()
         {
             static Application instance;
@@ -22,7 +25,7 @@ namespace Cogravi
 
         Application()
         {
-           
+
             if (glfwInit() == GL_FALSE) return;
 
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -46,11 +49,11 @@ namespace Cogravi
             glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
                 auto w = (Application*)glfwGetWindowUserPointer(window); if (w->teclado) w->teclado(key, scancode, action, mods);
             });
-            
+
             glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
                 auto w = (Application*)glfwGetWindowUserPointer(window); if (w->mousePos) w->mousePos(xpos, ypos);
             });
-            
+
             glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
                 auto w = (Application*)glfwGetWindowUserPointer(window); if (w->desplazar) w->desplazar(xoffset, yoffset);
             });
@@ -135,7 +138,7 @@ namespace Cogravi
             {
                 //camera->ProcessMouseScroll(yoffset);
             };
-            
+
             mouseButton = [&](int button, int action, int mods)
             {
                 if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
@@ -155,7 +158,7 @@ namespace Cogravi
                 {
 
                 }
-            };  
+            };
 
         }
 
@@ -164,19 +167,26 @@ namespace Cogravi
             vector<Texture> g;
             Texture sd = Texture(Util::loadTexture("assets/animations/goku/body texture.png"), TextureType::DIFFUSE);
             g.push_back(sd);
+
+            for (int i = 0; i < 1; i++) {
+                skeletal.push_back(new Skeletal());
+                skeletal.back()->load();
+            }
+
+
             //Texture tx(Util::)
-            animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
-            //animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "assets/animations/player/player.dae", *shaderAnimation);
+            //animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
+            animation = new DynamicGameObject(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/player/player.dae", *shaderAnimation1);
             //animation = new DynamicGameObject(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "assets/animations/Hip Hop Dancing.fbx", *shaderAnimation, g);
             //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
 
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
-           
+
             models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/tunel/tunel.obj");
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/sinon/sinon.fbx");
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/tunel/tunel.obj", ColliderType::BOX, bulletWorldController);
-            
+
         }
 
         void addAnimations()
@@ -212,7 +222,7 @@ namespace Cogravi
         {
             util = Util::Instance();
             bulletWorldController = new BulletWorldController();
-          
+
             avatar = new Avatar(bulletWorldController);
             aula = new Aula(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/aula/aula.obj", bulletWorldController);
 
@@ -240,12 +250,13 @@ namespace Cogravi
 
             shaderModel = util->myShaders[ShaderType::MODEL_STATIC];
             shaderAnimation = util->myShaders[ShaderType::MODEL_DYNAMIC];
+            shaderAnimation1 = util->myShaders[ShaderType::MODEL_DYNAMIC_1];
 
             addModels();
             addAnimations();
 
         }
-       
+
         void inicializarImgui()
         {
             const char* glsl_version = "#version 460";
@@ -367,9 +378,9 @@ namespace Cogravi
         {
             inicializarImgui();
             inicializarScene();
-           /* inicializarVR();
+             /*inicializarVR();
 
-            avatar->Init();*/
+             avatar->Init();*/
             vincularFrambufferEngine();
             startFrame = glfwGetTime();
         }
@@ -383,12 +394,12 @@ namespace Cogravi
             glm::mat4 ViewMatrix = camera->GetViewMatrix();
 
             bulletWorldController->physics_step(60.0f);
-        
 
-           /* skybox->render(*camera);
-            terrain->render(*camera);*/
-            /*models->render(*camera);
-            animations->render(*camera, animationTime);*/
+
+            /* skybox->render(*camera);
+             terrain->render(*camera);*/
+             /*models->render(*camera);
+             animations->render(*camera, animationTime);*/
 
             debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
             bulletWorldController->dynamicsWorld->debugDrawWorld();
@@ -443,12 +454,20 @@ namespace Cogravi
                     ovrMatrix4f ovrProjection = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], camera->NEAR, camera->FAR, ovrProjection_None);
 
                     avatar->Render(eyeRenderPose[eye], ovrProjection);
-                    skybox->render(*avatar);
-                    terrain->render(*avatar);
+                    skybox->render(*avatar, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
+                    terrain->render(*avatar, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
+                    //player->render(*camera, animationTime);
+                   /* models->render(*camera);
+                    animations->render(*camera, animationTime);*/
+                    models->render(*avatar, *shaderModel);
+                    aula->render(*avatar, *shaderModel);
+                    for (int i = 0; i < skeletal.size(); i++) {
+                        skeletal[i]->render(*avatar, animationTime * 1.0f);
+                    }
 
-               /*     animations->render(*avatar, animationTime);
-                    models->render(*avatar);*/
-                    aula->render(*avatar,*shaderModel);
+                    /*     animations->render(*avatar, animationTime);
+                         models->render(*avatar);*/
+                    aula->render(*avatar, *shaderModel);
 
                     debugDrawer->SetMatrices(avatar->view, avatar->proj);
                     bulletWorldController->dynamicsWorld->debugDrawWorld();
@@ -490,7 +509,7 @@ namespace Cogravi
                 // Blit mirror texture to back buffer
                 glBindFramebuffer(GL_READ_FRAMEBUFFER, mirrorFBO);
                 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-                
+
                 glBlitFramebuffer(0, HEIGHT_VR, WIDTH_VR, 0, 0, 0, WIDTH_VR, HEIGHT_VR, GL_COLOR_BUFFER_BIT, GL_NEAREST);
                 glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
             }
@@ -503,7 +522,7 @@ namespace Cogravi
             static Model* modelSelect = NULL;
             static Animation* animationSelect = NULL;
             static btCollisionShape* aulaSelect = NULL;
-            
+
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
@@ -517,9 +536,9 @@ namespace Cogravi
 
             camera->update(bulletWorldController->dynamicsWorld);
             models->update();
-            animation->update();
+            //animation->update();
 
-            input->processInput();
+            input->processInput(deltaTime);
 
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
             {
@@ -592,7 +611,12 @@ namespace Cogravi
                 animations->render(*camera, animationTime);*/
                 models->render(*camera, *shaderModel);
                 aula->render(*camera, *shaderModel);
-                animation->render(*camera, *shaderAnimation, animationTime);
+                animation->render(*camera, *shaderAnimation1, animationTime);
+                for (int i = 0; i < skeletal.size(); i++) {
+                    skeletal[i]->render(*camera, animationTime * 1.0f);
+                }
+
+               
                 //animation->render(*camera, animationTime);
 
                 debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
@@ -602,8 +626,8 @@ namespace Cogravi
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-            DockSpace();           
-            
+            DockSpace();
+
             settingsImGui();
             renderImGui();
             lightingImGui();
@@ -645,9 +669,9 @@ namespace Cogravi
                 deltaTime = currentFrame - lastFrame;
                 lastFrame = currentFrame;
                 animationTime = currentFrame - startFrame;
-              /*  int framesToMove = (int)((lastFrame - currentFrame) / animationTime);
+                /*  int framesToMove = (int)((lastFrame - currentFrame) / animationTime);
 
-                cout << "FrameToMove: " << framesToMove << "\n";*/
+                  cout << "FrameToMove: " << framesToMove << "\n";*/
 
                 if (isEngine)
                     renderEngine();
@@ -680,9 +704,9 @@ namespace Cogravi
             ImGui::Begin("Aula", NULL);
             if (shape != NULL)
             {
-                
 
-               
+
+
                 if (ImGui::DragFloat3("Size", glm::value_ptr(aula->shapeScalar), 0.1f))
                 {
                     aula->changeScalar(shape);
@@ -691,7 +715,7 @@ namespace Cogravi
 
             }
 
-           
+
             ImGui::End();
         }
 
@@ -726,7 +750,7 @@ namespace Cogravi
             ImGui::Text("Vendor: %s", (const char*)glGetString(GL_VENDOR));
             ImGui::Text("GPU: %s", GPU);
             ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-            ImGui::Text("%.2f ms", 1000.0f/ImGui::GetIO().Framerate);
+            ImGui::Text("%.2f ms", 1000.0f / ImGui::GetIO().Framerate);
             ImGui::Separator();
             ImGui::Text("Collision Objects: %d", bulletWorldController->dynamicsWorld->getNumCollisionObjects());
 
@@ -1070,7 +1094,7 @@ namespace Cogravi
 
 
             ImGui::End();
-        }   
+        }
 
         void DockSpace()
         {
@@ -1132,7 +1156,7 @@ namespace Cogravi
                     ImGui::MenuItem("Padding", NULL, &opt_padding);
                     //ImGui::Separator();
 
-                    
+
 
                     ImGui::EndMenu();
                 }

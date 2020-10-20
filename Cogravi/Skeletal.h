@@ -18,10 +18,6 @@
 #include <assimp/Importer.hpp>
 #include <unordered_map>
 
-#include <cstdlib>
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 
 typedef unsigned int uint;
 typedef unsigned char byte;
@@ -51,78 +47,11 @@ inline glm::quat assimpToGlmQuat(aiQuaternion quat) {
 	return q;
 }
 
-
-/*
-opengl skeletal animation demo
-*/
-
-
-const char* vertexShaderSource = R"(
-	#version 440 core
-	layout (location = 0) in vec3 position; 
-	layout (location = 1) in vec3 normal;
-	layout (location = 2) in vec2 uv;
-	layout (location = 3) in vec4 boneIds;
-	layout (location = 4) in vec4 boneWeights;
-
-	out vec2 tex_cord;
-	out vec3 v_normal;
-	out vec3 v_pos;
-	out vec4 bw;
-
-	uniform mat4 bone_transforms[50];
-	uniform mat4 view_projection_matrix;
-	uniform mat4 model_matrix;
-
-	void main()
-	{
-		bw = vec4(0);
-		if(int(boneIds.x) == 1)
-		bw.z = boneIds.x;
-		//boneWeights = normalize(boneWeights);
-		mat4 boneTransform  =  mat4(0.0);
-		boneTransform  +=    bone_transforms[int(boneIds.x)] * boneWeights.x;
-		boneTransform  +=    bone_transforms[int(boneIds.y)] * boneWeights.y;
-		boneTransform  +=    bone_transforms[int(boneIds.z)] * boneWeights.z;
-		boneTransform  +=    bone_transforms[int(boneIds.w)] * boneWeights.w;
-		vec4 pos =boneTransform * vec4(position, 1.0);
-		gl_Position = view_projection_matrix * model_matrix * pos;
-		v_pos = vec3(model_matrix * boneTransform * pos);
-		tex_cord = uv;
-		v_normal = mat3(transpose(inverse(model_matrix * boneTransform))) * normal;
-		v_normal = normalize(v_normal);
-	}
-
-	)";
-const char* fragmentShaderSource = R"(
-	#version 440 core
-
-	in vec2 tex_cord;
-	in vec3 v_normal;
-	in vec3 v_pos;
-	in vec4 bw;
-	out vec4 color;
-
-	uniform sampler2D diff_texture;
-
-	vec3 lightPos = vec3(0.2, 1.0, -3.0);
-	
-	void main()
-	{
-		vec3 lightDir = normalize(lightPos - v_pos);
-		float diff = max(dot(v_normal, lightDir), 0.2);
-		vec3 dCol = diff * texture(diff_texture, tex_cord).rgb; 
-		color = vec4(dCol, 1);
-	}
-	)";
-
-
-
 namespace Cogravi
 {
 
 	// vertex of an animated model
-	struct Vertex {
+	struct Vertexx {
 		glm::vec3 position;
 		glm::vec3 normal;
 		glm::vec2 uv;
@@ -163,13 +92,132 @@ namespace Cogravi
 
 		Assimp::Importer importer;
 
-		std::vector<Vertex> vertices = {};
+		std::vector<Vertexx> vertices = {};
 		std::vector<uint> indices = {};
 		uint boneCount = 0;
 		Animation animation;
 		uint vao = 0;
 		Bone skeleton;
 		uint diffuseTexture;
+
+		glm::mat4 globalInverseTransform;
+
+		uint viewProjectionMatrixLocation;
+		uint modelMatrixLocation;
+		uint boneMatricesLocation;
+		uint textureLocation;
+		glm::mat4 identity;
+		uint shader;
+		std::vector<glm::mat4> currentPose;
+
+		void load()
+		{
+			const char* filePath = "assets/animations/man/model.dae";
+			const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals);
+
+			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+				std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+			}
+			aiMesh* mesh = scene->mMeshes[0];
+
+			//as the name suggests just inverse the global transform
+			this->globalInverseTransform = assimpToGlmMatrix(scene->mRootNode->mTransformation);
+			this->globalInverseTransform = glm::inverse(globalInverseTransform);
+
+
+			loadModel(scene, mesh, vertices, indices, skeleton, boneCount);
+			cout << "Bone count: " << boneCount << "\n";
+			loadAnimation(scene, animation);
+
+			cout << "Total: " << animation.boneTransforms.size() << "\n";
+
+			//cout << "vertices count: " << vertices.size() << "\n";
+			//cout << "indices count: " << indices.size() << "\n";
+
+			vao = createVertexArray(vertices, indices);
+			diffuseTexture = createTexture("assets/animations/man/diffuse.png");
+
+			identity = glm::mat4(1.0);
+
+			this->currentPose = {};
+			this->currentPose.resize(boneCount, identity); // use this for no animation
+
+			shader = Shader("assets/shaders/animation.vert", "assets/shaders/animation.frag").ID;
+
+			//get all shader uniform locations
+			viewProjectionMatrixLocation = glGetUniformLocation(shader, "view_projection_matrix");
+			modelMatrixLocation = glGetUniformLocation(shader, "model_matrix");
+			boneMatricesLocation = glGetUniformLocation(shader, "bone_transforms");
+			textureLocation = glGetUniformLocation(shader, "diff_texture");
+
+
+		}
+
+		void render(Camera& camera, float animationTime)
+		{
+			glm::mat4 projectionMatrix = camera.GetProjectionMatrix();
+			glm::mat4 viewMatrix = camera.GetViewMatrix();
+
+			glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+
+			glm::mat4 modelMatrix(1.0f);
+			modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 20.0f));
+
+			modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1, 0, 0));
+			float dAngle = animationTime * 0.2;
+			modelMatrix = glm::rotate(modelMatrix, dAngle, glm::vec3(0, 1, 0));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 1.05f, 0.5f));
+
+			getPose(animation, skeleton, animationTime, currentPose, identity);
+
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glUseProgram(shader);
+			glUniformMatrix4fv(viewProjectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewProjectionMatrix));
+			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+			glUniformMatrix4fv(boneMatricesLocation, boneCount, GL_FALSE, glm::value_ptr(currentPose[0]));
+
+			glBindVertexArray(vao);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+			glUniform1i(textureLocation, 0);
+
+			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+
+		}
+
+		void render(Avatar& avatar, float animationTime)
+		{
+			glm::mat4 projectionMatrix = avatar.proj;
+			glm::mat4 viewMatrix = avatar.view;
+
+			glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+
+			glm::mat4 modelMatrix(1.0f);
+			modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 20.0f));
+
+			modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1, 0, 0));
+			float dAngle = animationTime * 0.2;
+			modelMatrix = glm::rotate(modelMatrix, dAngle, glm::vec3(0, 1, 0));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 1.05f, 0.5f));
+
+			getPose(animation, skeleton, animationTime, currentPose, identity);
+
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glUseProgram(shader);
+			glUniformMatrix4fv(viewProjectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewProjectionMatrix));
+			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+			glUniformMatrix4fv(boneMatricesLocation, boneCount, GL_FALSE, glm::value_ptr(currentPose[0]));
+
+			glBindVertexArray(vao);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+			glUniform1i(textureLocation, 0);
+
+			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+
+		}
 
 
 		// a recursive function to read all bones and form skeleton
@@ -198,14 +246,14 @@ namespace Cogravi
 			return false;
 		}
 
-		void loadModel(const aiScene* scene, aiMesh* mesh, std::vector<Vertex>& verticesOutput, std::vector<uint>& indicesOutput, Bone& skeletonOutput, uint& nBoneCount) {
+		void loadModel(const aiScene* scene, aiMesh* mesh, std::vector<Vertexx>& verticesOutput, std::vector<uint>& indicesOutput, Bone& skeletonOutput, uint& nBoneCount) {
 
 			verticesOutput = {};
 			indicesOutput = {};
 			//load position, normal, uv
 			for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 				//process position 
-				Vertex vertex;
+				Vertexx vertex;
 				glm::vec3 vector;
 				vector.x = mesh->mVertices[i].x;
 				vector.y = mesh->mVertices[i].y;
@@ -270,8 +318,6 @@ namespace Cogravi
 				}
 			}
 
-
-
 			//normalize weights to make all weights sum 1
 			for (int i = 0; i < verticesOutput.size(); i++) {
 				glm::vec4& boneWeights = verticesOutput[i].boneWeights;
@@ -285,7 +331,6 @@ namespace Cogravi
 					);
 				}
 			}
-
 
 			//load indices
 			for (int i = 0; i < mesh->mNumFaces; i++) {
@@ -315,6 +360,7 @@ namespace Cogravi
 			// each channel represents each bone
 			for (int i = 0; i < anim->mNumChannels; i++) {
 				aiNodeAnim* channel = anim->mChannels[i];
+				cout << "Nodo: " << channel->mNodeName.data << "\n";
 				BoneTransformTrack track;
 				for (int j = 0; j < channel->mNumPositionKeys; j++) {
 					track.positionTimestamps.push_back(channel->mPositionKeys[j].mTime);
@@ -331,10 +377,11 @@ namespace Cogravi
 
 				}
 				animation.boneTransforms[channel->mNodeName.C_Str()] = track;
+				cout << "Size: " << animation.boneTransforms.size() << "\n";
 			}
 		}
 
-		unsigned int createVertexArray(std::vector<Vertex>& vertices, std::vector<uint> indices) {
+		unsigned int createVertexArray(std::vector<Vertexx>& vertices, std::vector<uint> indices) {
 			uint
 				vao = 0,
 				vbo = 0,
@@ -346,17 +393,17 @@ namespace Cogravi
 
 			glBindVertexArray(vao);
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertexx) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
 			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertexx), (GLvoid*)offsetof(Vertexx, position));
 			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertexx), (GLvoid*)offsetof(Vertexx, normal));
 			glEnableVertexAttribArray(2);
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, uv));
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertexx), (GLvoid*)offsetof(Vertexx, uv));
 			glEnableVertexAttribArray(3);
-			glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, boneIds));
+			glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertexx), (GLvoid*)offsetof(Vertexx, boneIds));
 			glEnableVertexAttribArray(4);
-			glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, boneWeights));
+			glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertexx), (GLvoid*)offsetof(Vertexx, boneWeights));
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint), &indices[0], GL_STATIC_DRAW);
@@ -390,20 +437,27 @@ namespace Cogravi
 			uint segment = 0;
 			while (dt > times[segment])
 				segment++;
+			//cout << "count: " << times.size() << "\n";
 			float start = times[segment - 1];
 			float end = times[segment];
 			float frac = (dt - start) / (end - start);
+
+			/*cout << "start: " << start << "\n";
+			cout << "end: " << end << "\n";
+			cout << "frac: " << frac << "\n";*/
+
 			return { segment, frac };
 		}
 
 
 
-		void getPose(Animation& animation, Bone& skeletion, float dt, std::vector<glm::mat4>& output, glm::mat4& parentTransform, glm::mat4& globalInverseTransform) {
+		void getPose(Animation& animation, Bone& skeletion, float dt, std::vector<glm::mat4>& output, glm::mat4& parentTransform) {
 
 			BoneTransformTrack& btt = animation.boneTransforms[skeletion.name];
 			dt = fmod(dt, animation.duration);
 			std::pair<uint, float> fp;
 			//calculate interpolated position
+			//cout << "count pos1: " << btt.positions.size() << "\n";
 			fp = getTimeFraction(btt.positionTimestamps, dt);
 
 			glm::vec3 position1 = btt.positions[fp.first - 1];
@@ -436,11 +490,16 @@ namespace Cogravi
 			glm::mat4 localTransform = positionMat * rotationMat * scaleMat;
 			glm::mat4 globalTransform = parentTransform * localTransform;
 
-			output[skeletion.id] = globalInverseTransform * globalTransform * skeletion.offset;
-			//update values for children bones
+			//output[0] = globalInverseTransform * globalTransform * skeletion.offset;
+			output[skeletion.id] = this->globalInverseTransform * globalTransform * skeletion.offset;
+
+			//cout << "size children: " << skeletion.children.size() << "\n";
+
+			////update values for children bones
 			for (Bone& child : skeletion.children) {
-				getPose(animation, child, dt, output, globalTransform, globalInverseTransform);
+				getPose(animation, child, dt, output, globalTransform);
 			}
+			//getPose(animation, skeletion.children[0], dt, output, globalTransform, globalInverseTransform);
 			//std::cout << dt << " => " << position.x << ":" << position.y << ":" << position.z << ":" << std::endl;
 		}
 

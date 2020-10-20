@@ -80,9 +80,9 @@ namespace Cogravi
             camera->setFront(front);
         }
 
-        void processInput()
+        void processInput(float deltaTime)
         {
-            float cameraSpeed = camera->speed;
+            float cameraSpeed = camera->speed * deltaTime * 20.0f;
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
                 camera->setPosition(camera->getPosition() + cameraSpeed * camera->getFront());
             if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)

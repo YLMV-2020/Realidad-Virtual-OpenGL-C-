@@ -80,7 +80,7 @@ namespace Cogravi {
 		virtual void render(Camera& camera, Shader &shader, float animationTime)
 		{
 			shader.use();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
+			glm::mat4 projection = camera.GetProjectionMatrix();
 			glm::mat4 view = camera.GetViewMatrix();
 
 			transform = glm::mat4(1.0f);

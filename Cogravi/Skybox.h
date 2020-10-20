@@ -145,7 +145,7 @@ namespace Cogravi
 			glDepthFunc(GL_LESS);
 		}
 
-		void render(Cogravi::Avatar& avatar)
+		void render(Cogravi::Avatar& avatar, glm::vec3 ambient)
 		{
 			// draw scene as normal
 			shader.use();
@@ -165,6 +165,7 @@ namespace Cogravi
 			view = glm::mat4(glm::mat3(avatar.view)); // remove translation from the view matrix
 			skyboxShader.setMat4("view", view);
 			skyboxShader.setMat4("projection", projection);
+			skyboxShader.setVec3("ambient", ambient);
 			// skybox cube
 			glBindVertexArray(skyboxVAO);
 			glActiveTexture(GL_TEXTURE0);

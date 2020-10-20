@@ -1,23 +1,14 @@
 #version 460 core
 
-in vec2 text_coords;
-in vec3 frag_pos;
-in vec3 normal;
+in vec2 tex_cord;
+in vec3 v_normal;
+in vec3 v_pos;
+in vec4 bw;
+out vec4 color;
 
-struct Material
-{
-	sampler2D diffuse;
-	sampler2D specular;
-
-	float shininess;
-	float transparency;
-};
-
-uniform Material material;
+uniform sampler2D diff_texture;
 
 void main()
 {
-	
-	gl_FragColor =  texture(material.diffuse, text_coords);
-
+	color =  texture(diff_texture, tex_cord);
 }

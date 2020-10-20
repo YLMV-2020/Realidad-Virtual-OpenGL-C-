@@ -95,7 +95,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;glew32.lib;LibOVR.lib;libovravatar.lib;LibOVRPlatform64_1.lib;Bullet2FileLoader_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletSoftBody_Debug.lib;BulletWorldImporter_Debug.lib;LinearMath_Debug.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;glew32.lib;LibOVR.lib;libovravatar.lib;LibOVRPlatform64_1.lib;Bullet2FileLoader_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletSoftBody_Debug.lib;BulletWorldImporter_Debug.lib;LinearMath_Debug.lib;assimpd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -177,6 +177,8 @@
   <ItemGroup>
     <None Include="assets\shaders\animation.frag" />
     <None Include="assets\shaders\animation.vert" />
+    <None Include="assets\shaders\animation1.frag" />
+    <None Include="assets\shaders\animation1.vert" />
     <None Include="assets\shaders\avatar.frag" />
     <None Include="assets\shaders\avatar.vert" />
     <None Include="assets\shaders\cubemaps.frag" />

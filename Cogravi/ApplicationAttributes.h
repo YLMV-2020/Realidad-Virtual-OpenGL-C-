@@ -37,12 +37,13 @@ using namespace std;
 #include "Skybox.h"
 #include "DebugDrawer.h"
 #include "ModelController.h"
-#include "AnimationController.h"
 #include "PlayerController.h"
 #include "VehicleController.h"
 #include "Aula.h"
 #include "InputProcessor.h"
 #include "Lighting.h"
+#include "DynamicGameObject.h"
+#include "Skeletal.h"
 
 
 using namespace Cogravi;

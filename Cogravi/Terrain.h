@@ -72,7 +72,7 @@ namespace Cogravi
 
 		}
 
-		void render(Avatar& avatar)
+		void render(Avatar& avatar, glm::vec3 ambient)
 		{
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);
@@ -80,6 +80,7 @@ namespace Cogravi
 			glm::mat4 projection = avatar.proj;
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
+			shader.setVec3("ambient", ambient);
 
 			glBindVertexArray(VAO);
 			glBindTexture(GL_TEXTURE_2D, floorTexture);
