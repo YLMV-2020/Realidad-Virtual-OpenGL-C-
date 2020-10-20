@@ -31,21 +31,21 @@ namespace Cogravi {
 
         void render(Camera& camera, float animationTime)
         {
-            for (Animation*& animation : animations)
-                animation->render(camera, animationTime);
+            /*for (Animation*& animation : animations)
+                animation->render(camera, animationTime);*/
         }
 
         void render(Avatar& avatar, float animationTime)
         {
-            for (Animation*& animation : animations)
-                animation->render(avatar, animationTime);
+            /*for (Animation*& animation : animations)
+                animation->render(avatar, animationTime);*/
         }
 
         void addAnimation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>& textures, Shader shader, BulletWorldController* worldController)
         {
-            Animation* animation = new Animation(position, rotation, scale, path, textures, shader);
+            /*Animation* animation = new Animation(position, rotation, scale, path, textures, shader);
             animation->addBodyPhysicsBox(-1 * (animations.size() + 2), worldController);
-            animations.push_back(animation);
+            animations.push_back(animation);*/
         }
 
         Animation* getAnimation(int index)

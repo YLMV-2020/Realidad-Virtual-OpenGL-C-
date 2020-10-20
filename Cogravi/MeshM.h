@@ -45,15 +45,7 @@ namespace Cogravi {
             for (unsigned int i = 0; i < textures.size(); i++)
             {
                 glActiveTexture(GL_TEXTURE0 + i);
-                string number;
                 TextureType type = textures[i].type;
-                /* if (name == TextureType::DIFFUSE)
-                     number = std::to_string(diffuseNr++);
-                 else if (name == TextureType::SPECULAR)
-                     number = std::to_string(specularNr++);
-                 else if (name == TextureType::NORMAL)
-                     number = std::to_string(normalNr++); */
-
                 glUniform1i(glGetUniformLocation(shader.ID, ("material." + Util::Instance()->typeTexture[type]).c_str()), i);
 
                 glBindTexture(GL_TEXTURE_2D, textures[i].id);

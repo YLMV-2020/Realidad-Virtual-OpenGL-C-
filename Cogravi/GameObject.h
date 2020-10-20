@@ -188,10 +188,10 @@ namespace Cogravi {
 					indices.push_back(face.mIndices[j]);
 			}
 
-			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 			if (textureAssimp)
 			{
+				aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 				vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
 				textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 

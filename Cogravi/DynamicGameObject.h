@@ -20,10 +20,13 @@ namespace Cogravi {
 		glm::vec3 scale;
 
 		glm::mat4 transform;
-		Shader shader;
 
 		vector<Texture> textures;
+		vector<Texture> textures_loaded;
 		vector<MeshA> meshes;
+
+		string directory;
+		bool textureAssimp;
 
 		//GLint  indexAmount;           //Tamaño del vector de indices del modelo
 
@@ -40,19 +43,19 @@ namespace Cogravi {
 
 		glm::quat rotate_head_xz = glm::quat(cos(glm::radians(0.0f)), sin(glm::radians(0.0f)) * glm::vec3(1.0f, 0.0f, 0.0f));
 
-		DynamicGameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>& textures, Shader shader)
+		DynamicGameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader& shader, vector<Texture> textures = {})
 		{
 			this->position = position;
 			this->rotation = rotation;
 			this->scale = scale;
-			this->shader = shader;
-
 			this->textures = textures;
 
-			for (GLuint i = 0; i < MAX_BONES; i++) 
+			this->textureAssimp = this->textures.size() == 0 ? true : false;
+
+			for (GLuint i = 0; i < MAX_BONES; i++)
 			{
 				string name = "bones[" + to_string(i) + "]";
-				m_bone_location[i] = glGetUniformLocation(this->shader.ID, name.c_str());
+				m_bone_location[i] = glGetUniformLocation(shader.ID, name.c_str());
 			}
 
 			loadModel(path);
@@ -65,7 +68,7 @@ namespace Cogravi {
 			vector<aiMatrix4x4> transforms;
 			boneTransform((double)animationTime, transforms);
 
-			for (GLuint i = 0; i < transforms.size(); i++) 
+			for (GLuint i = 0; i < transforms.size(); i++)
 			{
 				glUniformMatrix4fv(m_bone_location[i], 1, GL_TRUE, (const GLfloat*)&transforms[i]);
 			}
@@ -74,10 +77,9 @@ namespace Cogravi {
 				meshes[i].draw(shader);
 		}
 
-		virtual void render(Camera& camera, float animationTime)
+		virtual void render(Camera& camera, Shader &shader, float animationTime)
 		{
 			shader.use();
-
 			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
 			glm::mat4 view = camera.GetViewMatrix();
 
@@ -107,13 +109,14 @@ namespace Cogravi {
 			glm::mat4 MVP = projection * view * transform;
 			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
 			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "M_matrix"), 1, GL_FALSE, glm::value_ptr(transform));
-			glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
+			glm::mat4 matr_normals_cube = glm::mat4(1.0);
+			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
 			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "normals_matrix"), 1, GL_FALSE, glm::value_ptr(matr_normals_cube));
 
 			draw(shader, animationTime);
 		}
 
-		virtual void render(Avatar& avatar, float animationTime)
+		virtual void render(Avatar& avatar, Shader& shader, float animationTime)
 		{
 			shader.use();
 			glm::mat4 projection = avatar.proj;
@@ -162,7 +165,13 @@ namespace Cogravi {
 
 		void loadModel(string const& path)
 		{
-			scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+			scene = import.ReadFile(path, 
+				aiProcess_JoinIdenticalVertices |
+				aiProcess_SortByPType |
+				aiProcess_Triangulate |
+				aiProcess_GenSmoothNormals |
+				aiProcess_FlipUVs |
+				aiProcess_LimitBoneWeights);
 
 			if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 			{
@@ -172,24 +181,29 @@ namespace Cogravi {
 
 			m_global_inverse_transform = scene->mRootNode->mTransformation;
 			m_global_inverse_transform.Inverse();
+			cout << "Num de animaciones: " << scene->mNumAnimations << "\n";
 
-			if (scene->mAnimations[0]->mTicksPerSecond != 0.0)
+			if (scene->mNumAnimations > 0)
 			{
-				ticks_per_second = scene->mAnimations[0]->mTicksPerSecond;
-			}
-			else
-			{
-				ticks_per_second = 25.0f;
+
+				if (scene->mAnimations[0]->mTicksPerSecond != 0.0)
+				{
+					ticks_per_second = scene->mAnimations[0]->mTicksPerSecond;
+				}
+				else
+				{
+					ticks_per_second = 25.0f;
+				}
 			}
 
 			// directoru = container for model.obj and textures and other files
+			directory = path.substr(0, path.find_last_of('/'));
 
 			cout << "scene->HasAnimations() 1: " << scene->HasAnimations() << endl;
 			cout << "scene->mNumMeshes 1: " << scene->mNumMeshes << endl;
 			cout << "scene->mAnimations[0]->mNumChannels 1: " << scene->mAnimations[0]->mNumChannels << endl;
 			cout << "scene->mAnimations[0]->mDuration 1: " << scene->mAnimations[0]->mDuration << endl;
 			cout << "scene->mAnimations[0]->mTicksPerSecond 1: " << scene->mAnimations[0]->mTicksPerSecond << endl << endl;
-			cout << "Num de animaciones: " << scene->mNumAnimations << "\n";
 
 			cout << "		name nodes : " << endl;
 			showNodeName(scene->mRootNode);
@@ -204,6 +218,7 @@ namespace Cogravi {
 				cout << scene->mAnimations[0]->mChannels[i]->mNodeName.C_Str() << endl;
 			}
 			cout << endl;
+			glBindVertexArray(0);
 		}
 
 		void showNodeName(aiNode* node)
@@ -214,7 +229,7 @@ namespace Cogravi {
 				showNodeName(node->mChildren[i]);
 			}
 		}
-		
+
 		void processNode(aiNode* node, const aiScene* scene)
 		{
 			MeshA mesh;
@@ -232,6 +247,7 @@ namespace Cogravi {
 			// data to fill
 			vector<VertexA> vertices;
 			vector<GLuint> indices;
+			vector<Texture> textures;
 			vector<VertexBoneData> bones_id_weights_for_each_vertex;
 
 			vertices.reserve(mesh->mNumVertices);
@@ -322,13 +338,63 @@ namespace Cogravi {
 				}
 			}
 
-			// return a mesh object created from the extracted mesh data
-			return MeshA(vertices, indices, this->textures, bones_id_weights_for_each_vertex);
+
+			if (textureAssimp)
+			{
+				aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+				vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
+				textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+				vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
+				textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+				std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
+				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+				//std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+				//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+				return MeshA(vertices, indices, textures, bones_id_weights_for_each_vertex);
+			}
+			else
+			{
+				return MeshA(vertices, indices, this->textures, bones_id_weights_for_each_vertex);
+			}			
+		}
+
+		vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType typeName)
+		{
+			vector<Texture> textures;
+			for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+			{
+				aiString str;
+				mat->GetTexture(type, i, &str);
+
+				bool skip = false;
+				for (unsigned int j = 0; j < textures_loaded.size(); j++)
+				{
+					if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+					{
+						textures.push_back(textures_loaded[j]);
+						skip = true;
+						break;
+					}
+				}
+				if (!skip)
+				{
+					Texture texture;
+					texture.id = Util::TextureFromFile(str.C_Str(), this->directory);
+					texture.type = typeName;
+					texture.path = str.C_Str();
+					textures.push_back(texture);
+					textures_loaded.push_back(texture);
+				}
+			}
+			return textures;
 		}
 
 		GLuint findPosition(float p_animation_time, const aiNodeAnim* p_node_anim)
 		{
-
+			//cout << "NumPositionKey: " << p_node_anim->mNumPositionKeys << "\n";
 			for (GLuint i = 0; i < p_node_anim->mNumPositionKeys - 1; i++)
 			{
 				if (p_animation_time < (float)p_node_anim->mPositionKeys[i + 1].mTime)

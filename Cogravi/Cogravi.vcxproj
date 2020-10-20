@@ -169,6 +169,7 @@
     <ClInclude Include="ModelAttributes.h" />
     <ClInclude Include="ModelController.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Skeletal.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Util.h" />

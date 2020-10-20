@@ -170,6 +170,9 @@
     <ClInclude Include="Lighting.h">
       <Filter>Archivos de encabezado\GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="Skeletal.h">
+      <Filter>Archivos de encabezado\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\model.frag">

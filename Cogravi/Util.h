@@ -6,6 +6,16 @@
 
 namespace Cogravi {
 
+    enum ColliderType 
+    {
+        MESH,
+        BOX,
+        SPHERE,
+        CAPSULE,
+        CYLINDER,
+        CONE
+    };
+
     enum ShaderType
     {
         MODEL_STATIC,

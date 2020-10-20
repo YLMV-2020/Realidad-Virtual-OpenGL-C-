@@ -9,20 +9,20 @@ namespace Cogravi
 	{
 	public:
 
-		Animation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture> textures, Shader shader) :
-			DynamicGameObject(position, rotation, scale, path, textures, shader)
+		Animation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, vector<Texture> textures = {}) :
+			DynamicGameObject(position, rotation, scale, path, shader, textures)
 		{
 			this->translate = glm::vec3(0.0f, 0.0f, 0.0f);		
 		}
 
-		void render(Camera& camera, float animationTime) override
+		void render(Camera& camera, Shader &shader, float animationTime) override
 		{
-			DynamicGameObject::render(camera, animationTime);
+			DynamicGameObject::render(camera, shader, animationTime);
 		}
 
-		void render(Avatar& avatar, float animationTime) override
+		void render(Avatar& avatar, Shader& shader, float animationTime) override
 		{
-			DynamicGameObject::render(avatar, animationTime);
+			DynamicGameObject::render(avatar, shader, animationTime);
 		}
 
 		void update() override
