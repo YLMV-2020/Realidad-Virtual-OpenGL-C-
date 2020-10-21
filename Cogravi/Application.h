@@ -176,9 +176,9 @@ namespace Cogravi
 
             //Texture tx(Util::)
             //animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 1; i++) {
                
-                animation.push_back(new DynamicGameObject(glm::vec3(10.0f*(i+1), 0.0f, 20.0f), glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(1.03f, 1.03f, 1.03f), "assets/animations/man/model.dae", *shaderAnimation1));
+                animation.push_back(new DynamicGameObject(glm::vec3(10.0f*(i+1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderAnimation1));
             }
             //animation = new DynamicGameObject(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "assets/animations/Hip Hop Dancing.fbx", *shaderAnimation, g);
             //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
@@ -518,6 +518,7 @@ namespace Cogravi
                 glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
             }
         }
+        int numAnim = 0;
 
         void renderEngine()
         {
@@ -620,7 +621,7 @@ namespace Cogravi
                 models->render(*camera, *shaderModel);
                 aula->render(*camera, *shaderModel);
                 for (int i = 0; i < animation.size(); i++)
-                    animation[i]->render(*camera, *shaderAnimation1, animationTime);
+                    animation[i]->render(*camera, numAnim, *shaderAnimation1, animationTime);
 
                 //for (int i = 0; i < skeletal.size(); i++) {
                 //    skeletal[i]->render(*camera, animationTime * 1.0f);
@@ -1021,6 +1022,7 @@ namespace Cogravi
 
         void animationImGui()
         {
+            static bool v;
             ImGui::Begin("Animation", NULL);
 
             if (ImGui::Checkbox("Luz Direccional", &isLightDirectional))
@@ -1034,6 +1036,24 @@ namespace Cogravi
             if (ImGui::Checkbox("Luz Focal", &isLightSpot))
             {
                 shaderModel->setBool("isLightSpot", isLightSpot);
+            }
+
+            if (ImGui::Checkbox("ANIM 1", &v))
+            {              
+                numAnim = 0;
+                animationTime = 0;
+            }
+
+            if (ImGui::Checkbox("ANIM 2", &v))
+            {
+                numAnim = 1;
+                animationTime = 0;
+            }
+
+            if (ImGui::Checkbox("ANIM 3", &v))
+            {
+                numAnim = 2;
+                animationTime = 0;
             }
 
             if (isLightPoint)
