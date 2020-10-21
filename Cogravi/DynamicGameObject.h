@@ -3,7 +3,9 @@
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-#include <assimp/postprocess.h> 
+#include <assimp/postprocess.h>
+
+#include <unordered_map>
 
 #include "MeshA.h"
 
@@ -40,6 +42,8 @@ namespace Cogravi {
 
 		GLuint m_bone_location[MAX_BONES];
 		float ticks_per_second = 0.0f;
+
+		std::unordered_map<string, const aiNodeAnim*> myMap;
 
 		glm::quat rotate_head_xz = glm::quat(cos(glm::radians(0.0f)), sin(glm::radians(0.0f)) * glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -195,6 +199,8 @@ namespace Cogravi {
 					ticks_per_second = 25.0f;
 				}
 			}
+
+			loadAnimations();
 
 			// directoru = container for model.obj and textures and other files
 			directory = path.substr(0, path.find_last_of('/'));
@@ -515,18 +521,49 @@ namespace Cogravi {
 			return start + factor * delta;
 		}
 
+		void loadAnimations()
+		{
+			scene->mAnimations[0];
+
+			for (int i = 0; i < scene->mNumAnimations; i++)
+			{
+				const aiAnimation* animation = scene->mAnimations[i];
+				for (GLuint j = 0; j < animation->mNumChannels; j++)
+				{
+					const aiNodeAnim* node_anim = animation->mChannels[j];
+					myMap[string(node_anim->mNodeName.data)] = node_anim;
+				}
+			}
+		}
+
 		const aiNodeAnim* findNodeAnim(const aiAnimation* p_animation, const string p_node_name)
 		{
 			// channel in animation contains aiNodeAnim (aiNodeAnim its transformation for bones)
 			// numChannels == numBones
+
+			std::unordered_map<string, const aiNodeAnim*>::iterator it;
+
+			it = myMap.find(p_node_name);
+			if (it != myMap.end())
+			{
+				//cout << "Encontrado p\n";
+				return myMap[p_node_name];
+			}
+
+
+			//cout << "zize: " << p_animation->mNumChannels << "\n";
 			for (GLuint i = 0; i < p_animation->mNumChannels; i++)
 			{
+				//cout << "Encontrando nuevo\n";
 				const aiNodeAnim* node_anim = p_animation->mChannels[i];
+				myMap[string(node_anim->mNodeName.data)] = node_anim;
 				if (string(node_anim->mNodeName.data) == p_node_name)
 				{
-					return node_anim;
+					return myMap[p_node_name] = node_anim;
+					//return node_anim;
 				}
 			}
+			//cout << "\n";
 
 			return nullptr;
 		}
@@ -537,7 +574,9 @@ namespace Cogravi {
 			string node_name(p_node->mName.data);
 			const aiAnimation* animation = scene->mAnimations[0];
 			aiMatrix4x4 node_transform = p_node->mTransformation;
-			const aiNodeAnim* node_anim = findNodeAnim(animation, node_name);
+			//const aiNodeAnim* node_anim = animation->mChannels[0];
+			//const aiNodeAnim* node_anim = findNodeAnim(animation, node_name);
+			const aiNodeAnim* node_anim = myMap[node_name];
 
 			if (node_anim)
 			{
@@ -658,6 +697,87 @@ namespace Cogravi {
 			return result.Normalize();
 		}
 
+
+
 	};
 }
 #endif
+
+//// calculateAnimPose() calculates the bone transformations for a mesh at a particular time in an animation (in scene)
+//// Each bone transformation is relative to the rest pose.
+//void calculateAnimPose(aiMesh* mesh, const aiScene* scene, int animNum, float poseTime, mat4* boneTransforms) {
+//
+//	if (mesh->mNumBones == 0 || animNum < 0) {    // animNum = -1 for no animation
+//		boneTransforms[0] = mat4(1.0);           // so, just return a single identity matrix
+//		return;
+//	}
+//	if (scene->mNumAnimations <= (unsigned int)animNum)
+//		failInt("No animation with number:", animNum);
+//
+//	aiAnimation* anim = scene->mAnimations[animNum];  // animNum = 0 for the first animation
+//
+//	// Set transforms from bone channels 
+//	for (unsigned int chanID = 0; chanID < anim->mNumChannels; chanID++) {
+//		aiNodeAnim* channel = anim->mChannels[chanID];
+//		aiVector3D curPosition;
+//		aiQuaternion curRotation;   // interpolation of scaling purposefully left out for simplicity.
+//
+//		// find the node which the channel affects
+//		aiNode* targetNode = scene->mRootNode->FindNode(channel->mNodeName);
+//
+//		// find current positionKey
+//		size_t posIndex = 0;
+//		for (posIndex = 0; posIndex + 1 < channel->mNumPositionKeys; posIndex++)
+//			if (channel->mPositionKeys[posIndex + 1].mTime > poseTime)
+//				break;   // the next key lies in the future - so use the current key
+//
+//		// This assumes that there is at least one key
+//		if (posIndex + 1 == channel->mNumPositionKeys)
+//			curPosition = channel->mPositionKeys[posIndex].mValue;
+//		else {
+//			float t0 = channel->mPositionKeys[posIndex].mTime;   // Interpolate position/translation
+//			float t1 = channel->mPositionKeys[posIndex + 1].mTime;
+//			float weight1 = (poseTime - t0) / (t1 - t0);
+//
+//			curPosition = channel->mPositionKeys[posIndex].mValue * (1.0f - weight1) +
+//				channel->mPositionKeys[posIndex + 1].mValue * weight1;
+//		}
+//
+//		// find current rotationKey
+//		size_t rotIndex = 0;
+//		for (rotIndex = 0; rotIndex + 1 < channel->mNumRotationKeys; rotIndex++)
+//			if (channel->mRotationKeys[rotIndex + 1].mTime > poseTime)
+//				break;   // the next key lies in the future - so use the current key
+//
+//		if (rotIndex + 1 == channel->mNumRotationKeys)
+//			curRotation = channel->mRotationKeys[rotIndex].mValue;
+//		else {
+//			float t0 = channel->mRotationKeys[rotIndex].mTime;   // Interpolate using quaternions
+//			float t1 = channel->mRotationKeys[rotIndex + 1].mTime;
+//			float weight1 = (poseTime - t0) / (t1 - t0);
+//
+//			aiQuaternion::Interpolate(curRotation, channel->mRotationKeys[rotIndex].mValue,
+//				channel->mRotationKeys[rotIndex + 1].mValue, weight1);
+//			curRotation = curRotation.Normalize();
+//		}
+//
+//		aiMatrix4x4 trafo = aiMatrix4x4(curRotation.GetMatrix());             // now build a rotation matrix
+//		trafo.a4 = curPosition.x; trafo.b4 = curPosition.y; trafo.c4 = curPosition.z; // add the translation
+//		targetNode->mTransformation = trafo;  // assign this transformation to the node
+//	}
+//
+//	// Calculate the total transformation for each bone relative to the rest pose
+//	for (unsigned int a = 0; a < mesh->mNumBones; a++) {
+//		const aiBone* bone = mesh->mBones[a];
+//		aiMatrix4x4 bTrans = bone->mOffsetMatrix;  // start with mesh-to-bone matrix to subtract rest pose
+//
+//		// Find the bone, then loop through the nodes/bones on the path up to the root. 
+//		for (aiNode* node = scene->mRootNode->FindNode(bone->mName); node != NULL; node = node->mParent)
+//			bTrans = node->mTransformation * bTrans;   // add each bone's current relative transformation
+//
+//		boneTransforms[a] = mat4(vec4(bTrans.a1, bTrans.a2, bTrans.a3, bTrans.a4),
+//			vec4(bTrans.b1, bTrans.b2, bTrans.b3, bTrans.b4),
+//			vec4(bTrans.c1, bTrans.c2, bTrans.c3, bTrans.c4),
+//			vec4(bTrans.d1, bTrans.d2, bTrans.d3, bTrans.d4));   // Convert to mat4
+//	}
+//}

@@ -119,6 +119,8 @@ namespace Cogravi
 				position += Matrix4f::RotationY(Yaw).Transform(
 					Vector3f(leftStick.x * leftStick.x * (leftStick.x > 0 ? 0.1f : -0.1f), 0, leftStick.y * leftStick.y * (leftStick.y > 0 ? -0.1f : 0.1f)));
 
+				//usar el moetodo mover
+
 				if (rightStick.x > 0) Yaw -= 0.01f;
 				if (rightStick.y > 0) Yaw += 0.01f;
 

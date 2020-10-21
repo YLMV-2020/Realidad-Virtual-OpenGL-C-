@@ -165,8 +165,8 @@ namespace Cogravi
 
 			modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1, 0, 0));
 			float dAngle = animationTime * 0.2;
-			modelMatrix = glm::rotate(modelMatrix, dAngle, glm::vec3(0, 1, 0));
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 1.05f, 0.5f));
+			//modelMatrix = glm::rotate(modelMatrix, dAngle, glm::vec3(0, 1, 0));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
 
 			getPose(animation, skeleton, animationTime, currentPose, identity);
 
@@ -198,8 +198,8 @@ namespace Cogravi
 
 			modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1, 0, 0));
 			float dAngle = animationTime * 0.2;
-			modelMatrix = glm::rotate(modelMatrix, dAngle, glm::vec3(0, 1, 0));
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 1.05f, 0.5f));
+			//modelMatrix = glm::rotate(modelMatrix, dAngle, glm::vec3(0, 1, 0));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
 
 			getPose(animation, skeleton, animationTime, currentPose, identity);
 

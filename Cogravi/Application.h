@@ -13,8 +13,8 @@ namespace Cogravi
         Shader* shaderAnimation;
         Shader* shaderAnimation1;
 
-        vector<Skeletal*> skeletal;
-        DynamicGameObject* animation;
+        //vector<Skeletal*> skeletal;
+        vector<DynamicGameObject*> animation;
         //DynamicGameObject* animation;
 
         static Application* Instance()
@@ -168,15 +168,18 @@ namespace Cogravi
             Texture sd = Texture(Util::loadTexture("assets/animations/goku/body texture.png"), TextureType::DIFFUSE);
             g.push_back(sd);
 
-            for (int i = 0; i < 1; i++) {
+            /*for (int i = 0; i < 1; i++) {
                 skeletal.push_back(new Skeletal());
                 skeletal.back()->load();
-            }
+            }*/
 
 
             //Texture tx(Util::)
             //animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
-            animation = new DynamicGameObject(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/player/player.dae", *shaderAnimation1);
+            for (int i = 0; i < 4; i++) {
+               
+                animation.push_back(new DynamicGameObject(glm::vec3(10.0f*(i+1), 0.0f, 20.0f), glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(1.03f, 1.03f, 1.03f), "assets/animations/man/model.dae", *shaderAnimation1));
+            }
             //animation = new DynamicGameObject(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "assets/animations/Hip Hop Dancing.fbx", *shaderAnimation, g);
             //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
@@ -184,6 +187,7 @@ namespace Cogravi
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
 
             models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/tunel/tunel.obj");
+            models->addModel(glm::vec3(30.0f, 3.50f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/objects/tierra/universe-m.3ds", ColliderType::SPHERE, bulletWorldController);
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/sinon/sinon.fbx");
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/tunel/tunel.obj", ColliderType::BOX, bulletWorldController);
 
@@ -461,9 +465,9 @@ namespace Cogravi
                     animations->render(*camera, animationTime);*/
                     models->render(*avatar, *shaderModel);
                     aula->render(*avatar, *shaderModel);
-                    for (int i = 0; i < skeletal.size(); i++) {
+                    /*for (int i = 0; i < skeletal.size(); i++) {
                         skeletal[i]->render(*avatar, animationTime * 1.0f);
-                    }
+                    }*/
 
                     /*     animations->render(*avatar, animationTime);
                          models->render(*avatar);*/
@@ -563,6 +567,8 @@ namespace Cogravi
                     if (!presionado)
                     {
                         index = (int)RayCallback.m_collisionObject->getUserIndex();
+                        if (index != -1)
+                            modelSelect = NULL;
                         if (index >= 0 && index < 100)
                         {
                             modelSelect = getModel(index);
@@ -585,10 +591,12 @@ namespace Cogravi
                             //modelSelect->body->applyForce(btVector3(0, 1, 0), btVector3(5, 1, 0));
                         }
                     }
-                }
+                }                
             }
             else
             {
+                index = -1;
+                //modelSelect = NULL;
                 presionado = false;
             }
 
@@ -611,10 +619,12 @@ namespace Cogravi
                 animations->render(*camera, animationTime);*/
                 models->render(*camera, *shaderModel);
                 aula->render(*camera, *shaderModel);
-                animation->render(*camera, *shaderAnimation1, animationTime);
-                for (int i = 0; i < skeletal.size(); i++) {
-                    skeletal[i]->render(*camera, animationTime * 1.0f);
-                }
+                for (int i = 0; i < animation.size(); i++)
+                    animation[i]->render(*camera, *shaderAnimation1, animationTime);
+
+                //for (int i = 0; i < skeletal.size(); i++) {
+                //    skeletal[i]->render(*camera, animationTime * 1.0f);
+                //}
 
                
                 //animation->render(*camera, animationTime);

@@ -33,7 +33,7 @@ namespace Cogravi
 
 		void addBodyPhysicsBox(BulletWorldController* worldController, glm::vec3 traslation, glm::vec3 rotate, glm::vec3 size)
         {
-			this->userIndex = shape.size();
+			this->userIndex = shape.size() + 101;;
 			this->shape.push_back(new btBoxShape(btVector3(size.x, size.y, size.z)));
             bodyPhysicsConfiguration(worldController, traslation, rotate);
         }
