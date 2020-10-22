@@ -43,7 +43,7 @@ using namespace std;
 #include "InputProcessor.h"
 #include "Lighting.h"
 #include "DynamicGameObject.h"
-#include "Skeletal.h"
+
 
 
 using namespace Cogravi;

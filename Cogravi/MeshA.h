@@ -71,10 +71,8 @@ namespace Cogravi {
             setupMesh();
         }
 
-        void draw(Shader shader)
+        void draw(Shader &shader)
         {
-            int diffuse_nr = 1;
-            int specular_nr = 1;
 
             for (int i = 0; i < textures.size(); i++)
             {
@@ -88,6 +86,21 @@ namespace Cogravi {
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
             glActiveTexture(GL_TEXTURE0);
+        }
+
+        void drawInstance(Shader& shader, int amount)
+        {
+            for (unsigned int i = 0; i < textures.size(); i++)
+            {
+                glActiveTexture(GL_TEXTURE0 + i);
+                TextureType type = textures[i].type;
+                glUniform1i(glGetUniformLocation(shader.ID, "texture_diffuse1"), i);
+
+                glBindTexture(GL_TEXTURE_2D, textures[i].id);
+            }
+            glBindVertexArray(VAO);
+            glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, amount);
+            glBindVertexArray(0);
         }
 
 

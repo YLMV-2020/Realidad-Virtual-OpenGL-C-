@@ -169,7 +169,6 @@
     <ClInclude Include="ModelAttributes.h" />
     <ClInclude Include="ModelController.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="Skeletal.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Util.h" />
@@ -177,8 +176,6 @@
   <ItemGroup>
     <None Include="assets\shaders\animation.frag" />
     <None Include="assets\shaders\animation.vert" />
-    <None Include="assets\shaders\animation1.frag" />
-    <None Include="assets\shaders\animation1.vert" />
     <None Include="assets\shaders\avatar.frag" />
     <None Include="assets\shaders\avatar.vert" />
     <None Include="assets\shaders\cubemaps.frag" />

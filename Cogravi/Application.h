@@ -11,7 +11,8 @@ namespace Cogravi
 
         Shader* shaderModel;
         Shader* shaderAnimation;
-        Shader* shaderAnimation1;
+        Shader* shaderInstance;
+        GameObject* model;
 
         //vector<Skeletal*> skeletal;
         vector<DynamicGameObject*> animation;
@@ -162,23 +163,22 @@ namespace Cogravi
 
         }
 
+        
+
         void addModels()
         {
             vector<Texture> g;
-            Texture sd = Texture(Util::loadTexture("assets/animations/goku/body texture.png"), TextureType::DIFFUSE);
+            Texture sd = Texture(Util::loadTexture("assets/objects/arbol/arbol.tga"), TextureType::DIFFUSE);
             g.push_back(sd);
-
-            /*for (int i = 0; i < 1; i++) {
-                skeletal.push_back(new Skeletal());
-                skeletal.back()->load();
-            }*/
-
 
             //Texture tx(Util::)
             //animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
             for (int i = 0; i < 1; i++) {
-               
-                animation.push_back(new DynamicGameObject(glm::vec3(10.0f*(i+1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderAnimation1));
+
+                animation.push_back(new DynamicGameObject(glm::vec3(10.0f * (i + 1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderAnimation));
+                animation.back()->addAnimation("Hip Hop Dancing.dae");
+                animation.back()->addAnimation("Zombie Walk.dae");
+                //animation.back()->addAnimation("Victory Idle.dae");
             }
             //animation = new DynamicGameObject(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "assets/animations/Hip Hop Dancing.fbx", *shaderAnimation, g);
             //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
@@ -188,7 +188,10 @@ namespace Cogravi
 
             models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/tunel/tunel.obj");
             models->addModel(glm::vec3(30.0f, 3.50f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/objects/tierra/universe-m.3ds", ColliderType::SPHERE, bulletWorldController);
-            //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/sinon/sinon.fbx");
+            models->addModel(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.1f, 1.1f, 1.1f), "assets/objects/mirana/mirana.obj");
+            models->addModel(glm::vec3(-10.0f, 10.00f, 50.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/helicoptero/camcopters100.obj");
+            model = new GameObject(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/arbol/arbol.obj", g);
+            model->configureInstance();
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/tunel/tunel.obj", ColliderType::BOX, bulletWorldController);
 
         }
@@ -254,7 +257,7 @@ namespace Cogravi
 
             shaderModel = util->myShaders[ShaderType::MODEL_STATIC];
             shaderAnimation = util->myShaders[ShaderType::MODEL_DYNAMIC];
-            shaderAnimation1 = util->myShaders[ShaderType::MODEL_DYNAMIC_1];
+            shaderInstance = util->myShaders[ShaderType::INSTANCE];
 
             addModels();
             addAnimations();
@@ -525,7 +528,6 @@ namespace Cogravi
             static bool presionado = false;
             static int index = 0;
             static Model* modelSelect = NULL;
-            static Animation* animationSelect = NULL;
             static btCollisionShape* aulaSelect = NULL;
 
 
@@ -615,20 +617,13 @@ namespace Cogravi
 
                 skybox->render(*camera, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
                 terrain->render(*camera, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
-                //player->render(*camera, animationTime);
-               /* models->render(*camera);
-                animations->render(*camera, animationTime);*/
+
                 models->render(*camera, *shaderModel);
                 aula->render(*camera, *shaderModel);
                 for (int i = 0; i < animation.size(); i++)
-                    animation[i]->render(*camera, numAnim, *shaderAnimation1, animationTime);
+                    animation[i]->render(*camera, numAnim, *shaderAnimation, animationTime*1.0f);
 
-                //for (int i = 0; i < skeletal.size(); i++) {
-                //    skeletal[i]->render(*camera, animationTime * 1.0f);
-                //}
-
-               
-                //animation->render(*camera, animationTime);
+                model->renderInstance(*camera, *shaderInstance);
 
                 debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
                 bulletWorldController->dynamicsWorld->debugDrawWorld();
@@ -673,16 +668,13 @@ namespace Cogravi
         {
             renderInicializar();
             //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            float second;
             while (!glfwWindowShouldClose(window))
             {
+                
                 float currentFrame = glfwGetTime();
                 deltaTime = currentFrame - lastFrame;
                 lastFrame = currentFrame;
                 animationTime = currentFrame - startFrame;
-                /*  int framesToMove = (int)((lastFrame - currentFrame) / animationTime);
-
-                  cout << "FrameToMove: " << framesToMove << "\n";*/
 
                 if (isEngine)
                     renderEngine();
@@ -704,11 +696,6 @@ namespace Cogravi
             //return NULL;
         }
 
-        Animation* getAnimation(int index)
-        {
-            //return animations->getAnimation(index);
-            return NULL;
-        }
 
         void aulaImGui(btCollisionShape* shape)
         {
@@ -764,6 +751,7 @@ namespace Cogravi
             ImGui::Text("%.2f ms", 1000.0f / ImGui::GetIO().Framerate);
             ImGui::Separator();
             ImGui::Text("Collision Objects: %d", bulletWorldController->dynamicsWorld->getNumCollisionObjects());
+            ImGui::Text("Time: %.1f", animationTime);
 
             /*if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(100, 100)))
             {

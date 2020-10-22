@@ -20,11 +20,12 @@ namespace Cogravi {
     {
         MODEL_STATIC,
         MODEL_DYNAMIC,
-        MODEL_DYNAMIC_1,
         TERRAIN,
         SKYBOX,
         CUBE_MAP,
-        AVATAR
+        AVATAR,
+        INSTANCE,
+        INSTANCE_DYNAMIC
     };
 
     enum TextureType
@@ -70,11 +71,12 @@ namespace Cogravi {
         {
             myShaders[ShaderType::MODEL_STATIC] = new Shader("assets/shaders/model.vert", "assets/shaders/model.frag");
             myShaders[ShaderType::MODEL_DYNAMIC] = new Shader("assets/shaders/animation.vert", "assets/shaders/animation.frag");
-            myShaders[ShaderType::MODEL_DYNAMIC_1] = new Shader("assets/shaders/animation1.vert", "assets/shaders/animation1.frag");
             myShaders[ShaderType::TERRAIN] = new Shader("assets/shaders/terrain.vert", "assets/shaders/terrain.frag");      
             myShaders[ShaderType::SKYBOX] = new Shader("assets/shaders/skybox.vert", "assets/shaders/skybox.frag");
             myShaders[ShaderType::CUBE_MAP] = new Shader("assets/shaders/cubemaps.vert", "assets/shaders/cubemaps.frag");
             myShaders[ShaderType::AVATAR] = new Shader("assets/shaders/avatar.vert", "assets/shaders/avatar.frag");
+            myShaders[ShaderType::INSTANCE] = new Shader("assets/shaders/instance.vs", "assets/shaders/instance.fs");
+            myShaders[ShaderType::INSTANCE_DYNAMIC] = new Shader("assets/shaders/instance.vs", "assets/shaders/instance.fs");
         }
 
         void loadTextureType()

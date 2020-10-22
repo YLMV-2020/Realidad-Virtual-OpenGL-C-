@@ -32,6 +32,7 @@ namespace Cogravi {
 		string directory;
 		bool textureAssimp;
 
+		int T = 0;
 		Assimp::Importer import[MAX_ANIMATIONS];
 		const aiScene* scene[MAX_ANIMATIONS];
 
@@ -67,21 +68,116 @@ namespace Cogravi {
 			}
 
 			loadModel(path);
-			addAnimation("assets/animations/Dying/Dying.dae",1);
-			addAnimation("assets/animations/Hip Hop Dancing/Hip Hop Dancing.dae",2);
+			
 		}
 
 		~DynamicGameObject() {}
 
-		void draw(int index, Shader shader, float animationTime)
+		unsigned int amount = 2000;
+
+		void drawInstance(Shader& shader, int index, float animationTime, int amount)
 		{
 			vector<aiMatrix4x4> transforms;
 			boneTransform((double)animationTime, index, transforms);
 
-			for (GLuint i = 0; i < transforms.size(); i++)
+			glUniformMatrix4fv(m_bone_location[0], transforms.size(), GL_TRUE, (const GLfloat*)&transforms[0]);
+
+			for (unsigned int i = 0; i < meshes.size(); i++)
+				meshes[i].drawInstance(shader, amount);
+		}
+
+
+		virtual void renderInstance(Camera& camera, int index, Shader& shader, float animationTime)
+		{
+			glm::mat4 projection = camera.GetProjectionMatrix();
+			glm::mat4 view = camera.GetViewMatrix();
+			shader.use();
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+
+			drawInstance(shader, index, animationTime, this->amount);
+		}
+
+		void configureInstance()
+		{
+
+			glm::mat4* modelMatrices;
+			modelMatrices = new glm::mat4[amount];
+			srand(glfwGetTime()); // initialize random seed	
+			float radius = 45.0f;
+			float offset = 25.0f;
+			for (unsigned int i = 0; i < amount; i++)
+			{
+				glm::mat4 model = glm::mat4(1.0f);
+				// 1. translation: displace along circle with 'radius' in range [-offset, offset]
+				float angle = (float)i / (float)amount * 360.0f;
+				float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+				float x = sin(angle) * radius + displacement;
+				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+				float y = displacement * 0.4f; // keep height of asteroid field smaller compared to width of x and z
+				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+				float z = cos(angle) * radius + displacement;
+				model = glm::translate(model, glm::vec3(x, y, z));
+
+				// 2. scale: Scale between 0.05 and 0.25f
+				float scale = (rand() % 20) / 100.0f + 0.05;
+				model = glm::scale(model, glm::vec3(scale));
+
+				// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+				float rotAngle = (rand() % 360);
+				model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+				// 4. now add to list of matrices
+				modelMatrices[i] = model;
+			}
+
+			// configure instanced array
+			// -------------------------
+			unsigned int buffer;
+			glGenBuffers(1, &buffer);
+			glBindBuffer(GL_ARRAY_BUFFER, buffer);
+			glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+			// set transformation matrices as an instance vertex attribute (with divisor 1)
+			// note: we're cheating a little by taking the, now publicly declared, VAO of the model's mesh(es) and adding new vertexAttribPointers
+			// normally you'd want to do this in a more organized fashion, but for learning purposes this will do.
+			// -----------------------------------------------------------------------------------------------------------------------------------
+			for (unsigned int i = 0; i < meshes.size(); i++)
+			{
+				unsigned int VAO = meshes[i].VAO;
+				glBindVertexArray(VAO);
+				// set attribute pointers for matrix (4 times vec4)
+				glEnableVertexAttribArray(3);
+				glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+				glEnableVertexAttribArray(4);
+				glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+				glEnableVertexAttribArray(5);
+				glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+				glEnableVertexAttribArray(6);
+				glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+				glVertexAttribDivisor(3, 1);
+				glVertexAttribDivisor(4, 1);
+				glVertexAttribDivisor(5, 1);
+				glVertexAttribDivisor(6, 1);
+
+				glBindVertexArray(0);
+			}
+
+		}
+
+		void draw(Shader &shader, int index, float animationTime)
+		{
+			vector<aiMatrix4x4> transforms;
+			boneTransform((double)animationTime, index, transforms);
+			//cout << "t: " << transforms.size() << "\n";
+			/*for (GLuint i = 0; i < transforms.size(); i++)
 			{
 				glUniformMatrix4fv(m_bone_location[i], 1, GL_TRUE, (const GLfloat*)&transforms[i]);
-			}
+			}*/
+
+			glUniformMatrix4fv(m_bone_location[0], transforms.size(), GL_TRUE, (const GLfloat*)&transforms[0]);
+			//glUniformMatrix4fv(m_bone_location[0], sizeof(transforms[0]), GL_TRUE, (const GLfloat*)&transforms[0]);
 
 			for (unsigned int i = 0; i < meshes.size(); i++)
 				meshes[i].draw(shader);
@@ -123,7 +219,7 @@ namespace Cogravi {
 			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
 			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "normals_matrix"), 1, GL_FALSE, glm::value_ptr(matr_normals_cube));
 
-			draw(index, shader, animationTime);
+			draw(shader, index, animationTime);
 		}
 
 		virtual void render(Avatar& avatar, int index, Shader& shader, float animationTime)
@@ -163,7 +259,7 @@ namespace Cogravi {
 			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "normals_matrix"), 1, GL_FALSE, glm::value_ptr(matr_normals_cube));
 
 
-			draw(index, shader, animationTime);
+			draw(shader, index, animationTime);
 		}
 
 		virtual void update()
@@ -171,11 +267,11 @@ namespace Cogravi {
 
 		}
 
-
-		void addAnimation(string const& path,int v)
+		void addAnimation(string const& path)
 		{
-			
-			scene[v] = import[v].ReadFile(path,
+			T++;
+			const string ruta = directory + "/" + path;
+			scene[T] = import[T].ReadFile(ruta,
 				aiProcess_JoinIdenticalVertices |
 				aiProcess_SortByPType |
 				aiProcess_Triangulate |
@@ -183,17 +279,17 @@ namespace Cogravi {
 				aiProcess_FlipUVs |
 				aiProcess_LimitBoneWeights);
 
-			if (!scene[v] || scene[v]->mFlags == AI_SCENE_FLAGS_INCOMPLETE)
+			if (!scene[T] || scene[T]->mFlags == AI_SCENE_FLAGS_INCOMPLETE)
 			{
-				cout << "error assimp : " << import[v].GetErrorString() << endl;
+				cout << "error assimp : " << import[T].GetErrorString() << endl;
 				return;
 			}
 			cout << "==============================================================\n";
-			for (GLuint i = 0; i < scene[v]->mNumAnimations; i++)
+			for (GLuint i = 0; i < scene[T]->mNumAnimations; i++)
 			{
-				const aiAnimation* animation = scene[v]->mAnimations[i];
+				const aiAnimation* animation = scene[T]->mAnimations[i];
 				animations.push_back(animation);
-				root.push_back(scene[v]->mRootNode);
+				root.push_back(scene[T]->mRootNode);
 				int index = animations.size() - 1;
 				for (GLuint j = 0; j < animation->mNumChannels; j++)
 				{
@@ -232,12 +328,10 @@ namespace Cogravi {
 			m_global_inverse_transform.Inverse();
 			cout << "Num de animaciones: " << scene[0]->mNumAnimations << "\n";
 
-			
-
 			loadAnimations();
 
-			// directoru = container for model.obj and textures and other files
 			directory = path.substr(0, path.find_last_of('/'));
+			cout << "Direc: " << directory << "\n";
 
 			cout << "scene->HasAnimations() 1: " << scene[0]->HasAnimations() << endl;
 			cout << "scene->mNumMeshes 1: " << scene[0]->mNumMeshes << endl;
@@ -643,6 +737,8 @@ namespace Cogravi {
 			double time_in_ticks = time_in_sec * ticks_per_second;
 			float animation_time = fmod(time_in_ticks, animation->mDuration);
 
+			//cout << "Ti: " << animation_time << "\n";
+
 			readNodeHierarchy(animation_time, index, root[index], identity_matrix);
 
 			transforms.resize(m_num_bones);
@@ -691,8 +787,6 @@ namespace Cogravi {
 
 			return result.Normalize();
 		}
-
-
 
 	};
 }

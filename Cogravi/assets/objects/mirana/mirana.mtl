@@ -1,0 +1,114 @@
+# Blender MTL File: 'None'
+# Material Count: 9
+
+newmtl arrows_mat
+Ns 179.999996
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+
+newmtl blinn1
+Ns 56.806129
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Bump -bm 0.250000 mirana_arms_normal.tga
+map_Kd mirana_arms_color.tga
+map_Ks mirana_arms_specularMask.tga
+
+newmtl blinn2
+Ns 56.806129
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Bump -bm 0.250000 mirana_back_normal.tga
+map_Kd mirana_back_color.tga
+map_Ks mirana_back_specularMask.tga
+
+newmtl blinn3
+Ns 56.806129
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Bump -bm 0.250000 mirana_head_normal.tga
+map_Kd mirana_head_color.tga
+map_Ks mirana_head_specularMask.tga
+
+newmtl blinn5
+Ns 56.806129
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Bump -bm 0.250000 mirana_mount_normal.tga
+map_Kd mirana_mount_color.tga
+map_Ks mirana_mount_specularMask.tga
+
+newmtl blinn6
+Ns 56.806129
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Bump -bm 0.250000 base\\__mirana_base_normal.tga
+map_Kd base\\__mirana_base_color.tga
+map_Ks base\\__mirana_base_specularMask.tga
+
+newmtl blinn7
+Ns 56.806129
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Bump -bm 0.250000 mirana_misc_normal.tga
+map_Kd mirana_misc_color.tga
+map_Ks mirana_misc_specularMask.tga
+
+newmtl blinn8
+Ns 56.806129
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Bump -bm 0.250000 mirana_shoulders_normal.tga
+map_Kd mirana_shoulders_color.tga
+map_Ks mirana_shoulders_specularMask.tga
+
+newmtl javelin_mat
+Ns 179.999996
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3

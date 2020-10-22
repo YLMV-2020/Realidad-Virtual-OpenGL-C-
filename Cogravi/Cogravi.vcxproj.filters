@@ -170,9 +170,6 @@
     <ClInclude Include="Lighting.h">
       <Filter>Archivos de encabezado\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Skeletal.h">
-      <Filter>Archivos de encabezado\Animation</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\model.frag">
@@ -216,12 +213,6 @@
     </None>
     <None Include="assets\shaders\debug.frag">
       <Filter>Archivos de encabezado\BulletPhysics</Filter>
-    </None>
-    <None Include="assets\shaders\animation1.frag">
-      <Filter>Archivos de encabezado\Animation</Filter>
-    </None>
-    <None Include="assets\shaders\animation1.vert">
-      <Filter>Archivos de encabezado\Animation</Filter>
     </None>
   </ItemGroup>
 </Project>

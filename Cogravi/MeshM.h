@@ -35,13 +35,8 @@ namespace Cogravi {
 
         }
 
-        void draw(Shader shader)
+        void draw(Shader &shader)
         {
-            GLuint diffuseNr = 1;
-            GLuint specularNr = 1;
-            GLuint normalNr = 1;
-            GLuint heightNr = 1;
-
             for (unsigned int i = 0; i < textures.size(); i++)
             {
                 glActiveTexture(GL_TEXTURE0 + i);
@@ -55,13 +50,22 @@ namespace Cogravi {
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
 
-            /*for (int i = 0; i < textures.size(); i++)
+            glActiveTexture(GL_TEXTURE0);
+        }
+
+        void drawInstance(Shader &shader, int amount)
+        {
+            for (unsigned int i = 0; i < textures.size(); i++)
             {
                 glActiveTexture(GL_TEXTURE0 + i);
-                glBindTexture(GL_TEXTURE_2D, 0);
-            }*/
-            // always good practice to set everything back to defaults once configured.
-            glActiveTexture(GL_TEXTURE0);
+                TextureType type = textures[i].type;
+                glUniform1i(glGetUniformLocation(shader.ID, "texture_diffuse1"), i);
+
+                glBindTexture(GL_TEXTURE_2D, textures[i].id);
+            }
+            glBindVertexArray(VAO);
+            glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, amount);
+            glBindVertexArray(0);
         }
 
     private:
