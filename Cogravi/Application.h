@@ -12,10 +12,13 @@ namespace Cogravi
         Shader* shaderModel;
         Shader* shaderAnimation;
         Shader* shaderInstance;
+        Shader* shaderInstanceDynamic;
         GameObject* model;
+        GameObject* model1;
+
 
         //vector<Skeletal*> skeletal;
-        vector<DynamicGameObject*> animation;
+       DynamicGameObject* animation;
         //DynamicGameObject* animation;
 
         static Application* Instance()
@@ -173,13 +176,13 @@ namespace Cogravi
 
             //Texture tx(Util::)
             //animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
-            for (int i = 0; i < 1; i++) {
 
-                animation.push_back(new DynamicGameObject(glm::vec3(10.0f * (i + 1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderAnimation));
-                animation.back()->addAnimation("Hip Hop Dancing.dae");
-                animation.back()->addAnimation("Zombie Walk.dae");
+                animation=new DynamicGameObject(glm::vec3(10.0f * ( 1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderInstanceDynamic);
+                animation->addAnimation("Hip Hop Dancing.dae");
+                animation->addAnimation("Zombie Walk.dae");
+                animation->configureInstance();
                 //animation.back()->addAnimation("Victory Idle.dae");
-            }
+          
             //animation = new DynamicGameObject(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "assets/animations/Hip Hop Dancing.fbx", *shaderAnimation, g);
             //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/mesa/mesa.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
@@ -190,8 +193,10 @@ namespace Cogravi
             models->addModel(glm::vec3(30.0f, 3.50f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/objects/tierra/universe-m.3ds", ColliderType::SPHERE, bulletWorldController);
             models->addModel(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.1f, 1.1f, 1.1f), "assets/objects/mirana/mirana.obj");
             models->addModel(glm::vec3(-10.0f, 10.00f, 50.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/helicoptero/camcopters100.obj");
-            model = new GameObject(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/arbol/arbol.obj", g);
-            model->configureInstance();
+            model = new GameObject(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/arbol/arbol.obj",g);
+            model->configureInstance(); 
+            model1 = new GameObject(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/rock/rock.obj");
+            model1->configureInstance();
             //models->addModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/tunel/tunel.obj", ColliderType::BOX, bulletWorldController);
 
         }
@@ -258,6 +263,7 @@ namespace Cogravi
             shaderModel = util->myShaders[ShaderType::MODEL_STATIC];
             shaderAnimation = util->myShaders[ShaderType::MODEL_DYNAMIC];
             shaderInstance = util->myShaders[ShaderType::INSTANCE];
+            shaderInstanceDynamic = util->myShaders[ShaderType::INSTANCE_DYNAMIC];
 
             addModels();
             addAnimations();
@@ -385,7 +391,7 @@ namespace Cogravi
         {
             inicializarImgui();
             inicializarScene();
-             /*inicializarVR();
+            /* inicializarVR();
 
              avatar->Init();*/
             vincularFrambufferEngine();
@@ -463,17 +469,14 @@ namespace Cogravi
                     avatar->Render(eyeRenderPose[eye], ovrProjection);
                     skybox->render(*avatar, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
                     terrain->render(*avatar, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
-                    //player->render(*camera, animationTime);
-                   /* models->render(*camera);
-                    animations->render(*camera, animationTime);*/
+
                     models->render(*avatar, *shaderModel);
                     aula->render(*avatar, *shaderModel);
-                    /*for (int i = 0; i < skeletal.size(); i++) {
-                        skeletal[i]->render(*avatar, animationTime * 1.0f);
-                    }*/
 
-                    /*     animations->render(*avatar, animationTime);
-                         models->render(*avatar);*/
+                    animation->render(*avatar, numAnim, *shaderAnimation, animationTime * 1.0f);
+
+                    model->renderInstance(*avatar, *shaderInstance);
+
                     aula->render(*avatar, *shaderModel);
 
                     debugDrawer->SetMatrices(avatar->view, avatar->proj);
@@ -620,10 +623,12 @@ namespace Cogravi
 
                 models->render(*camera, *shaderModel);
                 aula->render(*camera, *shaderModel);
-                for (int i = 0; i < animation.size(); i++)
-                    animation[i]->render(*camera, numAnim, *shaderAnimation, animationTime*1.0f);
+                /*for (int i = 0; i < animation.size(); i++)
+                    animation[i]->render(*camera, numAnim, *shaderAnimation, animationTime*1.0f);*/
+                animation->renderInstance(*camera, numAnim, *shaderInstanceDynamic, animationTime * 1.0f);
 
-                model->renderInstance(*camera, *shaderInstance);
+               /* model->renderInstance(*camera, *shaderInstance);
+                model1->renderInstance(*camera, *shaderInstance);*/
 
                 debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
                 bulletWorldController->dynamicsWorld->debugDrawWorld();

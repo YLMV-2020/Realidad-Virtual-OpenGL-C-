@@ -90,12 +90,11 @@ namespace Cogravi {
 
         void drawInstance(Shader& shader, int amount)
         {
-            for (unsigned int i = 0; i < textures.size(); i++)
+            for (unsigned int i = 0; i < textures.size() - 1; i++)
             {
                 glActiveTexture(GL_TEXTURE0 + i);
                 TextureType type = textures[i].type;
                 glUniform1i(glGetUniformLocation(shader.ID, "texture_diffuse1"), i);
-
                 glBindTexture(GL_TEXTURE_2D, textures[i].id);
             }
             glBindVertexArray(VAO);

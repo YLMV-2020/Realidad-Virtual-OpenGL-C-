@@ -49,7 +49,6 @@ namespace Cogravi {
 		vector<const aiAnimation*> animations;
 		vector<aiNode*> root;
 
-
 		glm::quat rotate_head_xz = glm::quat(cos(glm::radians(0.0f)), sin(glm::radians(0.0f)) * glm::vec3(1.0f, 0.0f, 0.0f));
 
 		DynamicGameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader& shader, vector<Texture> textures = {})
@@ -73,7 +72,7 @@ namespace Cogravi {
 
 		~DynamicGameObject() {}
 
-		unsigned int amount = 2000;
+		unsigned int amount = 10;
 
 		void drawInstance(Shader& shader, int index, float animationTime, int amount)
 		{
@@ -117,15 +116,15 @@ namespace Cogravi {
 				float y = displacement * 0.4f; // keep height of asteroid field smaller compared to width of x and z
 				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 				float z = cos(angle) * radius + displacement;
-				model = glm::translate(model, glm::vec3(x, y, z));
+				model = glm::translate(model, glm::vec3(x, 0, z));
 
 				// 2. scale: Scale between 0.05 and 0.25f
 				float scale = (rand() % 20) / 100.0f + 0.05;
-				model = glm::scale(model, glm::vec3(scale));
+				model = glm::scale(model, glm::vec3(0.03f));
 
 				// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
 				float rotAngle = (rand() % 360);
-				model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+				//model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
 
 				// 4. now add to list of matrices
 				modelMatrices[i] = model;
@@ -147,19 +146,19 @@ namespace Cogravi {
 				unsigned int VAO = meshes[i].VAO;
 				glBindVertexArray(VAO);
 				// set attribute pointers for matrix (4 times vec4)
-				glEnableVertexAttribArray(3);
-				glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-				glEnableVertexAttribArray(4);
-				glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
 				glEnableVertexAttribArray(5);
-				glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+				glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
 				glEnableVertexAttribArray(6);
-				glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+				glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+				glEnableVertexAttribArray(7);
+				glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+				glEnableVertexAttribArray(8);
+				glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
 
-				glVertexAttribDivisor(3, 1);
-				glVertexAttribDivisor(4, 1);
 				glVertexAttribDivisor(5, 1);
 				glVertexAttribDivisor(6, 1);
+				glVertexAttribDivisor(7, 1);
+				glVertexAttribDivisor(8, 1);
 
 				glBindVertexArray(0);
 			}

@@ -76,7 +76,7 @@ namespace Cogravi {
             myShaders[ShaderType::CUBE_MAP] = new Shader("assets/shaders/cubemaps.vert", "assets/shaders/cubemaps.frag");
             myShaders[ShaderType::AVATAR] = new Shader("assets/shaders/avatar.vert", "assets/shaders/avatar.frag");
             myShaders[ShaderType::INSTANCE] = new Shader("assets/shaders/instance.vs", "assets/shaders/instance.fs");
-            myShaders[ShaderType::INSTANCE_DYNAMIC] = new Shader("assets/shaders/instance.vs", "assets/shaders/instance.fs");
+            myShaders[ShaderType::INSTANCE_DYNAMIC] = new Shader("assets/shaders/instanceD.vs", "assets/shaders/instanceD.fs");
         }
 
         void loadTextureType()

@@ -54,7 +54,7 @@ namespace Cogravi {
 				meshes[i].drawInstance(shader, amount);
 		}
 
-		unsigned int amount = 2000;
+		unsigned int amount = 200;
 
 		virtual void renderInstance(Camera& camera, Shader& shader)
 		{
@@ -67,13 +67,24 @@ namespace Cogravi {
 			drawInstance(shader, this->amount);
 		}
 
+		virtual void renderInstance(Avatar& avatar, Shader& shader)
+		{
+			glm::mat4 projection = avatar.proj;
+			glm::mat4 view = avatar.view;
+			shader.use();
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+
+			drawInstance(shader, this->amount);
+		}
+
 		void configureInstance()
 		{
 			
 			glm::mat4* modelMatrices;
 			modelMatrices = new glm::mat4[amount];
-			srand(glfwGetTime()); // initialize random seed	
-			float radius = 45.0f;
+			srand(time(NULL)); // initialize random seed	
+			float radius = 65.0f;
 			float offset = 25.0f;
 			for (unsigned int i = 0; i < amount; i++)
 			{
@@ -83,18 +94,18 @@ namespace Cogravi {
 				float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 				float x = sin(angle) * radius + displacement;
 				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-				float y = displacement * 0.4f; // keep height of asteroid field smaller compared to width of x and z
+				float y = 0.0f; // keep height of asteroid field smaller compared to width of x and z
 				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 				float z = cos(angle) * radius + displacement;
 				model = glm::translate(model, glm::vec3(x, y, z));
 
 				// 2. scale: Scale between 0.05 and 0.25f
 				float scale = (rand() % 20) / 100.0f + 0.05;
-				model = glm::scale(model, glm::vec3(scale));
+				model = glm::scale(model, glm::vec3(scale*2));
 
 				// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
 				float rotAngle = (rand() % 360);
-				model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+				//model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
 
 				// 4. now add to list of matrices
 				modelMatrices[i] = model;
