@@ -1,8 +1,6 @@
 #version 460 core
 
-in vec2 text_coords;
-in vec3 frag_pos;
-in vec3 normal;
+in vec2 TexCoords;
 
 struct Material
 {
@@ -17,5 +15,5 @@ uniform Material material;
 
 void main()
 {
-	gl_FragColor =  texture(material.diffuse, text_coords);
+	gl_FragColor =  texture(material.diffuse, TexCoords);
 }

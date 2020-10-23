@@ -14,19 +14,19 @@ namespace Cogravi {
 
     struct BoneMatrix
     {
-        aiMatrix4x4 offset_matrix;
-        aiMatrix4x4 final_world_transform;
+        aiMatrix4x4 offsetMatrix;
+        aiMatrix4x4 finalWorldTransform;
 
     };
 
     struct VertexBoneData
     {
-        GLuint ids[NUM_BONES_PER_VERTEX];   // we have 4 bone ids for EACH vertex & 4 weights for EACH vertex
+        GLuint ids[NUM_BONES_PER_VERTEX];  
         float weights[NUM_BONES_PER_VERTEX];
 
         VertexBoneData()
         {
-            memset(ids, 0, sizeof(ids));    // init all values in array = 0
+            memset(ids, 0, sizeof(ids));
             memset(weights, 0, sizeof(weights));
         }
 
@@ -50,10 +50,9 @@ namespace Cogravi {
 
         vector<VertexA> vertices;
         vector<GLuint> indices;
-        vector<Cogravi::Texture> textures;
-        vector<VertexBoneData> bones_id_weights_for_each_vertex;
+        vector<Texture> textures;
+        vector<VertexBoneData> bones;
 
-        //buffers
         GLuint VAO;
         GLuint VBO_vertices;
         GLuint VBO_bones;
@@ -61,12 +60,12 @@ namespace Cogravi {
 
         MeshA() {};
 
-        MeshA(vector<VertexA> vertices, vector<unsigned int> indices, vector<Cogravi::Texture> textures, vector<VertexBoneData> bones_id_weights_for_each_vertex)
+        MeshA(vector<VertexA> vertices, vector<unsigned int> indices, vector<Cogravi::Texture> textures, vector<VertexBoneData> bones)
         {
             this->vertices = vertices;
             this->indices = indices;
             this->textures = textures;
-            this->bones_id_weights_for_each_vertex = bones_id_weights_for_each_vertex;
+            this->bones = bones;
 
             setupMesh();
         }
@@ -116,7 +115,7 @@ namespace Cogravi {
             //bones data
             glGenBuffers(1, &VBO_bones);
             glBindBuffer(GL_ARRAY_BUFFER, VBO_bones);
-            glBufferData(GL_ARRAY_BUFFER, bones_id_weights_for_each_vertex.size() * sizeof(bones_id_weights_for_each_vertex[0]), &bones_id_weights_for_each_vertex[0], GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, bones.size() * sizeof(bones[0]), &bones[0], GL_STATIC_DRAW);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
 
             //numbers for sequence indices

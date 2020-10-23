@@ -269,6 +269,16 @@ namespace Cogravi
 			}
 		}
 
+		glm::mat4& GetProjectionMatrix()
+		{
+			return proj;
+		}
+
+		glm::mat4& GetViewMatrix()
+		{
+			return view;
+		}
+
 
 	private:
 

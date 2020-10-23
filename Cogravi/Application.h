@@ -177,15 +177,14 @@ namespace Cogravi
             //Texture tx(Util::)
             //animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
 
-            animation = new DynamicGameObject(glm::vec3(10.0f * (1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderInstanceDynamic, {}, 5);
+            animation = new DynamicGameObject(glm::vec3(10.0f * (1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderAnimation);
                 animation->addAnimation("Hip Hop Dancing.dae");
                 animation->addAnimation("Zombie Walk.dae");
                 animation->addAnimation("Ninja Idle.dae");
                 animation->addAnimation("Hurricane Kick.dae");
                 animation->addAnimation("Great Sword Slash.dae");
                 animation->addAnimation("Great Sword Walk.dae");
-                //animation->configureInstance();
-                //animation.back()->addAnimation("Victory Idle.dae");
+
           
             //animation = new DynamicGameObject(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "assets/animations/Hip Hop Dancing.fbx", *shaderAnimation, g);
             //models->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "assets/objects/aula/aula.obj", *util->myShaders[ShaderType::MODEL_STATIC], bulletWorldController);
@@ -627,12 +626,8 @@ namespace Cogravi
 
                 models->render(*camera, *shaderModel);
                 aula->render(*camera, *shaderModel);
-                /*for (int i = 0; i < animation.size(); i++)
-                    animation[i]->render(*camera, numAnim, *shaderAnimation, animationTime*1.0f);*/
-                animation->renderInstance(*camera, numAnim, *shaderInstanceDynamic, animationTime * 1.0f);
 
-               /* model->renderInstance(*camera, *shaderInstance);
-                model1->renderInstance(*camera, *shaderInstance);*/
+                animation->render(*camera, *shaderAnimation, animationTime * 1.0f);
 
                 debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
                 bulletWorldController->dynamicsWorld->debugDrawWorld();

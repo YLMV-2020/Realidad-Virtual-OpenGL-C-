@@ -34,7 +34,7 @@ namespace Cogravi {
 		Assimp::Importer import[MAX_ANIMATIONS];
 		const aiScene* scene[MAX_ANIMATIONS];
 
-		map<string, GLuint> mapBone;
+		unordered_map<string, GLuint> mapBone;
 		GLuint numBones = 0;
 		vector<BoneMatrix> matrixBone;
 		aiMatrix4x4 matrixInverse;
@@ -42,7 +42,7 @@ namespace Cogravi {
 		GLuint boneID;
 		float ticksPerSecond = 0.0f;
 
-		std::unordered_map<string, const aiNodeAnim*> mapNodeAnim[MAX_ANIMATIONS];
+	    unordered_map<string, const aiNodeAnim*> mapNodeAnim[MAX_ANIMATIONS];
 
 		vector<const aiAnimation*> animations;
 		vector<aiNode*> root;
@@ -84,7 +84,7 @@ namespace Cogravi {
 		}
 
 
-		virtual void renderInstance(Camera& camera, int index, Shader& shader, float animationTime)
+		virtual void renderInstance(Camera& camera, Shader& shader, float animationTime)
 		{
 			glm::mat4 projection = camera.GetProjectionMatrix();
 			glm::mat4 view = camera.GetViewMatrix();
@@ -188,37 +188,23 @@ namespace Cogravi {
 
 			transform = glm::scale(transform, scale);
 
-			glUniform3f(glGetUniformLocation(shader.ID, "view_pos"), camera.Position.x, camera.Position.y, camera.Position.z);
-			glUniform1f(glGetUniformLocation(shader.ID, "material.shininess"), 32.0f);
-			glUniform1f(glGetUniformLocation(shader.ID, "material.transparency"), 1.0f);
-			// Point Light 1
-			glUniform3f(glGetUniformLocation(shader.ID, "point_light.position"), camera.Position.x, camera.Position.y, camera.Position.z);
-
-			glUniform3f(glGetUniformLocation(shader.ID, "point_light.ambient"), 0.1f, 0.1f, 0.1f);
-			glUniform3f(glGetUniformLocation(shader.ID, "point_light.diffuse"), 1.0f, 1.0f, 1.0f);
-			glUniform3f(glGetUniformLocation(shader.ID, "point_light.specular"), 1.0f, 1.0f, 1.0f);
-
-			glUniform1f(glGetUniformLocation(shader.ID, "point_light.constant"), 1.0f);
-			glUniform1f(glGetUniformLocation(shader.ID, "point_light.linear"), 0.007);
-			glUniform1f(glGetUniformLocation(shader.ID, "point_light.quadratic"), 0.0002);
-
-			glm::mat4 MVP = projection * view * transform;
-			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "M_matrix"), 1, GL_FALSE, glm::value_ptr(transform));
-			glm::mat4 matr_normals_cube = glm::mat4(1.0);
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+			shader.setMat4("model", transform);
+		
 			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
-			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "normals_matrix"), 1, GL_FALSE, glm::value_ptr(matr_normals_cube));
-
+		
 			draw(shader, animationTime);
 		}
 
 		virtual void render(Avatar& avatar, Shader& shader, float animationTime)
 		{
 			shader.use();
-			glm::mat4 projection = avatar.proj;
-			glm::mat4 view = avatar.view;
+			glm::mat4 projection = avatar.GetProjectionMatrix();
+			glm::mat4 view = avatar.GetViewMatrix();
 
 			transform = glm::mat4(1.0f);
+			transform = glm::translate(transform, position);
 
 			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -226,28 +212,11 @@ namespace Cogravi {
 
 			transform = glm::scale(transform, scale);
 
-			glm::vec3 positionAvatar = glm::vec3(avatar.position.x, avatar.position.y, avatar.position.z);
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+			shader.setMat4("model", transform);
 
-			glUniform3f(glGetUniformLocation(shader.ID, "view_pos"), positionAvatar.x, positionAvatar.y, positionAvatar.z);
-			glUniform1f(glGetUniformLocation(shader.ID, "material.shininess"), 32.0f);
-			glUniform1f(glGetUniformLocation(shader.ID, "material.transparency"), 1.0f);
-			// Point Light 1
-			glUniform3f(glGetUniformLocation(shader.ID, "point_light.position"), positionAvatar.x, positionAvatar.y, positionAvatar.z);
-
-			glUniform3f(glGetUniformLocation(shader.ID, "point_light.ambient"), 0.1f, 0.1f, 0.1f);
-			glUniform3f(glGetUniformLocation(shader.ID, "point_light.diffuse"), 1.0f, 1.0f, 1.0f);
-			glUniform3f(glGetUniformLocation(shader.ID, "point_light.specular"), 1.0f, 1.0f, 1.0f);
-
-			glUniform1f(glGetUniformLocation(shader.ID, "point_light.constant"), 1.0f);
-			glUniform1f(glGetUniformLocation(shader.ID, "point_light.linear"), 0.007);
-			glUniform1f(glGetUniformLocation(shader.ID, "point_light.quadratic"), 0.0002);
-
-			glm::mat4 MVP = projection * view * transform;
-			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "M_matrix"), 1, GL_FALSE, glm::value_ptr(transform));
-			glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
-			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "normals_matrix"), 1, GL_FALSE, glm::value_ptr(matr_normals_cube));
-
+			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
 
 			draw(shader, animationTime);
 		}
@@ -274,7 +243,7 @@ namespace Cogravi {
 				cout << "error assimp : " << import[numAnimations].GetErrorString() << endl;
 				return;
 			}
-			cout << "==============================================================\n";
+
 			for (GLuint i = 0; i < scene[numAnimations]->mNumAnimations; i++)
 			{
 				const aiAnimation* animation = scene[numAnimations]->mAnimations[i];
@@ -283,17 +252,10 @@ namespace Cogravi {
 				int index = animations.size() - 1;
 				for (GLuint j = 0; j < animation->mNumChannels; j++)
 				{
-
-					//cout << scene[v]->mAnimations[i]->mChannels[j]->mNodeName.C_Str() << endl;
-					
 					const aiNodeAnim* node_anim = animation->mChannels[j];
 					mapNodeAnim[index][string(node_anim->mNodeName.data)] = node_anim;
 				}
-			}
-			
-
-			cout << "animaciones: " << animations.size() << "\n";
-			
+			}	
 		}
 
 	private:
@@ -316,32 +278,32 @@ namespace Cogravi {
 
 			matrixInverse = scene[0]->mRootNode->mTransformation;
 			matrixInverse.Inverse();
-			cout << "Num de animaciones: " << scene[0]->mNumAnimations << "\n";
+			//cout << "Num de animaciones: " << scene[0]->mNumAnimations << "\n";
 
 			loadAnimations();
 
 			directory = path.substr(0, path.find_last_of('/'));
-			cout << "Direc: " << directory << "\n";
+			//cout << "Direc: " << directory << "\n";
 
-			cout << "scene->HasAnimations() 1: " << scene[0]->HasAnimations() << endl;
-			cout << "scene->mNumMeshes 1: " << scene[0]->mNumMeshes << endl;
-			cout << "scene[0]->mAnimations[0]->mNumChannels 1: " << scene[0]->mAnimations[0]->mNumChannels << endl;
-			cout << "scene[0]->mAnimations[0]->mDuration 1: " << scene[0]->mAnimations[0]->mDuration << endl;
-			cout << "scene[0]->mAnimations[0]->mTicksPerSecond 1: " << scene[0]->mAnimations[0]->mTicksPerSecond << endl << endl;
+			//cout << "scene->HasAnimations() 1: " << scene[0]->HasAnimations() << endl;
+			//cout << "scene->mNumMeshes 1: " << scene[0]->mNumMeshes << endl;
+			//cout << "scene[0]->mAnimations[0]->mNumChannels 1: " << scene[0]->mAnimations[0]->mNumChannels << endl;
+			//cout << "scene[0]->mAnimations[0]->mDuration 1: " << scene[0]->mAnimations[0]->mDuration << endl;
+			//cout << "scene[0]->mAnimations[0]->mTicksPerSecond 1: " << scene[0]->mAnimations[0]->mTicksPerSecond << endl << endl;
 
-			cout << "		name nodes : " << endl;
-			showNodeName(scene[0]->mRootNode);
-			cout << endl;
+			//cout << "		name nodes : " << endl;
+			//showNodeName(scene[0]->mRootNode);
+			//cout << endl;
 
-			cout << "		name bones : " << endl;
+			//cout << "		name bones : " << endl;
 			processNode(scene[0]->mRootNode, scene[0]);
 
-			cout << "		name nodes animation : " << endl;
-			for (GLuint i = 0; i < scene[0]->mAnimations[0]->mNumChannels; i++)
+			//cout << "		name nodes animation : " << endl;
+			/*for (GLuint i = 0; i < scene[0]->mAnimations[0]->mNumChannels; i++)
 			{
 				cout << scene[0]->mAnimations[0]->mChannels[i]->mNodeName.C_Str() << endl;
 			}
-			cout << endl;
+			cout << endl;*/
 			glBindVertexArray(0);
 		}
 
@@ -360,7 +322,6 @@ namespace Cogravi {
 					mapNodeAnim[index][string(node_anim->mNodeName.data)] = node_anim;
 				}
 			}
-			cout << "animaciones: " << animations.size() << "\n";
 		}
 
 		void showNodeName(aiNode* node)
@@ -377,29 +338,23 @@ namespace Cogravi {
 			MeshA mesh;
 			for (GLuint i = 0; i < scene->mNumMeshes; i++)
 			{
-				aiMesh* ai_mesh = scene->mMeshes[i];
-				mesh = processMesh(ai_mesh, scene);
-				meshes.push_back(mesh); //accumulate all meshes in one vector
+				aiMesh* aiMesh = scene->mMeshes[i];
+				mesh = processMesh(aiMesh, scene);
+				meshes.push_back(mesh); 
 			}
-
 		}
 
 		MeshA processMesh(aiMesh* mesh, const aiScene* scene)
 		{
-			// data to fill
 			vector<VertexA> vertices;
 			vector<GLuint> indices;
 			vector<Texture> textures;
-			vector<VertexBoneData> bones_id_weights_for_each_vertex;
+			vector<VertexBoneData> bones;
 
 			vertices.reserve(mesh->mNumVertices);
 			indices.reserve(mesh->mNumVertices);
+			bones.resize(mesh->mNumVertices);
 
-			//first to load all the bones
-			//this will do the bone mapping and fill the Bones vector
-			bones_id_weights_for_each_vertex.resize(mesh->mNumVertices);
-
-			// Walk through each of the mesh's vertices
 			for (GLuint i = 0; i < mesh->mNumVertices; i++)
 			{
 				VertexA vertex;
@@ -421,9 +376,6 @@ namespace Cogravi {
 					vertex.normal = glm::vec3(1.0f);
 				}
 
-
-				// in assimp model can have 8 different texture coordinates
-				// we only care about the first set of texture coordinates
 				if (mesh->mTextureCoords[0])
 				{
 					glm::vec2 vec;
@@ -438,7 +390,6 @@ namespace Cogravi {
 				vertices.push_back(vertex);
 			}
 
-			//indices
 			for (GLuint i = 0; i < mesh->mNumFaces; i++)
 			{
 				aiFace face = mesh->mFaces[i];
@@ -447,25 +398,21 @@ namespace Cogravi {
 				indices.push_back(face.mIndices[2]);
 			}
 
-			// load bones
 			for (GLuint i = 0; i < mesh->mNumBones; i++)
 			{
 				GLuint bone_index = 0;
 				string bone_name(mesh->mBones[i]->mName.data);
 
-				cout << mesh->mBones[i]->mName.data << endl;
+				//cout << mesh->mBones[i]->mName.data << endl;
 
 				if (mapBone.find(bone_name) == mapBone.end())
 				{
-					// Allocate an index for a new bone
 					bone_index = numBones;
 					numBones++;
 					BoneMatrix bi;
 					matrixBone.push_back(bi);
-					matrixBone[bone_index].offset_matrix = mesh->mBones[i]->mOffsetMatrix;
+					matrixBone[bone_index].offsetMatrix = mesh->mBones[i]->mOffsetMatrix;
 					mapBone[bone_name] = bone_index;
-
-					//cout << "bone_name: " << bone_name << "			 bone_index: " << bone_index << endl;
 				}
 				else
 				{
@@ -476,14 +423,14 @@ namespace Cogravi {
 				{
 					GLuint vertex_id = mesh->mBones[i]->mWeights[j].mVertexId;
 					float weight = mesh->mBones[i]->mWeights[j].mWeight;
-					bones_id_weights_for_each_vertex[vertex_id].addBoneData(bone_index, weight);
+					bones[vertex_id].addBoneData(bone_index, weight);
 				}
 			}
-
 
 			if (textureAssimp)
 			{
 				aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
 				vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
 				textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
@@ -493,23 +440,20 @@ namespace Cogravi {
 				std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
 				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-				//std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-				//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-				return MeshA(vertices, indices, textures, bones_id_weights_for_each_vertex);
+				return MeshA(vertices, indices, textures, bones);
 			}
-			else
-			{
-				return MeshA(vertices, indices, this->textures, bones_id_weights_for_each_vertex);
-			}			
+
+			return MeshA(vertices, indices, this->textures, bones);
+					
 		}
 
-		vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType typeName)
+		vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, TextureType typeName)
 		{
 			vector<Texture> textures;
-			for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+			for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
 			{
 				aiString str;
-				mat->GetTexture(type, i, &str);
+				material->GetTexture(type, i, &str);
 
 				bool skip = false;
 				for (unsigned int j = 0; j < textures_loaded.size(); j++)
@@ -534,27 +478,11 @@ namespace Cogravi {
 			return textures;
 		}
 
-		GLuint findPosition(float p_animation_time, const aiNodeAnim* p_node_anim)
+		GLuint findPosition(float animationTime, const aiNodeAnim* nodeAnim)
 		{
-			//cout << "NumPositionKey: " << p_node_anim->mNumPositionKeys << "\n";
-			for (GLuint i = 0; i < p_node_anim->mNumPositionKeys - 1; i++)
+			for (GLuint i = 0; i < nodeAnim->mNumPositionKeys - 1; i++)
 			{
-				if (p_animation_time < (float)p_node_anim->mPositionKeys[i + 1].mTime)
-				{
-					return i;
-				}
-			}
-
-			assert(0);
-			return 0;
-		}
-
-		GLuint findRotation(float p_animation_time, const aiNodeAnim* p_node_anim)
-		{
-			assert(p_node_anim->mNumRotationKeys > 0);
-			for (GLuint i = 0; i < p_node_anim->mNumRotationKeys - 1; i++)
-			{
-				if (p_animation_time < (float)p_node_anim->mRotationKeys[i + 1].mTime)
+				if (animationTime < (float)nodeAnim->mPositionKeys[i + 1].mTime)
 				{
 					return i;
 				}
@@ -563,161 +491,133 @@ namespace Cogravi {
 			return 0;
 		}
 
-		GLuint findScaling(float p_animation_time, const aiNodeAnim* p_node_anim)
+		GLuint findRotation(float animationTime, const aiNodeAnim* nodeAnim)
 		{
-
-			for (GLuint i = 0; i < p_node_anim->mNumScalingKeys - 1; i++)
+			assert(nodeAnim->mNumRotationKeys > 0);
+			for (GLuint i = 0; i < nodeAnim->mNumRotationKeys - 1; i++)
 			{
-				if (p_animation_time < (float)p_node_anim->mScalingKeys[i + 1].mTime)
+				if (animationTime < (float)nodeAnim->mRotationKeys[i + 1].mTime)
 				{
 					return i;
 				}
 			}
-
 			assert(0);
 			return 0;
 		}
 
-		aiVector3D calcInterpolatedPosition(float p_animation_time, const aiNodeAnim* p_node_anim)
+		GLuint findScaling(float animationTime, const aiNodeAnim* nodeAnim)
 		{
-			if (p_node_anim->mNumPositionKeys == 1)
+			for (GLuint i = 0; i < nodeAnim->mNumScalingKeys - 1; i++)
 			{
-				return p_node_anim->mPositionKeys[0].mValue;
+				if (animationTime < (float)nodeAnim->mScalingKeys[i + 1].mTime)
+				{
+					return i;
+				}
 			}
+			assert(0);
+			return 0;
+		}
 
-			GLuint position_index = findPosition(p_animation_time, p_node_anim);
+		aiVector3D calcInterpolatedPosition(float animationTime, const aiNodeAnim* nodeAnim)
+		{
+			if (nodeAnim->mNumPositionKeys == 1)
+				return nodeAnim->mPositionKeys[0].mValue;
+			
+			GLuint position_index = findPosition(animationTime, nodeAnim);
 			GLuint next_position_index = position_index + 1;
-			assert(next_position_index < p_node_anim->mNumPositionKeys);
+			assert(next_position_index < nodeAnim->mNumPositionKeys);
 
-			float delta_time = (float)(p_node_anim->mPositionKeys[next_position_index].mTime - p_node_anim->mPositionKeys[position_index].mTime);
+			float deltaTime = (float)(nodeAnim->mPositionKeys[next_position_index].mTime - nodeAnim->mPositionKeys[position_index].mTime);
+			float factor = (animationTime - (float)nodeAnim->mPositionKeys[position_index].mTime) / deltaTime;
 
-			float factor = (p_animation_time - (float)p_node_anim->mPositionKeys[position_index].mTime) / delta_time;
 			assert(factor >= 0.0f && factor <= 1.0f);
-			aiVector3D start = p_node_anim->mPositionKeys[position_index].mValue;
-			aiVector3D end = p_node_anim->mPositionKeys[next_position_index].mValue;
+			aiVector3D start = nodeAnim->mPositionKeys[position_index].mValue;
+			aiVector3D end = nodeAnim->mPositionKeys[next_position_index].mValue;
 			aiVector3D delta = end - start;
 
 			return start + factor * delta;
 		}
 
-		aiQuaternion calcInterpolatedRotation(float p_animation_time, const aiNodeAnim* p_node_anim)
+		aiQuaternion calcInterpolatedRotation(float animationTime, const aiNodeAnim* nodeAnim)
 		{
-			if (p_node_anim->mNumRotationKeys == 1)
-			{
-				return p_node_anim->mRotationKeys[0].mValue;
-			}
+			if (nodeAnim->mNumRotationKeys == 1)
+				return nodeAnim->mRotationKeys[0].mValue;
 
-			GLuint rotation_index = findRotation(p_animation_time, p_node_anim);
+			GLuint rotation_index = findRotation(animationTime, nodeAnim);
 			GLuint next_rotation_index = rotation_index + 1;
-			assert(next_rotation_index < p_node_anim->mNumRotationKeys);
+			assert(next_rotation_index < nodeAnim->mNumRotationKeys);
 
-			float delta_time = (float)(p_node_anim->mRotationKeys[next_rotation_index].mTime - p_node_anim->mRotationKeys[rotation_index].mTime);
-
-			float factor = (p_animation_time - (float)p_node_anim->mRotationKeys[rotation_index].mTime) / delta_time;
-
-			//cout << "p_node_anim->mRotationKeys[rotation_index].mTime: " << p_node_anim->mRotationKeys[rotation_index].mTime << endl;
-			//cout << "p_node_anim->mRotationKeys[next_rotaion_index].mTime: " << p_node_anim->mRotationKeys[next_rotation_index].mTime << endl;
-			//cout << "delta_time: " << delta_time << endl;
-			//cout << "animation_time: " << p_animation_time << endl;
-			//cout << "animation_time - mRotationKeys[rotation_index].mTime: " << (p_animation_time - (float)p_node_anim->mRotationKeys[rotation_index].mTime) << endl;
-			//cout << "factor: " << factor << endl << endl << endl;
+			float deltaTime = (float)(nodeAnim->mRotationKeys[next_rotation_index].mTime - nodeAnim->mRotationKeys[rotation_index].mTime);
+			float factor = (animationTime - (float)nodeAnim->mRotationKeys[rotation_index].mTime) / deltaTime;
 
 			assert(factor >= 0.0f && factor <= 1.0f);
-			aiQuaternion start_quat = p_node_anim->mRotationKeys[rotation_index].mValue;
-			aiQuaternion end_quat = p_node_anim->mRotationKeys[next_rotation_index].mValue;
+			aiQuaternion startQuat = nodeAnim->mRotationKeys[rotation_index].mValue;
+			aiQuaternion endQuat = nodeAnim->mRotationKeys[next_rotation_index].mValue;
 
-			/*	aiQuaternion Out;
-
-				aiQuaternion::Interpolate(Out, start_quat, end_quat, factor);
-
-				return Out.Normalize();*/
-
-			return nlerp(start_quat, end_quat, factor);
+			return nlerp(startQuat, endQuat, factor);
 		}
 
-		aiVector3D calcInterpolatedScaling(float p_animation_time, const aiNodeAnim* p_node_anim)
+		aiVector3D calcInterpolatedScaling(float animationTime, const aiNodeAnim* nodeAnim)
 		{
-			if (p_node_anim->mNumScalingKeys == 1)
-			{
-				return p_node_anim->mScalingKeys[0].mValue;
-			}
+			if (nodeAnim->mNumScalingKeys == 1)
+				return nodeAnim->mScalingKeys[0].mValue;
 
-			GLuint scaling_index = findScaling(p_animation_time, p_node_anim);
+			GLuint scaling_index = findScaling(animationTime, nodeAnim);
 			GLuint next_scaling_index = scaling_index + 1;
-			assert(next_scaling_index < p_node_anim->mNumScalingKeys);
+			assert(next_scaling_index < nodeAnim->mNumScalingKeys);
 
-			float delta_time = (float)(p_node_anim->mScalingKeys[next_scaling_index].mTime - p_node_anim->mScalingKeys[scaling_index].mTime);
+			float deltaTime = (float)(nodeAnim->mScalingKeys[next_scaling_index].mTime - nodeAnim->mScalingKeys[scaling_index].mTime);
+			float  factor = (animationTime - (float)nodeAnim->mScalingKeys[scaling_index].mTime) / deltaTime;
 
-			float  factor = (p_animation_time - (float)p_node_anim->mScalingKeys[scaling_index].mTime) / delta_time;
 			assert(factor >= 0.0f && factor <= 1.0f);
-			aiVector3D start = p_node_anim->mScalingKeys[scaling_index].mValue;
-			aiVector3D end = p_node_anim->mScalingKeys[next_scaling_index].mValue;
+			aiVector3D start = nodeAnim->mScalingKeys[scaling_index].mValue;
+			aiVector3D end = nodeAnim->mScalingKeys[next_scaling_index].mValue;
 			aiVector3D delta = end - start;
 
 			return start + factor * delta;
 		}
 
-
-		void readNodeHierarchy(float p_animation_time, const aiNode* p_node, const aiMatrix4x4 parent_transform)
+		void readNodeHierarchy(float animationTime, const aiNode* node, const aiMatrix4x4 parentTransform)
 		{
-
-			string node_name(p_node->mName.data);
+			string nodeName(node->mName.data);
 			const aiAnimation* animation = animations[currentAnimation];
-			aiMatrix4x4 node_transform = p_node->mTransformation;
-			const aiNodeAnim* node_anim = mapNodeAnim[currentAnimation][node_name];
+			aiMatrix4x4 nodeTransform = node->mTransformation;
+			const aiNodeAnim* nodeAnim = mapNodeAnim[currentAnimation][nodeName];
 
-			if (node_anim)
+			if (nodeAnim)
 			{
 
-				//scaling
-				//aiVector3D scaling_vector = node_anim->mScalingKeys[2].mValue;
-				aiVector3D scaling_vector = calcInterpolatedScaling(p_animation_time, node_anim);
-				aiMatrix4x4 scaling_matr;
-				aiMatrix4x4::Scaling(scaling_vector, scaling_matr);
+				aiVector3D scale = calcInterpolatedScaling(animationTime, nodeAnim);
+				aiMatrix4x4 matrixScale;
+				aiMatrix4x4::Scaling(scale, matrixScale);
 
-				//rotation
-				//aiQuaternion rotate_quat = node_anim->mRotationKeys[2].mValue;
-				aiQuaternion rotate_quat = calcInterpolatedRotation(p_animation_time, node_anim);
-				aiMatrix4x4 rotate_matr = aiMatrix4x4(rotate_quat.GetMatrix());
+				aiQuaternion rotation = calcInterpolatedRotation(animationTime, nodeAnim);
+				aiMatrix4x4 matrixRotation = aiMatrix4x4(rotation.GetMatrix());
 
-				//translation
-				//aiVector3D translate_vector = node_anim->mPositionKeys[2].mValue;
-				aiVector3D translate_vector = calcInterpolatedPosition(p_animation_time, node_anim);
-				aiMatrix4x4 translate_matr;
-				aiMatrix4x4::Translation(translate_vector, translate_matr);
+				aiVector3D translate = calcInterpolatedPosition(animationTime, nodeAnim);
+				aiMatrix4x4 matrixTranslate;
+				aiMatrix4x4::Translation(translate, matrixTranslate);
 
-				/*if (string(node_anim->mNodeName.data) == string("Head"))
-				{
-					aiQuaternion rotate_head = aiQuaternion(rotate_head_xz.w, rotate_head_xz.x, rotate_head_xz.y, rotate_head_xz.z);
-
-					node_transform = translate_matr * (rotate_matr * aiMatrix4x4(rotate_head.GetMatrix())) * scaling_matr;
-				}
-				else
-				{*/
-					node_transform = translate_matr * rotate_matr * scaling_matr;
-				//}
+				nodeTransform = matrixTranslate * matrixRotation * matrixScale;
 
 			}
 
-			aiMatrix4x4 global_transform = parent_transform * node_transform;
+			aiMatrix4x4 globalTransform = parentTransform * nodeTransform;
 
-
-			if (mapBone.find(node_name) != mapBone.end())
+			if (mapBone.find(nodeName) != mapBone.end())
 			{
-				GLuint bone_index = mapBone[node_name];
-				matrixBone[bone_index].final_world_transform = matrixInverse * global_transform * matrixBone[bone_index].offset_matrix;
+				GLuint boneIndex = mapBone[nodeName];
+				matrixBone[boneIndex].finalWorldTransform = matrixInverse * globalTransform * matrixBone[boneIndex].offsetMatrix;
 			}
 
-			for (GLuint i = 0; i < p_node->mNumChildren; i++)
-			{
-				readNodeHierarchy(p_animation_time, p_node->mChildren[i], global_transform);
-			}
-
+			for (GLuint i = 0; i < node->mNumChildren; i++)
+				readNodeHierarchy(animationTime, node->mChildren[i], globalTransform);
+			
 		}
 
-		void boneTransform(double time_in_sec, vector<aiMatrix4x4>& transforms)
+		void boneTransform(double second, vector<aiMatrix4x4>& transforms)
 		{
-			aiMatrix4x4 identity_matrix; 
+			aiMatrix4x4 identityMatrix; 
 
 			const aiAnimation* animation = animations[currentAnimation];
 
@@ -726,55 +626,51 @@ namespace Cogravi {
 			else
 				ticksPerSecond = 25.0f;
 		
-			double time_in_ticks = time_in_sec * ticksPerSecond;
-			float animation_time = fmod(time_in_ticks, animation->mDuration);
+			double timeInTicks = second * ticksPerSecond;
+			float animationTime = fmod(timeInTicks, animation->mDuration);
 
-			//cout << "Ti: " << animation_time << "\n";
-
-			readNodeHierarchy(animation_time, root[currentAnimation], identity_matrix);
+			readNodeHierarchy(animationTime, root[currentAnimation], identityMatrix);
 
 			transforms.resize(numBones);
 
 			for (GLuint i = 0; i < numBones; i++)
-			{
-				transforms[i] = matrixBone[i].final_world_transform;
-			}
+				transforms[i] = matrixBone[i].finalWorldTransform;
+			
 		}
 
-		glm::mat4 aiToGlm(aiMatrix4x4 ai_matr)
+		glm::mat4 aiToGlm(aiMatrix4x4 matrix)
 		{
 			glm::mat4 result;
-			result[0].x = ai_matr.a1; result[0].y = ai_matr.b1; result[0].z = ai_matr.c1; result[0].w = ai_matr.d1;
-			result[1].x = ai_matr.a2; result[1].y = ai_matr.b2; result[1].z = ai_matr.c2; result[1].w = ai_matr.d2;
-			result[2].x = ai_matr.a3; result[2].y = ai_matr.b3; result[2].z = ai_matr.c3; result[2].w = ai_matr.d3;
-			result[3].x = ai_matr.a4; result[3].y = ai_matr.b4; result[3].z = ai_matr.c4; result[3].w = ai_matr.d4;
+			result[0].x = matrix.a1; result[0].y = matrix.b1; result[0].z = matrix.c1; result[0].w = matrix.d1;
+			result[1].x = matrix.a2; result[1].y = matrix.b2; result[1].z = matrix.c2; result[1].w = matrix.d2;
+			result[2].x = matrix.a3; result[2].y = matrix.b3; result[2].z = matrix.c3; result[2].w = matrix.d3;
+			result[3].x = matrix.a4; result[3].y = matrix.b4; result[3].z = matrix.c4; result[3].w = matrix.d4;
 
 			return result;
 		}
 
 		aiQuaternion nlerp(aiQuaternion a, aiQuaternion b, float blend)
 		{
-			//cout << a.w + a.x + a.y + a.z << endl;
 			a.Normalize();
 			b.Normalize();
 
 			aiQuaternion result;
-			float dot_product = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
-			float one_minus_blend = 1.0f - blend;
+			float dotProduct = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+			float oneMinusBlend = 1.0f - blend;
 
-			if (dot_product < 0.0f)
+			if (dotProduct < 0.0f)
 			{
-				result.x = a.x * one_minus_blend + blend * -b.x;
-				result.y = a.y * one_minus_blend + blend * -b.y;
-				result.z = a.z * one_minus_blend + blend * -b.z;
-				result.w = a.w * one_minus_blend + blend * -b.w;
+				result.x = a.x * oneMinusBlend + blend * -b.x;
+				result.y = a.y * oneMinusBlend + blend * -b.y;
+				result.z = a.z * oneMinusBlend + blend * -b.z;
+				result.w = a.w * oneMinusBlend + blend * -b.w;
 			}
 			else
 			{
-				result.x = a.x * one_minus_blend + blend * b.x;
-				result.y = a.y * one_minus_blend + blend * b.y;
-				result.z = a.z * one_minus_blend + blend * b.z;
-				result.w = a.w * one_minus_blend + blend * b.w;
+				result.x = a.x * oneMinusBlend + blend * b.x;
+				result.y = a.y * oneMinusBlend + blend * b.y;
+				result.z = a.z * oneMinusBlend + blend * b.z;
+				result.w = a.w * oneMinusBlend + blend * b.w;
 			}
 
 			return result.Normalize();
