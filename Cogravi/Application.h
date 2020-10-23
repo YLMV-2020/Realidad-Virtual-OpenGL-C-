@@ -177,10 +177,14 @@ namespace Cogravi
             //Texture tx(Util::)
             //animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
 
-                animation=new DynamicGameObject(glm::vec3(10.0f * ( 1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderInstanceDynamic);
+            animation = new DynamicGameObject(glm::vec3(10.0f * (1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderInstanceDynamic, {}, 5);
                 animation->addAnimation("Hip Hop Dancing.dae");
                 animation->addAnimation("Zombie Walk.dae");
-                animation->configureInstance();
+                animation->addAnimation("Ninja Idle.dae");
+                animation->addAnimation("Hurricane Kick.dae");
+                animation->addAnimation("Great Sword Slash.dae");
+                animation->addAnimation("Great Sword Walk.dae");
+                //animation->configureInstance();
                 //animation.back()->addAnimation("Victory Idle.dae");
           
             //animation = new DynamicGameObject(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "assets/animations/Hip Hop Dancing.fbx", *shaderAnimation, g);
@@ -262,7 +266,7 @@ namespace Cogravi
 
             shaderModel = util->myShaders[ShaderType::MODEL_STATIC];
             shaderAnimation = util->myShaders[ShaderType::MODEL_DYNAMIC];
-            shaderInstance = util->myShaders[ShaderType::INSTANCE];
+            shaderInstance = util->myShaders[ShaderType::INSTANCE_STATIC];
             shaderInstanceDynamic = util->myShaders[ShaderType::INSTANCE_DYNAMIC];
 
             addModels();
@@ -473,7 +477,7 @@ namespace Cogravi
                     models->render(*avatar, *shaderModel);
                     aula->render(*avatar, *shaderModel);
 
-                    animation->render(*avatar, numAnim, *shaderAnimation, animationTime * 1.0f);
+                    animation->render(*avatar, *shaderAnimation, animationTime * 1.0f);
 
                     model->renderInstance(*avatar, *shaderInstance);
 
@@ -1031,23 +1035,7 @@ namespace Cogravi
                 shaderModel->setBool("isLightSpot", isLightSpot);
             }
 
-            if (ImGui::Checkbox("ANIM 1", &v))
-            {              
-                numAnim = 0;
-                animationTime = 0;
-            }
-
-            if (ImGui::Checkbox("ANIM 2", &v))
-            {
-                numAnim = 1;
-                animationTime = 0;
-            }
-
-            if (ImGui::Checkbox("ANIM 3", &v))
-            {
-                numAnim = 2;
-                animationTime = 0;
-            }
+            ImGui::SliderInt("Anim", &animation->currentAnimation, 0, animation->numAnimations - 1);
 
             if (isLightPoint)
             {

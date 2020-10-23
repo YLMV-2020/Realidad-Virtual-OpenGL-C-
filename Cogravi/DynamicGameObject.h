@@ -18,7 +18,6 @@ namespace Cogravi {
 		static const GLuint MAX_BONES = 100;
 		static const GLuint MAX_ANIMATIONS = 20;
 		
-
 		glm::vec3 position;
 		glm::vec3 rotation;
 		glm::vec3 scale;
@@ -32,57 +31,56 @@ namespace Cogravi {
 		string directory;
 		bool textureAssimp;
 
-		int T = 0;
 		Assimp::Importer import[MAX_ANIMATIONS];
 		const aiScene* scene[MAX_ANIMATIONS];
 
-		map<string, GLuint> m_bone_mapping;
-		GLuint m_num_bones = 0;
-		vector<BoneMatrix> m_bone_matrices;
-		aiMatrix4x4 m_global_inverse_transform;
+		map<string, GLuint> mapBone;
+		GLuint numBones = 0;
+		vector<BoneMatrix> matrixBone;
+		aiMatrix4x4 matrixInverse;
 
-		GLuint m_bone_location[MAX_BONES];
-		float ticks_per_second = 0.0f;
+		GLuint boneID;
+		float ticksPerSecond = 0.0f;
 
 		std::unordered_map<string, const aiNodeAnim*> mapNodeAnim[MAX_ANIMATIONS];
 
 		vector<const aiAnimation*> animations;
 		vector<aiNode*> root;
 
-		glm::quat rotate_head_xz = glm::quat(cos(glm::radians(0.0f)), sin(glm::radians(0.0f)) * glm::vec3(1.0f, 0.0f, 0.0f));
+		GLuint numAnimations = 0;
+		GLuint cantidad;
+		int currentAnimation;
 
-		DynamicGameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader& shader, vector<Texture> textures = {})
+		//glm::quat rotate_head_xz = glm::quat(cos(glm::radians(0.0f)), sin(glm::radians(0.0f)) * glm::vec3(1.0f, 0.0f, 0.0f));
+
+		DynamicGameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader& shader, vector<Texture> textures = {}, int cantidad = 1)
 		{
 			this->position = position;
 			this->rotation = rotation;
 			this->scale = scale;
 			this->textures = textures;
-
 			this->textureAssimp = this->textures.size() == 0 ? true : false;
+			this->cantidad = cantidad;
 
-			for (GLuint i = 0; i < MAX_BONES; i++)
-			{
-				string name = "bones[" + to_string(i) + "]";
-				m_bone_location[i] = glGetUniformLocation(shader.ID, name.c_str());
-			}
+			boneID = glGetUniformLocation(shader.ID, "bones[0]");
+		
+			loadModel(path);		
 
-			loadModel(path);
-			
+			if (this->cantidad > 1)
+				configureInstance();
 		}
 
 		~DynamicGameObject() {}
 
-		unsigned int amount = 10;
-
-		void drawInstance(Shader& shader, int index, float animationTime, int amount)
+		void drawInstance(Shader& shader, float animationTime)
 		{
 			vector<aiMatrix4x4> transforms;
-			boneTransform((double)animationTime, index, transforms);
+			boneTransform((double)animationTime, transforms);
 
-			glUniformMatrix4fv(m_bone_location[0], transforms.size(), GL_TRUE, (const GLfloat*)&transforms[0]);
+			glUniformMatrix4fv(boneID, transforms.size(), GL_TRUE, (const GLfloat*)&transforms[0]);
 
 			for (unsigned int i = 0; i < meshes.size(); i++)
-				meshes[i].drawInstance(shader, amount);
+				meshes[i].drawInstance(shader, this->cantidad);
 		}
 
 
@@ -94,22 +92,21 @@ namespace Cogravi {
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 
-			drawInstance(shader, index, animationTime, this->amount);
+			drawInstance(shader, animationTime);
 		}
 
 		void configureInstance()
 		{
-
 			glm::mat4* modelMatrices;
-			modelMatrices = new glm::mat4[amount];
+			modelMatrices = new glm::mat4[cantidad];
 			srand(glfwGetTime()); // initialize random seed	
 			float radius = 45.0f;
 			float offset = 25.0f;
-			for (unsigned int i = 0; i < amount; i++)
+			for (unsigned int i = 0; i < cantidad; i++)
 			{
 				glm::mat4 model = glm::mat4(1.0f);
 				// 1. translation: displace along circle with 'radius' in range [-offset, offset]
-				float angle = (float)i / (float)amount * 360.0f;
+				float angle = (float)i / (float)cantidad * 360.0f;
 				float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 				float x = sin(angle) * radius + displacement;
 				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
@@ -124,7 +121,7 @@ namespace Cogravi {
 
 				// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
 				float rotAngle = (rand() % 360);
-				//model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+				model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.f, 0.f));
 
 				// 4. now add to list of matrices
 				modelMatrices[i] = model;
@@ -135,7 +132,7 @@ namespace Cogravi {
 			unsigned int buffer;
 			glGenBuffers(1, &buffer);
 			glBindBuffer(GL_ARRAY_BUFFER, buffer);
-			glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, cantidad * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
 
 			// set transformation matrices as an instance vertex attribute (with divisor 1)
 			// note: we're cheating a little by taking the, now publicly declared, VAO of the model's mesh(es) and adding new vertexAttribPointers
@@ -165,24 +162,18 @@ namespace Cogravi {
 
 		}
 
-		void draw(Shader &shader, int index, float animationTime)
+		void draw(Shader &shader, float animationTime)
 		{
 			vector<aiMatrix4x4> transforms;
-			boneTransform((double)animationTime, index, transforms);
-			//cout << "t: " << transforms.size() << "\n";
-			/*for (GLuint i = 0; i < transforms.size(); i++)
-			{
-				glUniformMatrix4fv(m_bone_location[i], 1, GL_TRUE, (const GLfloat*)&transforms[i]);
-			}*/
 
-			glUniformMatrix4fv(m_bone_location[0], transforms.size(), GL_TRUE, (const GLfloat*)&transforms[0]);
-			//glUniformMatrix4fv(m_bone_location[0], sizeof(transforms[0]), GL_TRUE, (const GLfloat*)&transforms[0]);
+			boneTransform((double)animationTime, transforms);
+			glUniformMatrix4fv(boneID, transforms.size(), GL_TRUE, (const GLfloat*)&transforms[0]);
 
 			for (unsigned int i = 0; i < meshes.size(); i++)
 				meshes[i].draw(shader);
 		}
 
-		virtual void render(Camera& camera, int index, Shader &shader, float animationTime)
+		virtual void render(Camera& camera, Shader &shader, float animationTime)
 		{
 			shader.use();
 			glm::mat4 projection = camera.GetProjectionMatrix();
@@ -218,10 +209,10 @@ namespace Cogravi {
 			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
 			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "normals_matrix"), 1, GL_FALSE, glm::value_ptr(matr_normals_cube));
 
-			draw(shader, index, animationTime);
+			draw(shader, animationTime);
 		}
 
-		virtual void render(Avatar& avatar, int index, Shader& shader, float animationTime)
+		virtual void render(Avatar& avatar, Shader& shader, float animationTime)
 		{
 			shader.use();
 			glm::mat4 projection = avatar.proj;
@@ -258,7 +249,7 @@ namespace Cogravi {
 			glUniformMatrix4fv(glGetUniformLocation(shader.ID, "normals_matrix"), 1, GL_FALSE, glm::value_ptr(matr_normals_cube));
 
 
-			draw(shader, index, animationTime);
+			draw(shader, animationTime);
 		}
 
 		virtual void update()
@@ -268,9 +259,9 @@ namespace Cogravi {
 
 		void addAnimation(string const& path)
 		{
-			T++;
+			numAnimations++;
 			const string ruta = directory + "/" + path;
-			scene[T] = import[T].ReadFile(ruta,
+			scene[numAnimations] = import[numAnimations].ReadFile(ruta,
 				aiProcess_JoinIdenticalVertices |
 				aiProcess_SortByPType |
 				aiProcess_Triangulate |
@@ -278,17 +269,17 @@ namespace Cogravi {
 				aiProcess_FlipUVs |
 				aiProcess_LimitBoneWeights);
 
-			if (!scene[T] || scene[T]->mFlags == AI_SCENE_FLAGS_INCOMPLETE)
+			if (!scene[numAnimations] || scene[numAnimations]->mFlags == AI_SCENE_FLAGS_INCOMPLETE)
 			{
-				cout << "error assimp : " << import[T].GetErrorString() << endl;
+				cout << "error assimp : " << import[numAnimations].GetErrorString() << endl;
 				return;
 			}
 			cout << "==============================================================\n";
-			for (GLuint i = 0; i < scene[T]->mNumAnimations; i++)
+			for (GLuint i = 0; i < scene[numAnimations]->mNumAnimations; i++)
 			{
-				const aiAnimation* animation = scene[T]->mAnimations[i];
+				const aiAnimation* animation = scene[numAnimations]->mAnimations[i];
 				animations.push_back(animation);
-				root.push_back(scene[T]->mRootNode);
+				root.push_back(scene[numAnimations]->mRootNode);
 				int index = animations.size() - 1;
 				for (GLuint j = 0; j < animation->mNumChannels; j++)
 				{
@@ -323,8 +314,8 @@ namespace Cogravi {
 				return;
 			}
 
-			m_global_inverse_transform = scene[0]->mRootNode->mTransformation;
-			m_global_inverse_transform.Inverse();
+			matrixInverse = scene[0]->mRootNode->mTransformation;
+			matrixInverse.Inverse();
 			cout << "Num de animaciones: " << scene[0]->mNumAnimations << "\n";
 
 			loadAnimations();
@@ -352,6 +343,24 @@ namespace Cogravi {
 			}
 			cout << endl;
 			glBindVertexArray(0);
+		}
+
+		void loadAnimations()
+		{
+			for (GLuint i = 0; i < scene[0]->mNumAnimations; i++)
+			{
+				numAnimations++;
+				const aiAnimation* animation = scene[0]->mAnimations[i];
+				animations.push_back(animation);
+				int index = animations.size() - 1;
+				root.push_back(scene[0]->mRootNode);
+				for (GLuint j = 0; j < animation->mNumChannels; j++)
+				{
+					const aiNodeAnim* node_anim = animation->mChannels[j];
+					mapNodeAnim[index][string(node_anim->mNodeName.data)] = node_anim;
+				}
+			}
+			cout << "animaciones: " << animations.size() << "\n";
 		}
 
 		void showNodeName(aiNode* node)
@@ -446,21 +455,21 @@ namespace Cogravi {
 
 				cout << mesh->mBones[i]->mName.data << endl;
 
-				if (m_bone_mapping.find(bone_name) == m_bone_mapping.end())
+				if (mapBone.find(bone_name) == mapBone.end())
 				{
 					// Allocate an index for a new bone
-					bone_index = m_num_bones;
-					m_num_bones++;
+					bone_index = numBones;
+					numBones++;
 					BoneMatrix bi;
-					m_bone_matrices.push_back(bi);
-					m_bone_matrices[bone_index].offset_matrix = mesh->mBones[i]->mOffsetMatrix;
-					m_bone_mapping[bone_name] = bone_index;
+					matrixBone.push_back(bi);
+					matrixBone[bone_index].offset_matrix = mesh->mBones[i]->mOffsetMatrix;
+					mapBone[bone_name] = bone_index;
 
 					//cout << "bone_name: " << bone_name << "			 bone_index: " << bone_index << endl;
 				}
 				else
 				{
-					bone_index = m_bone_mapping[bone_name];
+					bone_index = mapBone[bone_name];
 				}
 
 				for (GLuint j = 0; j < mesh->mBones[i]->mNumWeights; j++)
@@ -648,30 +657,14 @@ namespace Cogravi {
 			return start + factor * delta;
 		}
 
-		void loadAnimations()
-		{		
-			for (GLuint i = 0; i < scene[0]->mNumAnimations; i++)
-			{
-				animations.push_back(scene[0]->mAnimations[i]);
-				const aiAnimation* animation = scene[0]->mAnimations[i];
-				int index = animations.size() - 1;
-				root.push_back(scene[0]->mRootNode);
-				for (GLuint j = 0; j < animation->mNumChannels; j++)
-				{
-					const aiNodeAnim* node_anim = animation->mChannels[j];
-					mapNodeAnim[index][string(node_anim->mNodeName.data)] = node_anim;
-				}
-			}
-			cout << "animaciones: " << animations.size() << "\n";
-		}
 
-		void readNodeHierarchy(float p_animation_time, int index, const aiNode* p_node, const aiMatrix4x4 parent_transform)
+		void readNodeHierarchy(float p_animation_time, const aiNode* p_node, const aiMatrix4x4 parent_transform)
 		{
 
 			string node_name(p_node->mName.data);
-			const aiAnimation* animation = animations[index];
+			const aiAnimation* animation = animations[currentAnimation];
 			aiMatrix4x4 node_transform = p_node->mTransformation;
-			const aiNodeAnim* node_anim = mapNodeAnim[index][node_name];
+			const aiNodeAnim* node_anim = mapNodeAnim[currentAnimation][node_name];
 
 			if (node_anim)
 			{
@@ -709,42 +702,42 @@ namespace Cogravi {
 			aiMatrix4x4 global_transform = parent_transform * node_transform;
 
 
-			if (m_bone_mapping.find(node_name) != m_bone_mapping.end())
+			if (mapBone.find(node_name) != mapBone.end())
 			{
-				GLuint bone_index = m_bone_mapping[node_name];
-				m_bone_matrices[bone_index].final_world_transform = m_global_inverse_transform * global_transform * m_bone_matrices[bone_index].offset_matrix;
+				GLuint bone_index = mapBone[node_name];
+				matrixBone[bone_index].final_world_transform = matrixInverse * global_transform * matrixBone[bone_index].offset_matrix;
 			}
 
 			for (GLuint i = 0; i < p_node->mNumChildren; i++)
 			{
-				readNodeHierarchy(p_animation_time, index, p_node->mChildren[i], global_transform);
+				readNodeHierarchy(p_animation_time, p_node->mChildren[i], global_transform);
 			}
 
 		}
 
-		void boneTransform(double time_in_sec, int index, vector<aiMatrix4x4>& transforms)
+		void boneTransform(double time_in_sec, vector<aiMatrix4x4>& transforms)
 		{
 			aiMatrix4x4 identity_matrix; 
 
-			const aiAnimation* animation = animations[index];
+			const aiAnimation* animation = animations[currentAnimation];
 
 			if (animation->mTicksPerSecond != 0.0)
-				ticks_per_second = animation->mTicksPerSecond;			
+				ticksPerSecond = animation->mTicksPerSecond;			
 			else
-				ticks_per_second = 25.0f;
+				ticksPerSecond = 25.0f;
 		
-			double time_in_ticks = time_in_sec * ticks_per_second;
+			double time_in_ticks = time_in_sec * ticksPerSecond;
 			float animation_time = fmod(time_in_ticks, animation->mDuration);
 
 			//cout << "Ti: " << animation_time << "\n";
 
-			readNodeHierarchy(animation_time, index, root[index], identity_matrix);
+			readNodeHierarchy(animation_time, root[currentAnimation], identity_matrix);
 
-			transforms.resize(m_num_bones);
+			transforms.resize(numBones);
 
-			for (GLuint i = 0; i < m_num_bones; i++)
+			for (GLuint i = 0; i < numBones; i++)
 			{
-				transforms[i] = m_bone_matrices[i].final_world_transform;
+				transforms[i] = matrixBone[i].final_world_transform;
 			}
 		}
 

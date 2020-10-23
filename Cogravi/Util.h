@@ -24,7 +24,7 @@ namespace Cogravi {
         SKYBOX,
         CUBE_MAP,
         AVATAR,
-        INSTANCE,
+        INSTANCE_STATIC,
         INSTANCE_DYNAMIC
     };
 
@@ -75,8 +75,8 @@ namespace Cogravi {
             myShaders[ShaderType::SKYBOX] = new Shader("assets/shaders/skybox.vert", "assets/shaders/skybox.frag");
             myShaders[ShaderType::CUBE_MAP] = new Shader("assets/shaders/cubemaps.vert", "assets/shaders/cubemaps.frag");
             myShaders[ShaderType::AVATAR] = new Shader("assets/shaders/avatar.vert", "assets/shaders/avatar.frag");
-            myShaders[ShaderType::INSTANCE] = new Shader("assets/shaders/instance.vs", "assets/shaders/instance.fs");
-            myShaders[ShaderType::INSTANCE_DYNAMIC] = new Shader("assets/shaders/instanceD.vs", "assets/shaders/instanceD.fs");
+            myShaders[ShaderType::INSTANCE_STATIC] = new Shader("assets/shaders/instanceModel.vert", "assets/shaders/instanceModel.frag");
+            myShaders[ShaderType::INSTANCE_DYNAMIC] = new Shader("assets/shaders/instanceAnimation.vert", "assets/shaders/instanceAnimation.frag");
         }
 
         void loadTextureType()

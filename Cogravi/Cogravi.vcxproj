@@ -182,6 +182,10 @@
     <None Include="assets\shaders\cubemaps.vert" />
     <None Include="assets\shaders\debug.frag" />
     <None Include="assets\shaders\debug.vert" />
+    <None Include="assets\shaders\instanceAnimation.frag" />
+    <None Include="assets\shaders\instanceAnimation.vert" />
+    <None Include="assets\shaders\instanceModel.frag" />
+    <None Include="assets\shaders\instanceModel.vert" />
     <None Include="assets\shaders\model.frag" />
     <None Include="assets\shaders\model.vert" />
     <None Include="assets\shaders\skybox.frag" />

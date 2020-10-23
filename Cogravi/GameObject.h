@@ -26,16 +26,20 @@ namespace Cogravi {
 		string directory;
 		bool textureAssimp;
 
+		unsigned int cantidad;
 
-		GameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>textures = {})
+
+		GameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>textures = {}, int cantidad = 1)
 		{
 			this->position = position;
 			this->rotation = rotation;
-			this->scale = scale;
-		
+			this->scale = scale;		
 			this->textures = textures;
-
 			this->textureAssimp = this->textures.size() == 0 ? true : false;
+			this->cantidad = cantidad;
+
+			if (this->cantidad > 1)
+				configureInstance();
 
 			loadModel(path);
 		}
@@ -48,13 +52,11 @@ namespace Cogravi {
 				meshes[i].draw(shader);
 		}
 
-		void drawInstance(Shader &shader, int amount)
+		void drawInstance(Shader &shader)
 		{
 			for (unsigned int i = 0; i < meshes.size(); i++)
-				meshes[i].drawInstance(shader, amount);
-		}
-
-		unsigned int amount = 200;
+				meshes[i].drawInstance(shader, this->cantidad);
+		}	
 
 		virtual void renderInstance(Camera& camera, Shader& shader)
 		{
@@ -64,7 +66,7 @@ namespace Cogravi {
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 			
-			drawInstance(shader, this->amount);
+			drawInstance(shader);
 		}
 
 		virtual void renderInstance(Avatar& avatar, Shader& shader)
@@ -75,22 +77,21 @@ namespace Cogravi {
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 
-			drawInstance(shader, this->amount);
+			drawInstance(shader);
 		}
 
 		void configureInstance()
-		{
-			
+		{		
 			glm::mat4* modelMatrices;
-			modelMatrices = new glm::mat4[amount];
+			modelMatrices = new glm::mat4[cantidad];
 			srand(time(NULL)); // initialize random seed	
 			float radius = 65.0f;
 			float offset = 25.0f;
-			for (unsigned int i = 0; i < amount; i++)
+			for (unsigned int i = 0; i < cantidad; i++)
 			{
 				glm::mat4 model = glm::mat4(1.0f);
 				// 1. translation: displace along circle with 'radius' in range [-offset, offset]
-				float angle = (float)i / (float)amount * 360.0f;
+				float angle = (float)i / (float)cantidad * 360.0f;
 				float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 				float x = sin(angle) * radius + displacement;
 				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
@@ -116,7 +117,7 @@ namespace Cogravi {
 			unsigned int buffer;
 			glGenBuffers(1, &buffer);
 			glBindBuffer(GL_ARRAY_BUFFER, buffer);
-			glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, cantidad * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
 
 			// set transformation matrices as an instance vertex attribute (with divisor 1)
 			// note: we're cheating a little by taking the, now publicly declared, VAO of the model's mesh(es) and adding new vertexAttribPointers

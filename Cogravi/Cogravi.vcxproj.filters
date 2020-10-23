@@ -214,5 +214,17 @@
     <None Include="assets\shaders\debug.frag">
       <Filter>Archivos de encabezado\BulletPhysics</Filter>
     </None>
+    <None Include="assets\shaders\instanceAnimation.frag">
+      <Filter>Archivos de encabezado\Animation</Filter>
+    </None>
+    <None Include="assets\shaders\instanceAnimation.vert">
+      <Filter>Archivos de encabezado\Animation</Filter>
+    </None>
+    <None Include="assets\shaders\instanceModel.frag">
+      <Filter>Archivos de encabezado\Model</Filter>
+    </None>
+    <None Include="assets\shaders\instanceModel.vert">
+      <Filter>Archivos de encabezado\Model</Filter>
+    </None>
   </ItemGroup>
 </Project>
