@@ -43,6 +43,7 @@ using namespace std;
 #include "Aula.h"
 #include "InputProcessor.h"
 #include "Lighting.h"
+#include "Player.h"
 
 
 

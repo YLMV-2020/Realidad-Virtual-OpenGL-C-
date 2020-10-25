@@ -168,6 +168,7 @@
     <ClInclude Include="AnimationController.h" />
     <ClInclude Include="ModelAttributes.h" />
     <ClInclude Include="ModelController.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrain.h" />

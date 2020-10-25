@@ -22,13 +22,17 @@ namespace Cogravi
 		btCollisionShape* shape;
 
 		glm::vec3 translate;
-		glm::mat4 physics_matrix;
+		glm::mat4 physicsMatrix;
+
+		char description[200];
+		ColliderType colliderType;
 
 		//Collider
 
 		int shape_current;
 		float margin = 1.0f;
 		glm::vec3 shapeScalar = glm::vec3(1.0f);
+		bool isCollision = false;
 
 		//RigidBody
 

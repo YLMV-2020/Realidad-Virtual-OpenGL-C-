@@ -49,6 +49,7 @@ namespace Cogravi
 		LuzDireccional luzDireccional;
 		vector<LuzPuntual> luzPuntual;
 		LuzFocal luzFocal;
+		int shininess;
 
 
 		static Lighting* Instance()
@@ -72,6 +73,44 @@ namespace Cogravi
 			luzFocal.cutOff = 10.0f;
 			luzFocal.outerCutOff = 12.5f;
 
+			shininess = 5;
+		}
+
+		void loadShader(Shader& shader)
+		{
+			shader.setBool("isLightDirectional", true);
+			shader.setBool("isLightPoint", true);
+			shader.setBool("isLightSpot", true);
+			shader.setFloat("material.shininess", 32.0f);
+
+			shader.setVec3("dirLight.direction", luzDireccional.direction);
+			shader.setVec3("dirLight.ambient", luzDireccional.ambient);
+			shader.setVec3("dirLight.diffuse", luzDireccional.diffuse);
+			shader.setVec3("dirLight.specular", luzDireccional.specular);
+                
+
+			shader.setVec3("spotLight.ambient", luzFocal.ambient);
+			shader.setVec3("spotLight.diffuse", luzFocal.diffuse);
+			shader.setVec3("spotLight.specular", luzFocal.specular);
+			shader.setFloat("spotLight.constant", luzFocal.constant);
+			shader.setFloat("spotLight.linear", luzFocal.linear);
+			shader.setFloat("spotLight.quadratic", luzFocal.quadratic);
+			shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(luzFocal.cutOff)));
+			shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(luzFocal.outerCutOff)));
+                    
+		
+		}
+
+		void loadShaderLightPoint(Shader& shader)
+		{
+			int i = sizeSol() - 1;
+			shader.setVec3("pointLights[" + to_string(i) + "].position", getSol(i)->position);
+			shader.setVec3("pointLights[" + to_string(i) + "].ambient", luzPuntual[i].ambient);
+			shader.setVec3("pointLights[" + to_string(i) + "].diffuse", luzPuntual[i].diffuse);
+			shader.setVec3("pointLights[" + to_string(i) + "].specular", luzPuntual[i].specular);
+			shader.setFloat("pointLights[" + to_string(i) + "].constant", luzPuntual[i].constant);
+			shader.setFloat("pointLights[" + to_string(i) + "].linear", luzPuntual[i].linear);
+			shader.setFloat("pointLights[" + to_string(i) + "].quadratic", luzPuntual[i].quadratic);			
 		}
 
 		void addSol(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)

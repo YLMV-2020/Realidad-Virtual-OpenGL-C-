@@ -25,9 +25,9 @@ namespace Cogravi
             GameObject(position, rotation, scale, path, textures)
         {
 			this->worldController = worldController;
-			addBodyPhysicsBox(worldController, glm::vec3(13.50f, 0.0f, 0.f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 3.40f, 8.50f));
-			addBodyPhysicsBox(worldController, glm::vec3(-13.50f, 0.0f, 0.f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 3.40f, 8.50f));
-			addBodyPhysicsBox(worldController, glm::vec3(0.0f, 0.0f, -9.0f), glm::vec3(0.0f, 90.0f, 0.0f), glm::vec3(0.1f, 3.40f, 13.5f));
+			addBodyPhysicsBox(worldController, glm::vec3(13.50f, 0.0f, 0.f) * scale, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 3.40f, 8.50f) * scale);
+			addBodyPhysicsBox(worldController, glm::vec3(-13.50f, 0.0f, 0.f) * scale, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 3.40f, 8.50f) * scale);
+			addBodyPhysicsBox(worldController, glm::vec3(0.0f, 0.0f, -9.0f) * scale, glm::vec3(0.0f, 90.0f, 0.0f), glm::vec3(0.1f, 3.40f, 13.5f) * scale);
 			//addBodyPhysicsBox(worldController, glm::vec3(-13.50f, 0.0f, 15.0f), glm::vec3(0.1f, 3.40f, 8.0f));
         }
 

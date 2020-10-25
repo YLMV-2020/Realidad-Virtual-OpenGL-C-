@@ -95,6 +95,17 @@ namespace Cogravi {
 			drawInstance(shader, animationTime);
 		}
 
+		virtual void renderInstance(Avatar& avatar, Shader& shader, float animationTime)
+		{
+			glm::mat4 projection = avatar.GetProjectionMatrix();
+			glm::mat4 view = avatar.GetViewMatrix();
+			shader.use();
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+
+			drawInstance(shader, animationTime);
+		}
+
 		void configureInstance()
 		{
 			glm::mat4* modelMatrices;
@@ -117,11 +128,11 @@ namespace Cogravi {
 
 				// 2. scale: Scale between 0.05 and 0.25f
 				float scale = (rand() % 20) / 100.0f + 0.05;
-				model = glm::scale(model, glm::vec3(0.03f));
+				model = glm::scale(model, glm::vec3(0.01f));
 
 				// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
 				float rotAngle = (rand() % 360);
-				model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.f, 0.f));
+				model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.f, 0.f));
 
 				// 4. now add to list of matrices
 				modelMatrices[i] = model;

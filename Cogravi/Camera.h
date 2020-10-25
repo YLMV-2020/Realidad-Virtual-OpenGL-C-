@@ -32,6 +32,8 @@ public:
     float pitch; //angulo de giro en Y
 
     float speed = 1.0f;
+    float distance = 1.3f;
+    float distanceUp = 1.1f;
 
     CameraType mode;
 
@@ -116,7 +118,7 @@ public:
             camX = -sin(angle) * farOffset;
             camZ = -cos(angle) * farOffset;
 
-            posicionCamara = glm::vec3(camX * 2.0f, upOffset * 1.5f, camZ * 2.0f) + targetPos;
+            posicionCamara = glm::vec3(camX * distance, upOffset * distanceUp, camZ * distance) + targetPos;
             RayCallback = new btCollisionWorld::ClosestRayResultCallback(btVector3(targetPos.x, targetPos.y + 10, targetPos.z), btVector3(posicionCamara.x, posicionCamara.y, posicionCamara.z));
 
             world->rayTest(btVector3(targetPos.x, targetPos.y + 10, targetPos.z), btVector3(posicionCamara.x, posicionCamara.y, posicionCamara.z), *RayCallback);

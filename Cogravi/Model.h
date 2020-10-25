@@ -26,8 +26,9 @@ namespace Cogravi
 
 			transform = glm::mat4(1.0f);
 			
-			transform = transform * physics_matrix;
+			transform = transform * physicsMatrix;
 			//transform = glm::translate(transform, glm::vec3(position.x , position.y , position.z ));
+			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
 			//transform = glm::translate(transform, glm::vec3(position.x + translate.x, position.y + translate.y, position.z + translate.z));
 
 			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -55,9 +56,10 @@ namespace Cogravi
 
 			transform = glm::mat4(1.0f);
 
-			//transform = transform * physics_matrix;
-			//transform = glm::translate(transform, glm::vec3(position.x , position.y , position.z ));
-			transform = glm::translate(transform, glm::vec3(position.x + translate.x, position.y + translate.y, position.z + translate.z));
+
+			transform = transform * physicsMatrix;
+			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
+
 
 			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -77,17 +79,19 @@ namespace Cogravi
 
 		void update() override
 		{
-			btTransform physics_transform;
-			body->getMotionState()->getWorldTransform(physics_transform);
-			glm::mat4 graphics_transform;
-			physics_transform.getOpenGLMatrix(glm::value_ptr(physics_matrix));
-			position = glm::vec3(physics_matrix[3][0], 0, physics_matrix[3][2]);
+			
+			btTransform physicsTransform;
+			body->getMotionState()->getWorldTransform(physicsTransform);
+			physicsTransform.getOpenGLMatrix(glm::value_ptr(physicsMatrix));
+			
 		}
 
 		void addBodyPhysicsMesh(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
 			btTriangleMesh *trimesh = new btTriangleMesh();
+
+			btVector3 scalar(shapeScalar.x, shapeScalar.y, shapeScalar.z);
 
 			for (int j = 0; j < meshes.size(); j++)
 			{
@@ -104,7 +108,7 @@ namespace Cogravi
 					btVector3 vertex1(vertex[index1].Position.x, vertex[index1].Position.y, vertex[index1].Position.z);
 					btVector3 vertex2(vertex[index2].Position.x, vertex[index2].Position.y, vertex[index2].Position.z);
 
-					trimesh->addTriangle(vertex0, vertex1, vertex2);
+					trimesh->addTriangle(vertex0 * scalar, vertex1 * scalar, vertex2 * scalar);
 				}
 			}
 
@@ -115,35 +119,35 @@ namespace Cogravi
 		void addBodyPhysicsBox(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			this->shape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
+			this->shape = new btBoxShape(btVector3(shapeScalar.x, shapeScalar.y, shapeScalar.z));
 			bodyPhysicsConfiguration(worldController);
 		}
 
 		void addBodyPhysicsSphere(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			this->shape = new btSphereShape(btScalar(1));
+			this->shape = new btSphereShape(btScalar(shapeScalar.x));
 			bodyPhysicsConfiguration(worldController);
 		}
 
 		void addBodyPhysicsCapsule(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			this->shape = new btCapsuleShape(btScalar(1.0f), btScalar(0.2f));
+			this->shape = new btCapsuleShape(btScalar(shapeScalar.x), btScalar(shapeScalar.y));
 			bodyPhysicsConfiguration(worldController);
 		}
 
 		void addBodyPhysicsCylinder(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			this->shape = new btCylinderShape(btVector3(1.0f, 1.0f, 1.0f));
+			this->shape = new btCylinderShape(btVector3(shapeScalar.x, shapeScalar.y, shapeScalar.z));
 			bodyPhysicsConfiguration(worldController);
 		}
 
 		void addBodyPhysicsCone(int userIndex, BulletWorldController* worldController)
 		{
 			this->userIndex = userIndex;
-			this->shape = new btConeShape(btScalar(1.0f), btScalar(1.0f));
+			this->shape = new btConeShape(btScalar(shapeScalar.x), btScalar(shapeScalar.y));
 			bodyPhysicsConfiguration(worldController);
 		}
 
@@ -203,6 +207,9 @@ namespace Cogravi
 				break;
 			case 4:
 				addBodyPhysicsCone(userIndex, worldController);
+				break;
+			case 5:
+				addBodyPhysicsMesh(userIndex, worldController);
 				break;
 			default:
 				break;

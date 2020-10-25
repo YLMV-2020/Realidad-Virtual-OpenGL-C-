@@ -15,23 +15,65 @@ namespace Cogravi
 			this->translate = glm::vec3(0.0f, 0.0f, 0.0f);		
 		}
 
-		void render(Camera& camera, Shader &shader, float animationTime) override
+		virtual void render(Camera& camera, Shader &shader, float animationTime) override
 		{
-			DynamicGameObject::render(camera, shader, animationTime);
+			shader.use();
+			glm::mat4 projection = camera.GetProjectionMatrix();
+			glm::mat4 view = camera.GetViewMatrix();
+
+			transform = glm::mat4(1.0f);
+
+			transform = transform * physicsMatrix;
+			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
+
+			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+			transform = glm::scale(transform, scale);
+
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+			shader.setMat4("model", transform);
+
+			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
+
+			draw(shader, animationTime);
 		}
 
 		void render(Avatar& avatar, Shader& shader, float animationTime) override
 		{
-			DynamicGameObject::render(avatar, shader, animationTime);
+			shader.use();
+			glm::mat4 projection = avatar.GetProjectionMatrix();
+			glm::mat4 view = avatar.GetViewMatrix();
+
+			transform = glm::mat4(1.0f);
+
+			transform = transform * physicsMatrix;
+			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
+
+			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+			transform = glm::scale(transform, scale);
+
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+			shader.setMat4("model", transform);
+
+			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
+
+			draw(shader, animationTime);
 		}
 
-		void update() override
+		virtual void update() override
 		{
 			btTransform physics_transform;
 			body->getMotionState()->getWorldTransform(physics_transform);
 			glm::mat4 graphics_transform;
-			physics_transform.getOpenGLMatrix(glm::value_ptr(physics_matrix));
-			position = glm::vec3(physics_matrix[3][0], 0, physics_matrix[3][2]);
+			physics_transform.getOpenGLMatrix(glm::value_ptr(physicsMatrix));
+			position = glm::vec3(physicsMatrix[3][0], 0, physicsMatrix[3][2]);
 
 		}
 

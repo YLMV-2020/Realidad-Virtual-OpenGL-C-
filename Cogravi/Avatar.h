@@ -19,7 +19,7 @@ namespace Cogravi
 		glm::mat4 view;
 		glm::mat4 proj;
 
-		int userIndex = 0;
+		int userIndex[2];
 		float Yaw = 0.0f;
 
 		Vector3f position;
@@ -34,9 +34,18 @@ namespace Cogravi
 		btRigidBody* body[2];
 		btCollisionShape* shape[2];
 
+		float currentSpeed = 0.0f;
+		float currentTurnSpeed = 0.0f;
+
+		float RUN_SPEED = 10.0f;
+		float TURN_SPEED = 160.0f;
+
+		bool isCollision[2] = { false };
+
+
 		Avatar(BulletWorldController *worldController)
 		{
-			position = Vector3f(0.0f, 1.0f, 0.0f);
+			position = Vector3f(0.0f, 0.0f, 0.0f);
 			addBodyPhysicsBox(worldController);
 		}
 
@@ -53,7 +62,7 @@ namespace Cogravi
 			ovrAvatar_RequestAvatarSpecification(0);
 		}
 
-		void Prerender(ovrSession session) {
+		void Prerender(ovrSession session, float deltaTime) {
 
 			// Pump avatar messages
 			while (ovrAvatarMessage* message = ovrAvatarMessage_Pop())
@@ -116,10 +125,26 @@ namespace Cogravi
 				Vector2f leftStick = touchState.Thumbstick[ovrHand_Left];
 				Vector2f rightStick = touchState.Thumbstick[ovrHand_Right];
 
+
 				position += Matrix4f::RotationY(Yaw).Transform(
 					Vector3f(leftStick.x * leftStick.x * (leftStick.x > 0 ? 0.1f : -0.1f), 0, leftStick.y * leftStick.y * (leftStick.y > 0 ? -0.1f : 0.1f)));
 
-				//usar el moetodo mover
+
+				if (OVR_SUCCESS(ovr_GetInputState(session, ovrControllerType_Touch, &touchState)))
+				{
+					if (touchState.Buttons == ovrTouch_A)
+					{
+						//isCollision = !isCollision;
+					}
+					/*else
+						isCollision = false;*/
+
+					if (touchState.HandTrigger[ovrHand_Left] > 0.5f) {
+						//leftHandTriggerPressed = true;
+						//cout << "Presionando p\n";
+					}
+						//cout << "Presionando pdddd\n";
+				}
 
 				if (rightStick.x > 0) Yaw -= 0.01f;
 				if (rightStick.y > 0) Yaw += 0.01f;
@@ -134,6 +159,7 @@ namespace Cogravi
 				ovrAvatarPose_Finalize(_avatar, 0.0);
 			}
 		}
+
 
 		void Render(ovrPosef eye, ovrMatrix4f proj) {
 
@@ -178,25 +204,40 @@ namespace Cogravi
 
 		void Update()
 		{
+			if (!isCollision[0])
+			{
 
-			btTransform transform;
-			transform.setIdentity();
-			transform.setOrigin(btVector3(leftHandPosition.x, leftHandPosition.y, leftHandPosition.z));
+				btTransform transform;
+				transform.setIdentity();
+				transform.setOrigin(btVector3(leftHandPosition.x, leftHandPosition.y, leftHandPosition.z));
 
-			btQuaternion quat;
-			quat.setEulerZYX(btScalar(leftHandRotation.z), btScalar(leftHandRotation.y), btScalar(leftHandRotation.x));
-			transform.setRotation(btQuaternion(quat));
+				float x, y, z;
 
-			body[0]->setWorldTransform(transform);
+				leftHandRotation.GetYawPitchRoll(&x, &y, &z);
 
-			transform.setIdentity();
-			transform.setOrigin(btVector3(rightHandPosition.x, rightHandPosition.y, rightHandPosition.z));
+				btQuaternion quat;
+				quat.setEulerZYX(btScalar(z), btScalar(-y), btScalar(x));
+				transform.setRotation(btQuaternion(quat));
 
-			quat.setEulerZYX(btScalar(rightHandRotation.z), btScalar(rightHandRotation.y), btScalar(rightHandRotation.x));
-			transform.setRotation(btQuaternion(quat));
+				body[0]->setWorldTransform(transform);
+			}
 
-			body[1]->setWorldTransform(transform);
+			if (!isCollision[1])
+			{
+				btTransform transform;
+				transform.setIdentity();
+				transform.setOrigin(btVector3(rightHandPosition.x, rightHandPosition.y, rightHandPosition.z));
 
+				float x, y, z;
+
+				rightHandRotation.GetYawPitchRoll(&x, &y, &z);
+
+				btQuaternion quat;
+				quat.setEulerZYX(btScalar(z), btScalar(-y), btScalar(x));
+				transform.setRotation(btQuaternion(quat));
+
+				body[1]->setWorldTransform(transform);
+			}
 
 		}
 
@@ -209,7 +250,6 @@ namespace Cogravi
 
 		void addBodyPhysicsMesh(int index, BulletWorldController* worldController)
 		{
-			this->userIndex = userIndex;
 			btTriangleMesh* trimesh = new btTriangleMesh();
 
 			for (int i = 0; i < indices.size() / 3; i++)
@@ -244,25 +284,30 @@ namespace Cogravi
 
 			for (int i = 0; i < 2; i++)
 			{
+				float mass = 1.f;
+				userIndex[i] = 200 + i;
 				//addBodyPhysicsMesh(i, worldController);
-				shape[i]->calculateLocalInertia(10, inertia);
+				shape[i]->calculateLocalInertia(mass, inertia);
 
 				//Configuramos las propiedades básicas de construcción del cuerpo
 
 				btDefaultMotionState* state = new btDefaultMotionState(transform);
-				btRigidBody::btRigidBodyConstructionInfo info(10, state, shape[i], inertia);
+				btRigidBody::btRigidBodyConstructionInfo info(mass, state, shape[i], inertia);
 
 				//Establecemos los parámetros que recibidos como parámetro
 				body[i] = new btRigidBody(info);
 				body[i]->setRestitution(1.0f);
-				//body[i]->setUserIndex(this->userIndex);
+				body[i]->setUserIndex(this->userIndex[i]);
 				body[i]->setLinearFactor(btVector3(1.0f, 1.0f, 1.0f));
+
+				//body[i]->setCollisionFlags(body[i]->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+				body[i]->setActivationState(DISABLE_DEACTIVATION);
 
 				//Por defecto, todos los modelos están bloqueados en el espacio en X,Z así como sus ejes de rotación
 				body[i]->setAngularFactor(btVector3(0, 0, 0));
 				body[i]->setGravity(btVector3(0, 1, 0));
 
-				body[i]->setActivationState(DISABLE_DEACTIVATION);
+				//body[i]->setActivationState(DISABLE_DEACTIVATION);
 
 				//Añadimos el cuerpo al mundo dinámico
 				worldController->dynamicsWorld->addRigidBody(body[i]);

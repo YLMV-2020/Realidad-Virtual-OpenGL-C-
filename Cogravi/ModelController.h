@@ -51,32 +51,40 @@ namespace Cogravi {
                 model->render(avatar, shader);
         }
 
-        void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, ColliderType type, BulletWorldController* worldController, vector<Texture> textures = {})
+        void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, ColliderType type, BulletWorldController* worldController, vector<Texture> textures = {}, glm::vec3 colliderSize = glm::vec3(1.0f))
         {
             Model* model = new Model(position, rotation, scale, path, textures);
             //model->addBodyPhysicsBox(models.size(), worldController);
 
+            model->shapeScalar = colliderSize;
+
             switch (type)
             {
-            case ColliderType::MESH:
-                model->addBodyPhysicsMesh(modelsPhysics.size(), worldController);
-                break;
+            
             case ColliderType::BOX:
+                model->shape_current = 0;
                 model->addBodyPhysicsBox(modelsPhysics.size(), worldController);
                 break;
             case ColliderType::SPHERE:
+                model->shape_current = 1;
                 model->addBodyPhysicsSphere(modelsPhysics.size(), worldController);
                 break;
             case ColliderType::CAPSULE:
+                model->shape_current = 2;
                 model->addBodyPhysicsCapsule(modelsPhysics.size(), worldController);
                 break;
             case ColliderType::CYLINDER:
+                model->shape_current = 3;
                 model->addBodyPhysicsCylinder(modelsPhysics.size(), worldController);
                 break;
             case ColliderType::CONE:
+                model->shape_current = 4;
                 model->addBodyPhysicsCone(modelsPhysics.size(), worldController);
                 break;
-
+            case ColliderType::MESH:
+                model->shape_current = 5;
+                model->addBodyPhysicsMesh(modelsPhysics.size(), worldController);
+                break;
             default:
                 break;
             }
@@ -106,6 +114,7 @@ namespace Cogravi {
                 model = NULL;
             }
         }
+
 
         Model* getModelPhysics(int index)
         {

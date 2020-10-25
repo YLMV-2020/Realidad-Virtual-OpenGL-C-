@@ -22,7 +22,7 @@ namespace Cogravi
 		btCollisionShape* shape;
 		
 		glm::vec3 translate;		
-		glm::mat4 physics_matrix;
+		glm::mat4 physicsMatrix;
 
 		//Collider
 
