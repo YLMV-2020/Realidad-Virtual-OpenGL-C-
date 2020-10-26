@@ -32,8 +32,8 @@ public:
     float pitch; //angulo de giro en Y
 
     float speed = 1.0f;
-    float distance = 1.3f;
-    float distanceUp = 1.1f;
+    float distance = 0.1f;
+    float distanceUp = 1.0f;
 
     CameraType mode;
 
@@ -47,8 +47,8 @@ public:
 
         this->Position = glm::vec3(5.0f, 10.0f, 10.75f);
 
-        this->upOffset = 15.0f;
-        this->farOffset = 30.0f;
+        this->upOffset = 2.30f;
+        this->farOffset = 70.0f;
         this->zoomSpeed = 0.5f;
 
         this->projection = glm::perspective(glm::radians(FOV), (float)WIDTH / (float)HEIGHT, NEAR, FAR);
@@ -128,7 +128,7 @@ public:
                 diff = (targetPos - posicionCamara) * (float)1.f / 5.f;
                 posicionCamara += diff;
             }
-            view = glm::lookAt(posicionCamara, targetPos + glm::vec3(0, 10, 0), Up);
+            view = glm::lookAt(posicionCamara, targetPos + glm::vec3(0, 1, 0), Up);
             break;
         case CameraType::FIRST_PERSON:
             view = glm::lookAt(Position, Position + Front, Up);

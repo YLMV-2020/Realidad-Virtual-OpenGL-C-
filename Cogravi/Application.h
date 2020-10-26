@@ -295,11 +295,14 @@ namespace Cogravi
             //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
             io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
             io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+            io.ConfigFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
+
             //io.ConfigViewportsNoAutoMerge = true;
             //io.ConfigViewportsNoTaskBarIcon = true;
 
             // Setup Dear ImGui style
             ImGui::StyleColorsDark();
+           
 
             // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
             ImGuiStyle& style = ImGui::GetStyle();
@@ -309,7 +312,7 @@ namespace Cogravi
                 style.Colors[ImGuiCol_WindowBg].w = 1.0f;
             }
 
-            ImGuiWindowFlags window_flags = 0;
+            ImGuiWindowFlags window_flags = 0;      
             ImGui_ImplGlfw_InitForOpenGL(window, true);
             ImGui_ImplOpenGL3_Init(glsl_version);
         }
@@ -987,7 +990,7 @@ namespace Cogravi
             {
                 models->addModel(glm::vec3(camera->Position.x, 3.50f, camera->Position.z), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/objects/tierra/tierra.3ds", ColliderType::SPHERE, bulletWorldController, {}, glm::vec3(5.9f, 0.0f, 0.0f));
             }
-
+            ImGui::SameLine();
             if (ImGui::ImageButton((void*)textureObjects[1], ImVec2(100, 100)))
             {
                 vector<Texture> textures;
@@ -1009,25 +1012,25 @@ namespace Cogravi
                 skybox->loadSkybox("nubes", "jpg");
             }
 
-            ImGui::SameLine(125);
+            ImGui::SameLine();
 
             if (ImGui::ImageButton((void*)textureSkyboxs[1], ImVec2(100, 100)))
             {
                 skybox->loadSkybox("blue", "png");
             }
 
-            ImGui::SameLine(250);
+            ImGui::SameLine();
 
             if (ImGui::ImageButton((void*)textureSkyboxs[2], ImVec2(100, 100)))
             {
                 skybox->loadSkybox("rainbow", "png");
             }
-
+            ImGui::SameLine();
             if (ImGui::ImageButton((void*)textureSkyboxs[3], ImVec2(100, 100)))
             {
                 skybox->loadSkybox("Lan", "jpg");
             }
-
+            ImGui::SameLine();
             if (ImGui::ImageButton((void*)textureSkyboxs[4], ImVec2(100, 100)))
             {
                 skybox->loadSkybox("bosque", "png");
@@ -1164,6 +1167,7 @@ namespace Cogravi
 
         void terrainImGui()
         {
+
             ImGui::Begin("Terrain", NULL);
             ImGui::Text("Configuration");
             static int repeat = 500;
@@ -1178,7 +1182,7 @@ namespace Cogravi
                 terrain->volumen = glm::vec3(volumen[0], -0.01f, volumen[1]);
                 terrain->configTerrain();
             }
-
+  
             ImGui::Separator();
             for (int i = 0; i < textureFloors.size(); i++)
             {
@@ -1186,6 +1190,8 @@ namespace Cogravi
                 {
                     terrain->floorTexture = textureFloors[i];
                 }
+               /* if ((i + 1) % 6 != 0)*/
+                    ImGui::SameLine();
             }
             ImGui::Separator();
 
@@ -1195,6 +1201,18 @@ namespace Cogravi
         void cameraImGui()
         {
             ImGui::Begin("Camera", NULL);
+
+
+
+            static int modeCamera = 0;
+            if(ImGui::RadioButton("First Person", &modeCamera, 0))
+                camera->setMode(CameraType::FIRST_PERSON);
+            ImGui::SameLine();
+            if(ImGui::RadioButton("Third Person", &modeCamera, 1))
+                camera->setMode(CameraType::THIRD_PERSON);
+
+
+                
 
             ImGui::Text("Transform");
 
@@ -1217,6 +1235,8 @@ namespace Cogravi
             ImGui::DragFloat("Speed", &camera->speed, 0.01f);
             ImGui::DragFloat("Distance Player", &camera->distance, 0.1f);
             ImGui::DragFloat("Distance Up Player", &camera->distanceUp, 0.1f);
+            ImGui::DragFloat("far offset", &camera->farOffset, 0.1f);
+            ImGui::DragFloat("up offset", &camera->upOffset, 0.1f);
 
             ImGui::DragFloat("Run", &player->RUN_SPEED, 0.1f);
             ImGui::DragFloat("Rotation", &player->TURN_SPEED, 0.1f);
@@ -1282,7 +1302,7 @@ namespace Cogravi
             {
                 if (ImGui::BeginMenu("Options"))
                 {
-                    ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
+                    //ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
                     ImGui::MenuItem("Padding", NULL, &opt_padding);
                     //ImGui::Separator();
 

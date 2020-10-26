@@ -13,17 +13,17 @@ namespace Cogravi
 
 	public:
 
-		float RUN_SPEED = 10.0f;
+		float RUN_SPEED = 3.0f;
 		float TURN_SPEED = 160.0f;
 
 		Player(Shader& shader, BulletWorldController *worldController):
 			Animation(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.01f), "assets/animations/archer/Orc Idle.dae", shader)
 		{
 			addBodyPhysicsCapsule(111299, worldController);
-			shape->setLocalScaling(btVector3(2.0f, 5.0f, 0.0f));
+			shape->setLocalScaling(btVector3(0.40f, 1.0f, 0.0f));
 
 			addAnimation("Female Tough Walk.dae");
-			addAnimation("Jump.dae");
+			//addAnimation("Jump.dae");
 			/*addAnimation("Hip Hop Dancing.dae");
 			addAnimation("Zombie Walk.dae");
 			addAnimation("Ninja Idle.dae");
