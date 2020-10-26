@@ -103,6 +103,10 @@ namespace Cogravi
         bool isLightPoint = false;
         bool isLightSpot = false;
 
+        bool isDrawWireframe = true;
+        bool isDrawAABB = false;
+        bool isWireframe = false;
+
         //VR
         int WIDTH_VR = 1920;
         int HEIGHT_VR = 986;

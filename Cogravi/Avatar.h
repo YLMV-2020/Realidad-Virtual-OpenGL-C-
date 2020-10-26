@@ -136,6 +136,11 @@ namespace Cogravi
 					{
 						//isCollision = !isCollision;
 					}
+					if (touchState.Buttons == ovrTouch_LButtonMask)
+					{
+						//isCollision = !isCollision;
+						cout << "L button Mask\n";
+					}
 					/*else
 						isCollision = false;*/
 

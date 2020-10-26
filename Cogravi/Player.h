@@ -17,7 +17,7 @@ namespace Cogravi
 		float TURN_SPEED = 160.0f;
 
 		Player(Shader& shader, BulletWorldController *worldController):
-			Animation(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.03f), "assets/animations/archer/Orc Idle.dae", shader)
+			Animation(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.01f), "assets/animations/archer/Orc Idle.dae", shader)
 		{
 			addBodyPhysicsCapsule(111299, worldController);
 			shape->setLocalScaling(btVector3(2.0f, 5.0f, 0.0f));

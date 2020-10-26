@@ -246,6 +246,7 @@ namespace Cogravi
 		void changeMass()
 		{
 			body->setMassProps(mass, btVector3(localInertia.x, localInertia.y, localInertia.z));
+			//shape->calculateLocalInertia(mass, btVector3(localInertia.x, localInertia.y, localInertia.z));
 		}
 
 		void changeMargin()
@@ -261,10 +262,8 @@ namespace Cogravi
 		void change()
 		{
 			btTransform t;
-			t.setIdentity();
-			
+			t.setIdentity();			
 			t.setFromOpenGLMatrix(glm::value_ptr(transform));
-
 			body->setCenterOfMassTransform(t);
 		}
 

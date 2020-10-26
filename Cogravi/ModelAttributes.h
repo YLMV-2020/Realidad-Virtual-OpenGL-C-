@@ -42,7 +42,7 @@ namespace Cogravi
 		glm::vec3 localInertia = glm::vec3(0);
 		glm::vec3 linearFactor = glm::vec3(1);
 
-		glm::vec3 gravity = glm::vec3(0, 1, 0);
+		glm::vec3 gravity = glm::vec3(0, -9.81f, 0);
 
 		float mass = 1.0f;
 		float restitution = 1.0f;

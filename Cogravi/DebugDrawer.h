@@ -37,7 +37,7 @@ namespace Cogravi
 			// use the GL_LINES primitive to draw lines
 			glBegin(GL_LINES);
 			//glColor3f(color.x(), color.y(), color.z());
-			glColor3f(col.x, col.y, col.z);
+			glColor3f(this->color.x, this->color.y, this->color.z);
 			glVertex3f(from.getX(), from.getY(), from.getZ());
 			glVertex3f(to.getX(), to.getY(), to.getZ());
 			glEnd();
@@ -67,7 +67,7 @@ namespace Cogravi
 		int m_debugMode;
 
 	public:
-		glm::vec3 col;
+		glm::vec3 color = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	};
 }

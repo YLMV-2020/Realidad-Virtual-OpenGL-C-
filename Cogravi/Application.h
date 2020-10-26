@@ -85,9 +85,24 @@ namespace Cogravi
         {
             teclado = [&](int key, int sancode, int action, int mods)
             {
-                if (key == GLFW_KEY_G)
+                if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
                 {
-                    models->getModelPhysics(0)->body->applyCentralImpulse(btVector3(0, 20, 0));
+                    vector<Texture> g;
+                    Texture sd = Texture(Util::loadTexture("assets/textures//azulX.jpg"), TextureType::DIFFUSE);
+                    g.push_back(sd);
+                    models->addModel(camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 5.0f, 5.0f), "assets/objects/cubo.obj", ColliderType::SPHERE, bulletWorldController, g, glm::vec3(1.1f));
+                    //models->getModelPhysics(0)->body->applyCentralImpulse(btVector3(0, 20, 0));
+                    float fuerza = 20.0f;
+                    glm::vec3 look = camera->Front * fuerza;
+                    models->modelsPhysics.back()->body->setRestitution(0.5f);
+                    //models->modelsPhysics.back()->body->setGravity(btVector3)
+                    //models->modelsPhysics.back()->body->setmas
+                    models->modelsPhysics.back()->body->setFriction(0.3);
+                    models->modelsPhysics.back()->body->setRollingFriction(0.3); 
+                    models->modelsPhysics.back()->body->setAngularFactor(btVector3(1, 1, 1));
+                    models->modelsPhysics.back()->body->applyCentralImpulse(btVector3(look.x, look.y, look.z));
+                    //models->modelsPhysics.back()->body->setLinearVelocity(btVector3(look.x, look.y, look.z));
+                    //models->modelsPhysics.back()->body->setCollisionFlags(models->modelsPhysics.back()->body->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
                 }
 
                 if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -96,7 +111,6 @@ namespace Cogravi
                     isVr = false;
                     isPc = false;
                     glViewport(0, 0, WIDTH, HEIGHT);
-                    debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
                 }
 
                 if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
@@ -109,20 +123,6 @@ namespace Cogravi
                     case CameraType::THIRD_PERSON:
                         camera->setMode(CameraType::FIRST_PERSON);
                     }
-                }
-
-                if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-                {
-                    if (!input->isWireframe)
-                    {
-                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-                    }
-                    else
-                    {
-                        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                    }
-                    input->isWireframe = !input->isWireframe;
                 }
 
             };
@@ -213,7 +213,7 @@ namespace Cogravi
 
         void loadTexturesImGui()
         {
-            texturesImGui.push_back(Util::loadTexture("assets\\textures\\tierra.png"));
+            texturesImGui.push_back(Util::loadTexture("assets\\textures\\VR.png"));
         }
 
         void loadTextureObjects()
@@ -250,7 +250,7 @@ namespace Cogravi
             avatar = new Avatar(bulletWorldController);
             //aula = new Aula(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/aula/aula.obj", bulletWorldController);
 
-            terrain = new Terrain("assets\\textures\\marble.jpg", glm::vec3(1000, -0.01f, 1000), 100.0f, *util->myShaders[ShaderType::TERRAIN], bulletWorldController);
+            terrain = new Terrain("assets\\textures\\marble.jpg", glm::vec3(1000, -0.01f, 1000), 500.0f, *util->myShaders[ShaderType::TERRAIN], bulletWorldController);
             skybox = new Skybox("bosque", "png", *util->myShaders[ShaderType::CUBE_MAP], *util->myShaders[ShaderType::SKYBOX]);
 
             debugDrawer = new DebugDrawer();
@@ -405,9 +405,9 @@ namespace Cogravi
         {
             inicializarImgui();
             inicializarScene();
-             inicializarVR();
+             /*inicializarVR();
 
-             avatar->Init();
+             avatar->Init();*/
             vincularFrambufferEngine();
             startFrame = glfwGetTime();
         }
@@ -430,7 +430,7 @@ namespace Cogravi
 
             debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
             bulletWorldController->dynamicsWorld->debugDrawWorld();
-            debugDrawer->col = glm::vec3(0, 1, 0);
+            //debugDrawer->color = glm::vec3(0, 1, 0);
 
         }
 
@@ -568,7 +568,7 @@ namespace Cogravi
 
                     debugDrawer->SetMatrices(avatar->view, avatar->proj);
                     bulletWorldController->dynamicsWorld->debugDrawWorld();
-                    debugDrawer->col = glm::vec3(0, 1, 0);
+                    //debugDrawer->color = glm::vec3(0, 1, 0);
 
                     // Unbind the eye buffer
                     glBindFramebuffer(GL_FRAMEBUFFER, eyeFrameBuffers[eye]);
@@ -720,7 +720,6 @@ namespace Cogravi
 
                 debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
                 bulletWorldController->dynamicsWorld->debugDrawWorld();
-                debugDrawer->col = glm::vec3(0, 1, 0);
 
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -824,19 +823,25 @@ namespace Cogravi
             ImGui::Text("Collision Objects: %d", bulletWorldController->dynamicsWorld->getNumCollisionObjects());
             ImGui::Text("Time: %.1f", animationTime);
 
-            /*if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(100, 100)))
-            {
-                isEngine = false;
-                isPc = true;
-                isVr = false;
-
-                int w, h;
-                glfwGetWindowSize(window, &w, &h);
-                glViewport(0, 0, w, h);
-
+            ImGui::Separator();
+            if (ImGui::Checkbox("Draw Wireframe", &isDrawWireframe))
                 debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
-            }*/
-            ImGui::SameLine(120);
+
+            if (ImGui::Checkbox("Draw AABB", &isDrawAABB))
+                debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawAabb);
+
+            if (ImGui::Checkbox("Models Wireframe", &isWireframe))
+            {
+                if (isWireframe)
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                else
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                //isWireframe = !isWireframe;
+            }
+            ImGui::ColorEdit3("Draw Color", glm::value_ptr(debugDrawer->color));
+
+
+            ImGui::Separator();
             if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(100, 100)))
             {
                 if (ovr)
@@ -846,7 +851,6 @@ namespace Cogravi
                     isPc = false;
                     isVr = true;
                 }
-                //debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
             }
             ImGui::SameLine(240);
 
@@ -897,20 +901,16 @@ namespace Cogravi
 
                 ImGui::Text("Rigidbody");
 
-                if (ImGui::DragFloat3("Angular Factor ", glm::value_ptr(modelSelect->angularFactor), 0.01f))
-                {
-                    modelSelect->changeAngularFactor();
-                }
-                if (ImGui::DragFloat3("Linear Velocity", glm::value_ptr(modelSelect->linearVelocity), 0.01f))
-                {
-                    modelSelect->changeLinearVelocity();
-                }
                 if (ImGui::DragFloat("Mass", &modelSelect->mass, 0.01f))
                 {
                     modelSelect->changeMass();
                 }
                
-                ImGui::InputTextMultiline("Description", modelSelect->description, sizeof(modelSelect->description));
+                ImGui::Separator();
+
+                ImGui::Text("Description");
+
+                ImGui::InputTextMultiline(" ", modelSelect->description, sizeof(modelSelect->description));
 
                 //// Basic columns
                 //if (ImGui::TreeNode("Basic"))
@@ -944,6 +944,7 @@ namespace Cogravi
                 //    ImGui::Separator();
                 //    ImGui::TreePop();
                 //}
+                ImGui::Separator();
                 if (ImGui::Button("Eliminar", ImVec2(50, 50)))
                 {
                     models->removeModel(modelSelect, bulletWorldController);
@@ -1165,7 +1166,7 @@ namespace Cogravi
         {
             ImGui::Begin("Terrain", NULL);
             ImGui::Text("Configuration");
-            static int repeat = 100;
+            static int repeat = 500;
             static vector<float> volumen = { 1000.0f,1000.0f };
             if (ImGui::DragInt("Repeat", &repeat, 0.1f, 1, 1000))
             {
