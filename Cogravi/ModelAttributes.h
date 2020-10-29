@@ -31,7 +31,7 @@ namespace Cogravi
 
 		int shape_current;
 		float margin = 1.0f;
-		glm::vec3 shapeScalar = glm::vec3(1.0f);
+		glm::vec3 shapeScalar = glm::vec3(0.10f);
 		bool isCollision = false;
 
 		//RigidBody

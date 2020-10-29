@@ -16,7 +16,6 @@ namespace Cogravi {
     {
         aiMatrix4x4 offsetMatrix;
         aiMatrix4x4 finalWorldTransform;
-
     };
 
     struct VertexBoneData

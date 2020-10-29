@@ -83,6 +83,7 @@ namespace Cogravi
 			btTransform physicsTransform;
 			body->getMotionState()->getWorldTransform(physicsTransform);
 			physicsTransform.getOpenGLMatrix(glm::value_ptr(physicsMatrix));
+			position = glm::vec3(physicsMatrix[3][0], physicsMatrix[3][1], physicsMatrix[3][2]);
 			
 		}
 

@@ -16,6 +16,9 @@ namespace Cogravi
         GameObject* model;
         GameObject* model1;
 
+        float
+            sensitivity = 1.0f;
+
 
         //vector<Skeletal*> skeletal;
        DynamicGameObject* animation;
@@ -111,19 +114,7 @@ namespace Cogravi
                     isVr = false;
                     isPc = false;
                     glViewport(0, 0, WIDTH, HEIGHT);
-                }
-
-                if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-                {
-                    switch (camera->getMode())
-                    {
-                    case CameraType::FIRST_PERSON:
-                        camera->setMode(CameraType::THIRD_PERSON);
-                        break;
-                    case CameraType::THIRD_PERSON:
-                        camera->setMode(CameraType::FIRST_PERSON);
-                    }
-                }
+                }              
 
             };
 
@@ -183,11 +174,13 @@ namespace Cogravi
                 animation->addAnimation("Hurricane Kick.dae");
                 animation->addAnimation("Great Sword Slash.dae");
                 animation->addAnimation("Great Sword Walk.dae");
+                animation->addAnimation("Standing Melee Attack Backhand.dae");
 
 
            
-            models->addModel(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.1f, 1.1f, 1.1f), "assets/objects/mirana/mirana.obj");
-            models->addModel(glm::vec3(-10.0f, 10.00f, 50.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/helicoptero/camcopters100.obj");
+            models->addModel(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), "assets/objects/mirana/mirana.obj");
+            models->addModel(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "assets/objects/tunel/tunel.obj");
+            models->addModel(glm::vec3(-10.0f, 3.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/helicoptero/camcopters100.obj");
 
 
             Texture sd = Texture(Util::loadTexture("assets/objects/mango/Mango_01_DIFF.png"), TextureType::DIFFUSE);
@@ -715,9 +708,9 @@ namespace Cogravi
                 models->render(*camera, *shaderModel);
                 //aula->render(*camera, *shaderModel);
 
-                animation->renderInstance(*camera, *shaderInstanceDynamic, animationTime * 1.0f);
+                animation->renderInstance(*camera, *shaderInstanceDynamic, animationTime * sensitivity);
 
-                player->render(*camera, *shaderAnimation, animationTime);
+                //player->render(*camera, *shaderAnimation, animationTime);
 
                 model->renderInstance(*camera, *shaderInstance);
 
@@ -757,18 +750,23 @@ namespace Cogravi
 
         }
 
-
+        float currentFrame;
+        bool pausa = false;
         int render()
         {
             renderInicializar();
             //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             while (!glfwWindowShouldClose(window))
             {
-                
-                float currentFrame = glfwGetTime();
+                currentFrame = glfwGetTime();
+
                 deltaTime = currentFrame - lastFrame;
                 lastFrame = currentFrame;
-                animationTime = currentFrame - startFrame;
+
+                if (!pausa)
+                {                 
+                    animationTime = currentFrame - startFrame;
+                }
 
                 if (isEngine)
                     renderEngine();
@@ -868,17 +866,17 @@ namespace Cogravi
                 ImGui::Text("Index: %d", modelSelect->userIndex);
                 ImGui::Separator();
                 ImGui::Text("Transform");
-                ImGui::DragFloat3("Position", glm::value_ptr(modelSelect->position), 0.1);
-                ImGui::DragFloat3("Translate", glm::value_ptr(modelSelect->translate), 0.1f);
+                ImGui::DragFloat3("Position", glm::value_ptr(modelSelect->position), 0.01f);
+                ImGui::DragFloat3("Translate", glm::value_ptr(modelSelect->translate), 0.01f);
                 ImGui::DragFloat3("Rotation", glm::value_ptr(modelSelect->rotation), 0.1);
-                ImGui::DragFloat3("Scale", glm::value_ptr(modelSelect->scale), 0.1);
+                ImGui::DragFloat3("Scale", glm::value_ptr(modelSelect->scale), 0.01f, 0.01f, 10.0f);
 
                 ImGui::Text("Collider");
 
                 const char* shapes[] = { "Box", "Sphere", "Capsule", "Cylinder", "Cone","Mesh" };
                 if (ImGui::Combo("Shape", &modelSelect->shape_current, shapes, IM_ARRAYSIZE(shapes)))
                 {
-                    modelSelect->shapeScalar = glm::vec3(1.0f);
+                    modelSelect->shapeScalar = glm::vec3(0.10f);
                     modelSelect->changeBodyPhysics(bulletWorldController);
                 }
                 /*ImGui::DragFloat3("Center", rotation, 0.1);
@@ -892,7 +890,7 @@ namespace Cogravi
                 }
                 else
                 {
-                    if (ImGui::DragFloat3("Size", glm::value_ptr(modelSelect->shapeScalar), 0.1f))
+                    if (ImGui::DragFloat3("Size", glm::value_ptr(modelSelect->shapeScalar), 0.01f, 0.01f,100.0f))
                     {
                         modelSelect->changeScalar();
                     }
@@ -948,7 +946,7 @@ namespace Cogravi
                 //    ImGui::TreePop();
                 //}
                 ImGui::Separator();
-                if (ImGui::Button("Eliminar", ImVec2(50, 50)))
+                if (ImGui::Button("Eliminar", ImVec2(100, 50)))
                 {
                     models->removeModel(modelSelect, bulletWorldController);
                 }
@@ -1157,10 +1155,37 @@ namespace Cogravi
 
         void animationImGui()
         {
+            static float angle = 0.0f;
             ImGui::Begin("Animation", NULL);
             ImGui::SliderInt("Animaciones", &animation->currentAnimation, 0, animation->numAnimations - 1);
+            ImGui::SliderAngle("Angle", &angle);
+            ImGui::DragFloat("sensitivity", &sensitivity, 0.01f, 0.0f, 10.0f);
+            ImGui::Text("tickPerSecond: %.3f", animation->ticksPerSecond);
+            if (ImGui::Button("Time"))
+            {
+                cout << "fmod: " << fmod(animationTime, 2) << "\n";
+                animationTime = 0.0f;
+                ImGui::GetIO().DeltaTime = 1 / 120.0f;
+                currentFrame = 0.0f;
+                startFrame = lastFrame;
+                //glfwSetTime(0.0011f);
+            }
 
-            ImGui::Separator();
+            ImGui::Text("lastFrame: %.3f", lastFrame);
+            ImGui::Text("startFrame: %.3f", startFrame);
+            ImGui::Text("deltaTime: %.3f", deltaTime);
+
+            if (ImGui::Checkbox("Pausa", &pausa))
+            {
+                
+                startFrame = lastFrame - animationTime;
+            }
+             float arr[] = { lastFrame, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
+            ImGui::PlotLines("Frame Times", arr, IM_ARRAYSIZE(arr));
+
+            ImGui::PlotHistogram("Histogram", arr, IM_ARRAYSIZE(arr), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80.0f));
+            //ImGui::ListBox
+        
             ImGui::End();
 
         }
@@ -1202,17 +1227,12 @@ namespace Cogravi
         {
             ImGui::Begin("Camera", NULL);
 
-
-
             static int modeCamera = 0;
             if(ImGui::RadioButton("First Person", &modeCamera, 0))
                 camera->setMode(CameraType::FIRST_PERSON);
             ImGui::SameLine();
             if(ImGui::RadioButton("Third Person", &modeCamera, 1))
                 camera->setMode(CameraType::THIRD_PERSON);
-
-
-                
 
             ImGui::Text("Transform");
 
