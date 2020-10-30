@@ -23,77 +23,6 @@ using namespace Cogravi;
 using namespace cv;
 
 
-
-
-Mat CapturedImage;
-
-class CaptureClient
-{
-
-private:
-    VideoCapture Capture;
-    int ActiveChannel;
-    const int MaxChannels;
-
-public:
-    bool ThreadEnabled;
-
-    CaptureClient() : ActiveChannel(0), MaxChannels(2), ThreadEnabled(true) {}
-
-    void SwitchChannel() {
-
-        // switch to next active channel
-        if (ActiveChannel >= MaxChannels) {
-            ActiveChannel = 1;
-        }
-        else {
-            ActiveChannel++;
-            //Capture.grab();
-        }
-    }
-
-    void CaptureThread() {
-        int CurrentChannel = 0;
-
-        while (ThreadEnabled) {
-
-            // if active channel has switched
-            if (ActiveChannel != CurrentChannel) {
-
-                // broadcast active channel
-                switch (ActiveChannel)
-                {
-                case 1:
-                    // channel one is broadcast from webcam
-                    Capture.open(0);
-                    break;
-                case 2:
-                    // channel two is broadcast from video file
-                    Capture.open("28.mp4");
-                    break;
-                default:
-                    Capture.release();
-                }
-
-                // set current channel to active channel
-                CurrentChannel = ActiveChannel;
-            }
-
-            // obtain frame from channel
-            if (Capture.isOpened()) {
-                Capture >> CapturedImage;
-            }
-        }
-
-        // release capture
-        if (Capture.isOpened()) {
-            Capture.release();
-        }
-
-    }
-};
-
-
 int main()
 {
     if (glfwInit() == GL_FALSE) return 0;
@@ -104,9 +33,6 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
 
     // glfw window creation
     // --------------------
@@ -162,14 +88,19 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
+    //VideoCapture cap("cp.mp4");
+    // cap is the object of class video capture that tries to capture Bumpy.mp4
+    //if (!cap.isOpened())  // isOpened() returns true if capturing has been initialized.
+    //{
 
-    
+    //    return -1;
+    //}
 
-
-    CaptureClient* captureClient = new CaptureClient();
-    std::thread ct(&CaptureClient::CaptureThread, captureClient);
-
-
+    //double fps = cap.get(CV__CAP_PROP_LATEST); //get the frames per seconds of the video
+    //// The function get is used to derive a property from the element.
+    //// Example:
+    // CV_CAP_PROP_POS_MSEC :  Current Video capture timestamp.
+    // CV_CAP_PROP_POS_FRAMES : Index of the next frame.
 
      unsigned int texture1;
     // texture 1
@@ -183,15 +114,39 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-   
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, CapturedImage.cols, CapturedImage.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, CapturedImage.ptr());
+  
 
   
-    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
-    // -------------------------------------------------------------------------------------------
+   
+   
+
+    int rows = 600;
+    int cols = 800;
+    int rec = 150;
+
+    //crear una imagen de 800x600 pixeles
+    //canal BGR de tipo CV_8U( valores de 0 a 255)
+    //inicializamos a 0 (color negro)
+    Mat img(rows, cols, CV_8UC3, Scalar::all(0));
+
+    //dibuja un circulo en el centro de la imagen de un radio de 250
+    circle(img, Point(cols / 2, rows / 2), 250, Scalar(255, 0, 0), 3);
+
+    //dibuja una linea
+    line(img, Point(), Point(cols, rows), CV_RGB(255, 0, 0), 2);
+
+    //dibuja un rectangulo
+    rectangle(img, Point(rec, rec), Point(cols - rec, rows - rec), CV_RGB(0, 255, 255));
+
+    //dibuja el texto Opencv 2
+    char textop[100] = "Yordy Leonidas, estudiante de ingenieria de sistemas";
+    putText(img, textop, Point(180, 320), FONT_HERSHEY_SCRIPT_COMPLEX, 2, CV_RGB(125, 255, 145),2);
+
     ourShader.use(); // don't forget to activate/use the shader before setting uniforms!
-    // either set it manually like so:
+   // either set it manually like so:
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.cols, img.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, img.ptr());
+    //system("cls");
 
     // render loop
     // -----------
@@ -212,15 +167,28 @@ int main()
 
         glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
 
+        //Mat frame;
 
-        
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, CapturedImage.cols, CapturedImage.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, CapturedImage.ptr());
-            captureClient->SwitchChannel();
-            captureClient->SwitchChannel();
+        //if (!cap.read(frame))
+        //{
+        //    cap = VideoCapture("cp.mp4");
+        //    // cap is the object of class video capture that tries to capture Bumpy.mp4
+        //    if (!cap.isOpened())  // isOpened() returns true if capturing has been initialized.
+        //    {
 
-        
+        //        return -1;
+        //    }
+        //}
+
+
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame.cols, frame.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, frame.ptr());
+
+
+       
+           
         
 
+        //imshow("A_good_name", frame);
         ourShader.use();
         // render container
         glBindVertexArray(VAO);
@@ -231,9 +199,9 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    captureClient->ThreadEnabled = false;
+   /* captureClient->ThreadEnabled = false;
     ct.join();
-    delete captureClient;
+    delete captureClient;*/
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VAO);
