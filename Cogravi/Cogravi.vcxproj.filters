@@ -229,5 +229,11 @@
     <None Include="assets\shaders\instanceModel.vert">
       <Filter>Archivos de encabezado\Model</Filter>
     </None>
+    <None Include="assets\shaders\practica.frag">
+      <Filter>Archivos de origen</Filter>
+    </None>
+    <None Include="assets\shaders\practica.vert">
+      <Filter>Archivos de origen</Filter>
+    </None>
   </ItemGroup>
 </Project>
