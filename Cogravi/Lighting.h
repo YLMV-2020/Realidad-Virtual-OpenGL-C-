@@ -49,8 +49,13 @@ namespace Cogravi
 		LuzDireccional luzDireccional;
 		vector<LuzPuntual> luzPuntual;
 		LuzFocal luzFocal;
+
+		int numPuntual;
 		int shininess;
 
+		bool isLightDirectional = false;
+		bool isLightPoint = false;
+		bool isLightSpot = false;
 
 		static Lighting* Instance()
 		{
@@ -73,51 +78,72 @@ namespace Cogravi
 			luzFocal.cutOff = 10.0f;
 			luzFocal.outerCutOff = 12.5f;
 
-			shininess = 5;
+			shininess = 32.0f;
+			numPuntual = 0;
 		}
 
-		void loadShader(Shader& shader)
+		void loadShader(Camera& camera, Shader& shader, Shader& shaderSol)
 		{
-			shader.setBool("isLightDirectional", true);
-			shader.setBool("isLightPoint", true);
-			shader.setBool("isLightSpot", true);
-			shader.setFloat("material.shininess", 32.0f);
+			shader.use();
 
-			shader.setVec3("dirLight.direction", luzDireccional.direction);
-			shader.setVec3("dirLight.ambient", luzDireccional.ambient);
-			shader.setVec3("dirLight.diffuse", luzDireccional.diffuse);
-			shader.setVec3("dirLight.specular", luzDireccional.specular);
-                
+			shader.setVec3("viewPos", camera.Position);
 
-			shader.setVec3("spotLight.ambient", luzFocal.ambient);
-			shader.setVec3("spotLight.diffuse", luzFocal.diffuse);
-			shader.setVec3("spotLight.specular", luzFocal.specular);
-			shader.setFloat("spotLight.constant", luzFocal.constant);
-			shader.setFloat("spotLight.linear", luzFocal.linear);
-			shader.setFloat("spotLight.quadratic", luzFocal.quadratic);
-			shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(luzFocal.cutOff)));
-			shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(luzFocal.outerCutOff)));
-                    
-		
+			shader.setBool("isLightDirectional", isLightDirectional);
+			shader.setBool("isLightPoint", isLightPoint);
+			shader.setBool("isLightSpot", isLightSpot);
+			shader.setFloat("material.shininess", shininess);
+
+			if (isLightDirectional)
+			{
+				shader.setVec3("dirLight.direction", luzDireccional.direction);
+				shader.setVec3("dirLight.ambient", luzDireccional.ambient);
+				shader.setVec3("dirLight.diffuse", luzDireccional.diffuse);
+				shader.setVec3("dirLight.specular", luzDireccional.specular);
+			}
+
+			if (isLightSpot)
+			{
+				shader.setVec3("spotLight.position", camera.Position);
+				shader.setVec3("spotLight.direction", camera.Front);
+				shader.setVec3("spotLight.ambient", luzFocal.ambient);
+				shader.setVec3("spotLight.diffuse", luzFocal.diffuse);
+				shader.setVec3("spotLight.specular", luzFocal.specular);
+				shader.setFloat("spotLight.constant", luzFocal.constant);
+				shader.setFloat("spotLight.linear", luzFocal.linear);
+				shader.setFloat("spotLight.quadratic", luzFocal.quadratic);
+				shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(luzFocal.cutOff)));
+				shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(luzFocal.outerCutOff)));
+			}
+
+			if (isLightPoint)
+			{
+				shader.setInt("sizePointLights", numPuntual);
+
+				for (int i = 0; i < numPuntual; i++)
+				{
+					updateSol(shaderSol, luzPuntual[i].ambient);
+					loadShaderLightPoint(shader, i);
+					sol[i]->render(camera, shaderSol);
+				}
+			} 	
 		}
 
-		void loadShaderLightPoint(Shader& shader)
+		void loadShaderLightPoint(Shader& shader, int index)
 		{
-			int i = sizeSol() - 1;
-			shader.setVec3("pointLights[" + to_string(i) + "].position", getSol(i)->position);
-			shader.setVec3("pointLights[" + to_string(i) + "].ambient", luzPuntual[i].ambient);
-			shader.setVec3("pointLights[" + to_string(i) + "].diffuse", luzPuntual[i].diffuse);
-			shader.setVec3("pointLights[" + to_string(i) + "].specular", luzPuntual[i].specular);
-			shader.setFloat("pointLights[" + to_string(i) + "].constant", luzPuntual[i].constant);
-			shader.setFloat("pointLights[" + to_string(i) + "].linear", luzPuntual[i].linear);
-			shader.setFloat("pointLights[" + to_string(i) + "].quadratic", luzPuntual[i].quadratic);			
+			shader.use();
+
+			shader.setVec3("pointLights[" + to_string(index) + "].position", getSol(index)->position);
+			shader.setVec3("pointLights[" + to_string(index) + "].ambient", luzPuntual[index].ambient);
+			shader.setVec3("pointLights[" + to_string(index) + "].diffuse", luzPuntual[index].diffuse);
+			shader.setVec3("pointLights[" + to_string(index) + "].specular", luzPuntual[index].specular);
+			shader.setFloat("pointLights[" + to_string(index) + "].constant", luzPuntual[index].constant);
+			shader.setFloat("pointLights[" + to_string(index) + "].linear", luzPuntual[index].linear);
+			shader.setFloat("pointLights[" + to_string(index) + "].quadratic", luzPuntual[index].quadratic);			
 		}
 
 		void addSol(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
 		{
-			vector<Texture> texturas;
-			texturas.push_back(Texture(Util::loadTexture("assets/objects/sol/texture sol.png"), TextureType::DIFFUSE));
-			GameObject* model = new GameObject(position, rotation, scale, "assets/objects/sol/sol.obj", texturas);
+			GameObject* model = new GameObject(position, rotation, scale, "assets/objects/cubo.obj");
 			sol.push_back(model);
 
 			LuzPuntual luz;
@@ -130,6 +156,8 @@ namespace Cogravi
 			luz.linear = 0.09f;
 			luz.quadratic = 0.032f;
 
+			numPuntual++;
+
 			luzPuntual.push_back(luz);
 		}
 
@@ -139,24 +167,26 @@ namespace Cogravi
 			{
 				sol.erase(sol.begin() + index);
 				luzPuntual.erase(luzPuntual.begin() + index);
+				numPuntual--;
 			}
+			
 		}
 
-		//void updateSol(int index, glm::vec3 ambient)
-		//{
-		//	sol[index]->shader.use();
-		//	sol[index]->shader.setVec3("color", ambient);
-		//}
+		void updateSol(Shader& shader, glm::vec3 ambient)
+		{
+			shader.use();
+			shader.setVec3("color", ambient);
+		}
 
 		void render(Camera& camera, Shader& shader)
 		{
 			for (GameObject*& model : sol)
-				model->render(camera, shader);
+				model->render(camera, shader);	
 		}
 
 		int sizeSol()
 		{
-			return sol.size();
+			return numPuntual;
 		}
 
 		GameObject* getSol(int index)

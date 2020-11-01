@@ -9,22 +9,12 @@ namespace Cogravi
     {
     public:
 
-        Shader* shaderModel;
-        Shader* shaderAnimation;
-        Shader* shaderInstance;
-        Shader* shaderInstanceDynamic;
+        
         GameObject* model;
         GameObject* model1;
 
-        float
-            sensitivity = 1.0f;
-
-
-        //vector<Skeletal*> skeletal;
-       DynamicGameObject* animation;
-        //DynamicGameObject* animation;
-
-       Player* player;
+       DynamicGameObject* vegeta; 
+       DynamicGameObject* doctora; 
 
         static Application* Instance()
         {
@@ -165,22 +155,32 @@ namespace Cogravi
            
 
             //Texture tx(Util::)
-            //animation = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
+            //vegeta = new DynamicGameObject(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.02f, 0.02f, 0.02f), "assets/animations/player/player.dae", *shaderAnimation);
 
-            animation = new DynamicGameObject(glm::vec3(10.0f * (1), 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/player/player.dae", *shaderInstanceDynamic, {}, 200);
-                animation->addAnimation("Hip Hop Dancing.dae");
-                animation->addAnimation("Zombie Walk.dae");
-                animation->addAnimation("Ninja Idle.dae");
-                animation->addAnimation("Hurricane Kick.dae");
-                animation->addAnimation("Great Sword Slash.dae");
-                animation->addAnimation("Great Sword Walk.dae");
-                animation->addAnimation("Standing Melee Attack Backhand.dae");
+            vegeta = new DynamicGameObject(glm::vec3(7.0f , 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.025f, 0.025f, 0.025f), "assets/animations/vegeta/vegeta.dae", *shaderAnimation);
+            vegeta->addAnimation("Standing 1H Magic Attack 02.dae");
+            vegeta->addAnimation("Jumping.dae");
+            vegeta->addAnimation("Walking.dae");
+            vegeta->addAnimation("Running.dae");
+            vegeta->addAnimation("Flying.dae");
+            vegeta->addAnimation("Sword And Shield Death.dae");
+            vegeta->addAnimation("Roundhouse Kick.dae");
+            vegeta->addAnimation("Headspin End.dae");
+            vegeta->addAnimation("Swing Dancing.dae");
+            vegeta->addAnimation("Low Crawl.dae");
+            vegeta->addAnimation("Front Twist Flip.dae");
+            vegeta->addAnimation("Swimming.dae");
+            vegeta->addAnimation("Goalkeeper Diving Save.dae");
+            vegeta->addAnimation("Soccer Penalty Kick.dae");
 
 
-           
+            doctora = new DynamicGameObject(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/doctora/doctora.dae", *shaderAnimation);
+            doctora->addAnimation("Dig And Plant Seeds.dae");
+
             models->addModel(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), "assets/objects/mirana/mirana.obj");
             models->addModel(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "assets/objects/tunel/tunel.obj");
             models->addModel(glm::vec3(-10.0f, 3.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/helicoptero/camcopters100.obj");
+            //models->addModel(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.1f, 2.1f, 2.1f), "assets/objects/Bar/Bar.obj");
 
 
             Texture sd = Texture(Util::loadTexture("assets/objects/mango/Mango_01_DIFF.png"), TextureType::DIFFUSE);
@@ -234,7 +234,7 @@ namespace Cogravi
             textureFloors.push_back(Util::loadTexture("assets\\textures\\TiledConcrete.png"));
             textureFloors.push_back(Util::loadTexture("assets\\textures\\wood.png"));
         }
-        //Aula* aula;
+
         void inicializarScene()
         {
             util = Util::Instance();
@@ -253,8 +253,6 @@ namespace Cogravi
             debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);          
 
             luz = Lighting::Instance();
-
-
             models = new ModelController();
 
             loadTextureFloors();
@@ -266,9 +264,9 @@ namespace Cogravi
             shaderAnimation = util->myShaders[ShaderType::MODEL_DYNAMIC];
             shaderInstance = util->myShaders[ShaderType::INSTANCE_STATIC];
             shaderInstanceDynamic = util->myShaders[ShaderType::INSTANCE_DYNAMIC];
+            shaderSol = util->myShaders[ShaderType::SOL];
 
             player = new Player(*shaderAnimation, bulletWorldController);
-
             camera = new Camera(player->body);
             input = new InputProcessor(window, camera);
 
@@ -550,13 +548,13 @@ namespace Cogravi
                     ovrMatrix4f ovrProjection = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], camera->NEAR, camera->FAR, ovrProjection_None);
 
                     avatar->Render(eyeRenderPose[eye], ovrProjection);
-                    skybox->render(*avatar, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
-                    terrain->render(*avatar, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
+                    skybox->render(*avatar, luz->isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
+                    terrain->render(*avatar, luz->isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
 
                     models->render(*avatar, *shaderModel);
                     //aula->render(*camera, *shaderModel);
 
-                    animation->renderInstance(*avatar, *shaderInstanceDynamic, animationTime * 1.0f);
+                    vegeta->renderInstance(*avatar, *shaderInstanceDynamic, animationTime * 1.0f);
 
                     //player->render(*avatar, *shaderAnimation, animationTime);
 
@@ -630,7 +628,7 @@ namespace Cogravi
             models->update();
             player->input(window, deltaTime);
             player->update();
-            //animation->update();
+            //vegeta->update();
 
             input->processInput(deltaTime);
 
@@ -702,29 +700,33 @@ namespace Cogravi
                 glClearColor(0, 0, 0, 0);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                skybox->render(*camera, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
-                terrain->render(*camera, isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
+                skybox->render(*camera, luz->isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
+                terrain->render(*camera, luz->isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
 
                 models->render(*camera, *shaderModel);
+                
                 //aula->render(*camera, *shaderModel);
 
-                animation->renderInstance(*camera, *shaderInstanceDynamic, animationTime * sensitivity);
+                vegeta->render(*camera, *shaderAnimation, animationTime);
+                doctora->render(*camera, *shaderAnimation, animationTime);
 
-                //player->render(*camera, *shaderAnimation, animationTime);
+                player->render(*camera, *shaderAnimation, animationTime);
 
                 model->renderInstance(*camera, *shaderInstance);
-
+                //luz->render(*camera, *shaderSol);
+                //televisor->render(*camera);
                 debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
                 bulletWorldController->dynamicsWorld->debugDrawWorld();
+
+                DockSpace();
+                lightingImGui();
 
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-            DockSpace();
-
             settingsImGui();
             renderImGui();
-            lightingImGui();
+           
             terrainImGui();
             cameraImGui();
             skyboxImGui();
@@ -752,10 +754,12 @@ namespace Cogravi
 
         float currentFrame;
         bool pausa = false;
+        
+       
         int render()
         {
             renderInicializar();
-            //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
             while (!glfwWindowShouldClose(window))
             {
                 currentFrame = glfwGetTime();
@@ -1043,28 +1047,11 @@ namespace Cogravi
         {
             ImGui::Begin("Lighting", NULL);
 
-            shaderModel->use();
-            shaderModel->setVec3("viewPos", camera->Position);
+            ImGui::Checkbox("Luz Direccional", &luz->isLightDirectional);
+            ImGui::Checkbox("Luz Puntual", &luz->isLightPoint);
+            ImGui::Checkbox("Luz Focal", &luz->isLightSpot);
 
-            if (ImGui::Checkbox("Luz Direccional", &isLightDirectional))
-            {
-                shaderModel->setBool("isLightDirectional", isLightDirectional);
-            }
-            if (ImGui::Checkbox("Luz Puntual", &isLightPoint))
-            {
-                shaderModel->setBool("isLightPoint", isLightPoint);
-            }
-            if (ImGui::Checkbox("Luz Focal", &isLightSpot))
-            {
-                shaderModel->setBool("isLightSpot", isLightSpot);
-            }
-
-            //if (ImGui::SliderInt("Shininess", &luz->shininess, 1, 12));
-
-            shaderModel->setFloat("material.shininess", 32.0f);
-            //shaderModel->setFloat("material.shininess", pow(2, luz->shininess));
-
-            if (isLightDirectional)
+            if (luz->isLightDirectional)
             {
                 ImGui::Text("Luz Direccional");
 
@@ -1074,25 +1061,16 @@ namespace Cogravi
                 ImGui::ColorEdit3("Especular", glm::value_ptr(luz->luzDireccional.specular));
 
                 ImGui::Separator();
-
-                shaderModel->setVec3("dirLight.direction", luz->luzDireccional.direction);
-                shaderModel->setVec3("dirLight.ambient", luz->luzDireccional.ambient);
-                shaderModel->setVec3("dirLight.diffuse", luz->luzDireccional.diffuse);
-                shaderModel->setVec3("dirLight.specular", luz->luzDireccional.specular);
             }
 
-            if (isLightPoint)
+            if (luz->isLightPoint)
             {
-                for (int i = 0; i < luz->luzPuntual.size(); i++)
+                for (int i = 0; i < luz->sizeSol(); i++)
                 {
                     ImGui::Text("Luz Puntual %d", i + 1);
 
                     ImGui::DragFloat3((to_string(i + 1) + ".Position").c_str(), glm::value_ptr(luz->getSol(i)->position), 0.05f);
-                    if (ImGui::ColorEdit3((to_string(i + 1) + ".Ambiental").c_str(), glm::value_ptr(luz->luzPuntual[i].ambient)))
-                    {
-                        //luz->updateSol(i, luz->luzPuntual[i].ambient);
-                        shaderModel->use();
-                    }
+                    ImGui::ColorEdit3((to_string(i + 1) + ".Ambiental").c_str(), glm::value_ptr(luz->luzPuntual[i].ambient));
                     ImGui::ColorEdit3((to_string(i + 1) + ".Difusa").c_str(), glm::value_ptr(luz->luzPuntual[i].diffuse));
                     ImGui::ColorEdit3((to_string(i + 1) + ".Especular").c_str(), glm::value_ptr(luz->luzPuntual[i].specular));
                     ImGui::DragFloat((to_string(i + 1) + ".Constant").c_str(), &luz->luzPuntual[i].constant, 0.001f, 0.0f, 1.0f);
@@ -1102,28 +1080,18 @@ namespace Cogravi
                     if (ImGui::Button((to_string(i + 1) + ".Eliminar").c_str()))
                     {
                         luz->deleteSol(i);
-                        shaderModel->setInt("sizePointLights", luz->sizeSol());
                         break;
                     }
-
-                    shaderModel->setVec3("pointLights[" + to_string(i) + "].position", luz->getSol(i)->position);
-                    shaderModel->setVec3("pointLights[" + to_string(i) + "].ambient", luz->luzPuntual[i].ambient);
-                    shaderModel->setVec3("pointLights[" + to_string(i) + "].diffuse", luz->luzPuntual[i].diffuse);
-                    shaderModel->setVec3("pointLights[" + to_string(i) + "].specular", luz->luzPuntual[i].specular);
-                    shaderModel->setFloat("pointLights[" + to_string(i) + "].constant", luz->luzPuntual[i].constant);
-                    shaderModel->setFloat("pointLights[" + to_string(i) + "].linear", luz->luzPuntual[i].linear);
-                    shaderModel->setFloat("pointLights[" + to_string(i) + "].quadratic", luz->luzPuntual[i].quadratic);
 
                     ImGui::Separator();
                 }
                 if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(50, 50)))
                 {
-                    luz->addSol(glm::vec3(camera->Position.x, 10.0f, camera->Position.z), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-                    shaderModel->setInt("sizePointLights", luz->sizeSol());
+                    luz->addSol(camera->Position + camera->Front , glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.50f, 3.50f, 3.50f));
                 }
             }
 
-            if (isLightSpot)
+            if (luz->isLightSpot)
             {
 
                 ImGui::Text("Luz Focal");
@@ -1139,52 +1107,59 @@ namespace Cogravi
                 ImGui::DragFloat("OuterCutOff F", &luz->luzFocal.outerCutOff, 0.05f, 0.0f, 256.0f);
                 ImGui::DragFloat("CutOff F", &luz->luzFocal.cutOff, 0.05f, 0.0f, luz->luzFocal.outerCutOff);
 
-                shaderModel->setVec3("spotLight.position", camera->Position);
-                shaderModel->setVec3("spotLight.direction", camera->Front);
-                shaderModel->setVec3("spotLight.ambient", luz->luzFocal.ambient);
-                shaderModel->setVec3("spotLight.diffuse", luz->luzFocal.diffuse);
-                shaderModel->setVec3("spotLight.specular", luz->luzFocal.specular);
-                shaderModel->setFloat("spotLight.constant", luz->luzFocal.constant);
-                shaderModel->setFloat("spotLight.linear", luz->luzFocal.linear);
-                shaderModel->setFloat("spotLight.quadratic", luz->luzFocal.quadratic);
-                shaderModel->setFloat("spotLight.cutOff", glm::cos(glm::radians(luz->luzFocal.cutOff)));
-                shaderModel->setFloat("spotLight.outerCutOff", glm::cos(glm::radians(luz->luzFocal.outerCutOff)));
+               
             }
+
+            luz->loadShader(*camera, *shaderAnimation, *shaderSol);
+            luz->loadShader(*camera, *shaderModel, *shaderSol);
+            luz->loadShader(*camera, *shaderInstance, *shaderSol);
+            //luz->loadShader(*camera, *shaderInstanceDynamic);
+
+
             ImGui::End();
         }
-
+        float time = 0.0f;
         void animationImGui()
         {
             static float angle = 0.0f;
             ImGui::Begin("Animation", NULL);
-            ImGui::SliderInt("Animaciones", &animation->currentAnimation, 0, animation->numAnimations - 1);
-            ImGui::SliderAngle("Angle", &angle);
-            ImGui::DragFloat("sensitivity", &sensitivity, 0.01f, 0.0f, 10.0f);
-            ImGui::Text("tickPerSecond: %.3f", animation->ticksPerSecond);
-            if (ImGui::Button("Time"))
+            ImGui::Text("Vegeta");
+            if (ImGui::SliderInt("Animations", &vegeta->currentAnimation, 0, vegeta->numAnimations - 1))
             {
-                cout << "fmod: " << fmod(animationTime, 2) << "\n";
-                animationTime = 0.0f;
-                ImGui::GetIO().DeltaTime = 1 / 120.0f;
                 currentFrame = 0.0f;
                 startFrame = lastFrame;
-                //glfwSetTime(0.0011f);
+                time = 0.0f;
             }
+            ImGui::DragFloat("Sensitivity", &vegeta->sensitivity, 0.01f, 0.0f, 10.0f);
+            if (ImGui::Button("Time"))
+            {              
+                currentFrame = 0.0f;
+                startFrame = lastFrame;
+
+            }
+            
+            ImGui::SliderFloat("frame", &time, 0.0f, vegeta->getDurationAnimation());
 
             ImGui::Text("lastFrame: %.3f", lastFrame);
             ImGui::Text("startFrame: %.3f", startFrame);
             ImGui::Text("deltaTime: %.3f", deltaTime);
+            ImGui::Text("fmod: %.3f", fmod(animationTime, vegeta->getDurationAnimation()));
 
             if (ImGui::Checkbox("Pausa", &pausa))
             {
                 
                 startFrame = lastFrame - animationTime;
             }
-             float arr[] = { lastFrame, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
-            ImGui::PlotLines("Frame Times", arr, IM_ARRAYSIZE(arr));
 
-            ImGui::PlotHistogram("Histogram", arr, IM_ARRAYSIZE(arr), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80.0f));
-            //ImGui::ListBox
+            ImGui::Separator();
+
+            ImGui::Text("Doctora");
+            if (ImGui::SliderInt("Animations", &doctora->currentAnimation, 0, doctora->numAnimations - 1))
+            {
+                currentFrame = 0.0f;
+                startFrame = lastFrame;
+                time = 0.0f;
+            }
         
             ImGui::End();
 

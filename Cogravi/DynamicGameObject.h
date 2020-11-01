@@ -41,6 +41,7 @@ namespace Cogravi {
 
 		GLuint boneID;
 		float ticksPerSecond = 0.0f;
+		float sensitivity = 1.0f;
 
 	    unordered_map<string, const aiNodeAnim*> mapNodeAnim[MAX_ANIMATIONS];
 
@@ -199,6 +200,8 @@ namespace Cogravi {
 
 			transform = glm::scale(transform, scale);
 
+			shader.setVec3("viewPos", camera.Position);
+
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 			shader.setMat4("model", transform);
@@ -222,6 +225,9 @@ namespace Cogravi {
 			transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 
 			transform = glm::scale(transform, scale);
+
+			glm::vec3 posAvatar = glm::vec3(avatar.position.x, avatar.position.y, avatar.position.z);
+			shader.setVec3("viewPos", posAvatar);
 
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
@@ -267,6 +273,11 @@ namespace Cogravi {
 					mapNodeAnim[index][string(node_anim->mNodeName.data)] = node_anim;
 				}
 			}	
+		}
+
+		double getDurationAnimation()
+		{
+			return animations[currentAnimation]->mDuration;
 		}
 
 	private:
@@ -450,6 +461,8 @@ namespace Cogravi {
 
 				std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
 				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+				cout << "Tiene " << textures.size() << " texturas\n";
 
 				return MeshA(vertices, indices, textures, bones);
 			}
@@ -637,7 +650,7 @@ namespace Cogravi {
 			else
 				ticksPerSecond = 25.0f;
 		
-			double timeInTicks = second * ticksPerSecond;
+			double timeInTicks = second * ticksPerSecond * sensitivity;
 			float animationTime = fmod(timeInTicks, animation->mDuration);
 
 			readNodeHierarchy(animationTime, root[currentAnimation], identityMatrix);

@@ -21,16 +21,7 @@ namespace Cogravi
 		{
 			addBodyPhysicsCapsule(111299, worldController);
 			shape->setLocalScaling(btVector3(0.40f, 1.0f, 0.0f));
-
 			addAnimation("Female Tough Walk.dae");
-			//addAnimation("Jump.dae");
-			/*addAnimation("Hip Hop Dancing.dae");
-			addAnimation("Zombie Walk.dae");
-			addAnimation("Ninja Idle.dae");
-			addAnimation("Hurricane Kick.dae");
-			addAnimation("Great Sword Slash.dae");
-			addAnimation("Great Sword Walk.dae");*/
-
 		}
 
 		void render(Camera& camera, Shader& shader, float animationTime) override

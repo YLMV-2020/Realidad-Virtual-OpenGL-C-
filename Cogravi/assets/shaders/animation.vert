@@ -6,6 +6,8 @@ layout (location = 2) in vec2 aTexCoords;
 layout (location = 3) in ivec4 aBone;    
 layout (location = 4) in vec4 aWeights;
 
+out vec3 FragPos;
+out vec3 Normal;
 out vec2 TexCoords;
 
 uniform mat4 projection;
@@ -22,8 +24,9 @@ void main()
 		boneTransform += bones[aBone[2]] * aWeights[2];
 		boneTransform += bones[aBone[3]] * aWeights[3];		
     
+    FragPos = vec3(model * vec4(aPos, 1.0));
+    Normal = mat3(transpose(inverse(model))) * aNormal;  
     TexCoords = aTexCoords;
-
 
 	gl_Position = projection * view * model * boneTransform * vec4(aPos, 1.0);
 }

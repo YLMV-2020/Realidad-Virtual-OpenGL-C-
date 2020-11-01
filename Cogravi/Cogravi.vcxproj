@@ -177,6 +177,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TV.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
@@ -198,6 +199,8 @@
     <None Include="assets\shaders\practica.vert" />
     <None Include="assets\shaders\skybox.frag" />
     <None Include="assets\shaders\skybox.vert" />
+    <None Include="assets\shaders\sol.frag" />
+    <None Include="assets\shaders\sol.vert" />
     <None Include="assets\shaders\terrain.frag" />
     <None Include="assets\shaders\terrain.vert" />
   </ItemGroup>

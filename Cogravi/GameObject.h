@@ -63,6 +63,9 @@ namespace Cogravi {
 			glm::mat4 projection = camera.GetProjectionMatrix();
 			glm::mat4 view = camera.GetViewMatrix();
 			shader.use();
+
+			shader.setVec3("viewPos", camera.Position);
+
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 			
@@ -71,9 +74,13 @@ namespace Cogravi {
 
 		virtual void renderInstance(Avatar& avatar, Shader& shader)
 		{
-			glm::mat4 projection = avatar.proj;
-			glm::mat4 view = avatar.view;
+			glm::mat4 projection = avatar.GetProjectionMatrix();
+			glm::mat4 view = avatar.GetViewMatrix();
 			shader.use();
+
+			glm::vec3 posAvatar = glm::vec3(avatar.position.x, avatar.position.y, avatar.position.z);
+			shader.setVec3("viewPos", posAvatar);
+
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 
@@ -164,7 +171,6 @@ namespace Cogravi {
 
 			transform = glm::scale(transform, scale);
 
-			shader.setVec3("lightPos", glm::vec3(2, 4, 0));
 			shader.setVec3("viewPos", camera.Position);
 
 			shader.setMat4("model", transform);
@@ -178,8 +184,8 @@ namespace Cogravi {
 		{
 			shader.use();
 
-			glm::mat4 projection = avatar.proj;
-			glm::mat4 view = avatar.view;
+			glm::mat4 projection = avatar.GetProjectionMatrix();
+			glm::mat4 view = avatar.GetViewMatrix();
 
 			transform = glm::mat4(1.0f);
 
@@ -191,7 +197,6 @@ namespace Cogravi {
 
 			transform = glm::scale(transform, scale);
 
-			shader.setVec3("lightPos", glm::vec3(2, 4, 0));
 			glm::vec3 posAvatar = glm::vec3(avatar.position.x, avatar.position.y, avatar.position.z);
 			shader.setVec3("viewPos", posAvatar);
 

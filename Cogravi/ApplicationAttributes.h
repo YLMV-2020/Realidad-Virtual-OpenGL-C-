@@ -44,6 +44,7 @@ using namespace std;
 #include "InputProcessor.h"
 #include "Lighting.h"
 #include "Player.h"
+#include "TV.h"
 
 
 
@@ -92,16 +93,21 @@ namespace Cogravi
         DebugDrawer* debugDrawer;
 
         Util* util;
-
         InputProcessor* input;
 
         ModelController* models;
-
         Lighting* luz;
 
-        bool isLightDirectional = false;
-        bool isLightPoint = false;
-        bool isLightSpot = false;
+        TV* televisor;
+        Player* player;
+
+        Shader* shaderModel;
+        Shader* shaderAnimation;
+
+        Shader* shaderInstance;
+        Shader* shaderInstanceDynamic;
+
+        Shader* shaderSol;
 
         bool isDrawWireframe = true;
         bool isDrawAABB = false;
