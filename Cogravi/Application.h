@@ -15,6 +15,7 @@ namespace Cogravi
 
        DynamicGameObject* vegeta; 
        DynamicGameObject* doctora; 
+       Text* text;
 
         static Application* Instance()
         {
@@ -175,7 +176,6 @@ namespace Cogravi
 
 
             doctora = new DynamicGameObject(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.03f, 0.03f, 0.03f), "assets/animations/doctora/doctora.dae", *shaderAnimation);
-            doctora->addAnimation("Dig And Plant Seeds.dae");
 
             models->addModel(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), "assets/objects/mirana/mirana.obj");
             models->addModel(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "assets/objects/tunel/tunel.obj");
@@ -196,6 +196,10 @@ namespace Cogravi
             model->configureInstance(); 
             model1 = new GameObject(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "assets/objects/rock/rock.obj");
             model1->configureInstance();
+
+
+
+            text = new Text("GengRimbaRegular");
 
         }
 
@@ -287,6 +291,7 @@ namespace Cogravi
             io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
             io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
             io.ConfigFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
+
 
             //io.ConfigViewportsNoAutoMerge = true;
             //io.ConfigViewportsNoTaskBarIcon = true;
@@ -554,7 +559,7 @@ namespace Cogravi
                     models->render(*avatar, *shaderModel);
                     //aula->render(*camera, *shaderModel);
 
-                    vegeta->renderInstance(*avatar, *shaderInstanceDynamic, animationTime * 1.0f);
+                    //vegeta->renderInstance(*avatar, *shaderInstanceDynamic, animationTime * 1.0f);
 
                     //player->render(*avatar, *shaderAnimation, animationTime);
 
@@ -713,6 +718,9 @@ namespace Cogravi
                 player->render(*camera, *shaderAnimation, animationTime);
 
                 model->renderInstance(*camera, *shaderInstance);
+                text->RenderText("Yordy Leonidas", 0.0f, 0.0f, 1.0f, *camera, glm::vec3(0, 1, 0));
+                text->RenderText("Yordy MV", 0.0f, 50.0f, 1.0f, *camera, glm::vec3(0, 1, 0));
+
                 //luz->render(*camera, *shaderSol);
                 //televisor->render(*camera);
                 debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
@@ -731,7 +739,7 @@ namespace Cogravi
             cameraImGui();
             skyboxImGui();
             projectImGui();
-            animationImGui();
+            //animationImGui();
 
             inspectorImGui(modelSelect);
 
@@ -826,7 +834,7 @@ namespace Cogravi
             ImGui::Text("%.2f ms", 1000.0f / ImGui::GetIO().Framerate);
             ImGui::Separator();
             ImGui::Text("Collision Objects: %d", bulletWorldController->dynamicsWorld->getNumCollisionObjects());
-            ImGui::Text("Time: %.1f", animationTime);
+            ImGui::Text("Time: %.1f", ImGui::GetTime());
 
             ImGui::Separator();
             if (ImGui::Checkbox("Draw Wireframe", &isDrawWireframe))
@@ -966,7 +974,6 @@ namespace Cogravi
             ImDrawList* drawList = ImGui::GetWindowDrawList();
             displayRender = ImGui::GetWindowSize();
             display = ImGui::GetCursorScreenPos();
-
 
             drawList->AddImage(
                 (void*)textureEngine, display,
@@ -1118,7 +1125,9 @@ namespace Cogravi
 
             ImGui::End();
         }
+
         float time = 0.0f;
+
         void animationImGui()
         {
             static float angle = 0.0f;
@@ -1215,7 +1224,7 @@ namespace Cogravi
             ImGui::DragFloat3("Front", glm::value_ptr(camera->Front));
             ImGui::DragFloat3("Up", glm::value_ptr(camera->Up));
 
-            ImGui::Text("Camera Configuration");
+            ImGui::Text("Configuration");
 
             if (ImGui::DragFloat("Near", &camera->NEAR))
             {
@@ -1228,15 +1237,7 @@ namespace Cogravi
             }
 
             ImGui::DragFloat("Speed", &camera->speed, 0.01f);
-            ImGui::DragFloat("Distance Player", &camera->distance, 0.1f);
-            ImGui::DragFloat("Distance Up Player", &camera->distanceUp, 0.1f);
-            ImGui::DragFloat("far offset", &camera->farOffset, 0.1f);
-            ImGui::DragFloat("up offset", &camera->upOffset, 0.1f);
-
-            ImGui::DragFloat("Run", &player->RUN_SPEED, 0.1f);
-            ImGui::DragFloat("Rotation", &player->TURN_SPEED, 0.1f);
-
-
+           
 
             ImGui::End();
         }

@@ -26,7 +26,8 @@ namespace Cogravi {
         AVATAR,
         INSTANCE_STATIC,
         INSTANCE_DYNAMIC,
-        SOL
+        SOL,
+        TEXT
     };
 
     enum TextureType
@@ -79,6 +80,7 @@ namespace Cogravi {
             myShaders[ShaderType::INSTANCE_STATIC] = new Shader("assets/shaders/instanceModel.vert", "assets/shaders/instanceModel.frag");
             myShaders[ShaderType::INSTANCE_DYNAMIC] = new Shader("assets/shaders/instanceAnimation.vert", "assets/shaders/instanceAnimation.frag");
             myShaders[ShaderType::SOL] = new Shader("assets/shaders/sol.vert", "assets/shaders/sol.frag");
+            myShaders[ShaderType::TEXT] = new Shader("assets/shaders/text.vert", "assets/shaders/text.frag");
         }
 
         void loadTextureType()

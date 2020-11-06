@@ -179,6 +179,9 @@
     <ClInclude Include="TV.h">
       <Filter>Archivos de encabezado\GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Archivos de encabezado\Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\model.frag">
@@ -246,6 +249,12 @@
     </None>
     <None Include="assets\shaders\sol.vert">
       <Filter>Archivos de encabezado\GameObjects</Filter>
+    </None>
+    <None Include="assets\shaders\text.frag">
+      <Filter>Archivos de encabezado\Application</Filter>
+    </None>
+    <None Include="assets\shaders\text.vert">
+      <Filter>Archivos de encabezado\Application</Filter>
     </None>
   </ItemGroup>
 </Project>

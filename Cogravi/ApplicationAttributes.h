@@ -39,12 +39,12 @@ using namespace std;
 #include "DynamicGameObject.h"
 #include "ModelController.h"
 #include "PlayerController.h"
-#include "VehicleController.h"
 #include "Aula.h"
 #include "InputProcessor.h"
 #include "Lighting.h"
 #include "Player.h"
 #include "TV.h"
+#include "Text.h"
 
 
 
