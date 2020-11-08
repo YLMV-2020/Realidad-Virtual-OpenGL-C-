@@ -51,9 +51,10 @@ namespace Cogravi {
                 model->render(avatar, shader);
         }
 
-        void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, ColliderType type, BulletWorldController* worldController, vector<Texture> textures = {}, glm::vec3 colliderSize = glm::vec3(1.0f))
+        void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, ColliderType type, BulletWorldController* worldController, glm::vec3 colliderSize = glm::vec3(1.0f), glm::vec3 translateCollider  = glm::vec3(0.0f), vector<Texture> textures = {})
         {
             Model* model = new Model(position, rotation, scale, path, textures);
+            model->translate = translateCollider;
             //model->addBodyPhysicsBox(models.size(), worldController);
 
             model->shapeScalar = colliderSize;
@@ -112,6 +113,7 @@ namespace Cogravi {
                     modelsPhysics[i]->body->setUserIndex(i);
                 }
                 model = NULL;
+                delete model;
             }
         }
 

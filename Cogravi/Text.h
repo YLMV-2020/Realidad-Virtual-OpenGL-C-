@@ -113,7 +113,7 @@ namespace Cogravi
 
 			// Load font as face
 			FT_Face face;
-			std::string font = "assets/fonts/" + type + ".ttf";
+			std::string font = "assets/fonts/" + type + ".otf";
 			if (FT_New_Face(ft, font.c_str(), 0, &face))
 				std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 

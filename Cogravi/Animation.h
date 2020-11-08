@@ -9,13 +9,13 @@ namespace Cogravi
 	{
 	public:
 
-		Animation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader shader, vector<Texture> textures = {}) :
+		Animation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader &shader, vector<Texture> textures = {}) :
 			DynamicGameObject(position, rotation, scale, path, shader, textures)
 		{
 			this->translate = glm::vec3(0.0f, 0.0f, 0.0f);		
 		}
 
-		virtual void render(Camera& camera, Shader &shader, float animationTime) override
+		virtual void render(Camera& camera, Shader &shader) override
 		{
 			shader.use();
 			glm::mat4 projection = camera.GetProjectionMatrix();
@@ -38,10 +38,10 @@ namespace Cogravi
 
 			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
 
-			draw(shader, animationTime);
+			draw(shader);
 		}
 
-		void render(Avatar& avatar, Shader& shader, float animationTime) override
+		void render(Avatar& avatar, Shader& shader) override
 		{
 			shader.use();
 			glm::mat4 projection = avatar.GetProjectionMatrix();
@@ -64,7 +64,7 @@ namespace Cogravi
 
 			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
 
-			draw(shader, animationTime);
+			draw(shader);
 		}
 
 		virtual void update() override
@@ -154,6 +154,22 @@ namespace Cogravi
 			//worldController->motionStates.push_back(state);
 			//worldController->collisionShapes.push_back(shape);
 
+		}
+
+		void destroy(BulletWorldController* worldController)
+		{
+			//Obtenemos todos los componentes de colision del mundo
+			btCollisionObjectArray arr = worldController->dynamicsWorld->getCollisionObjectArray();
+
+			//ID del cuerpo que deseamos destruir
+			int deleteID;
+
+			//Buscamos entre todos los componentes aquel con el ID que se desea borrar, guardamos su ID y lo eliminamos del mundo
+			for (size_t i = 0; i < arr.size(); i++)
+			{
+				if (arr.at(i)->getUserIndex() == userIndex) deleteID = i;
+			}
+			worldController->dynamicsWorld->removeCollisionObject(worldController->dynamicsWorld->getCollisionObjectArray()[deleteID]);
 		}
 
 		

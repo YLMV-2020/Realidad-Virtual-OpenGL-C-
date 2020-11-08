@@ -7,7 +7,6 @@ const int WIDTH = 1280;
 const int HEIGHT = 800;
 
 #include <functional>
-//#include <WinSock2.h> servidores :v
 #include <GL/glew.h> 
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -36,7 +35,7 @@ using namespace std;
 #include "Terrain.h"
 #include "Skybox.h"
 #include "DebugDrawer.h"
-#include "DynamicGameObject.h"
+#include "AnimationController.h"
 #include "ModelController.h"
 #include "PlayerController.h"
 #include "Aula.h"
@@ -45,8 +44,6 @@ using namespace std;
 #include "Player.h"
 #include "TV.h"
 #include "Text.h"
-
-
 
 using namespace Cogravi;
 
@@ -64,11 +61,8 @@ namespace Cogravi
 
         ImVec2 mouse;
 
-        float startFrame;
         float deltaTime;
-
         float lastFrame;
-        float animationTime;
 
         GLuint framebufferEngine;
         GLuint textureEngine;
@@ -85,6 +79,7 @@ namespace Cogravi
         vector<GLuint> textureObjects;
 
         vector<GLuint> texturesImGui;
+        Text* text;
 
         Terrain* terrain;
         Skybox* skybox;
@@ -95,10 +90,10 @@ namespace Cogravi
         Util* util;
         InputProcessor* input;
 
-        ModelController* models;
+        ModelController* modelController;
+        AnimationController* animationController;
+        
         Lighting* luz;
-
-        TV* televisor;
         Player* player;
 
         Shader* shaderModel;
@@ -134,7 +129,6 @@ namespace Cogravi
         std::function<void(double xpos, double ypos)> mousePos;
         std::function<void(double xoffset, double yoffset)> desplazar;
         std::function<void(int button, int action, int mods)> mouseButton;
-
 
 	};
 }

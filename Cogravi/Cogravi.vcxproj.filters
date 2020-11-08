@@ -72,6 +72,9 @@
     <ClCompile Include="imgui_widgets.cpp">
       <Filter>Archivos de recursos\imGui</Filter>
     </ClCompile>
+    <ClCompile Include="GLDebugDrawer.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imconfig.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Archivos de encabezado\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="GLDebugDrawer.hpp">
+      <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

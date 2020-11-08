@@ -31,7 +31,7 @@ public:
     float yaw; //angulo de giro en Z
     float pitch; //angulo de giro en Y
 
-    float speed = 0.10f;
+    float speed = 1.0f;
     float distance = 0.1f;
     float distanceUp = 1.0f;
 

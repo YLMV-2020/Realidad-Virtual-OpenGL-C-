@@ -24,7 +24,7 @@ namespace Cogravi
 			addAnimation("Female Tough Walk.dae");
 		}
 
-		void render(Camera& camera, Shader& shader, float animationTime) override
+		void render(Camera& camera, Shader& shader) override
 		{
 			shader.use();
 			glm::mat4 projection = camera.GetProjectionMatrix();
@@ -46,7 +46,7 @@ namespace Cogravi
 
 			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
 
-			draw(shader, animationTime);
+			draw(shader);
 		}
 
 		void update()

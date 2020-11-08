@@ -17,7 +17,7 @@ namespace Cogravi {
 
 		static const GLuint MAX_BONES = 100;
 		static const GLuint MAX_ANIMATIONS = 20;
-		
+
 		glm::vec3 position;
 		glm::vec3 rotation;
 		glm::vec3 scale;
@@ -43,7 +43,12 @@ namespace Cogravi {
 		float ticksPerSecond = 0.0f;
 		float sensitivity = 1.0f;
 
-	    unordered_map<string, const aiNodeAnim*> mapNodeAnim[MAX_ANIMATIONS];
+		float startFrame;
+		float animationTime;
+		//float frameTime;
+		bool pause = false;
+
+		unordered_map<string, const aiNodeAnim*> mapNodeAnim[MAX_ANIMATIONS];
 
 		vector<const aiAnimation*> animations;
 		vector<aiNode*> root;
@@ -51,8 +56,6 @@ namespace Cogravi {
 		GLuint numAnimations = 0;
 		GLuint cantidad;
 		int currentAnimation;
-
-		//glm::quat rotate_head_xz = glm::quat(cos(glm::radians(0.0f)), sin(glm::radians(0.0f)) * glm::vec3(1.0f, 0.0f, 0.0f));
 
 		DynamicGameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader& shader, vector<Texture> textures = {}, int cantidad = 1)
 		{
@@ -64,8 +67,10 @@ namespace Cogravi {
 			this->cantidad = cantidad;
 
 			boneID = glGetUniformLocation(shader.ID, "bones[0]");
-		
-			loadModel(path);		
+
+			this->startFrame = glfwGetTime();
+
+			loadModel(path);
 
 			if (this->cantidad > 1)
 				configureInstance();
@@ -73,7 +78,7 @@ namespace Cogravi {
 
 		~DynamicGameObject() {}
 
-		void drawInstance(Shader& shader, float animationTime)
+		void drawInstance(Shader& shader)
 		{
 			vector<aiMatrix4x4> transforms;
 			boneTransform((double)animationTime, transforms);
@@ -84,97 +89,7 @@ namespace Cogravi {
 				meshes[i].drawInstance(shader, this->cantidad);
 		}
 
-
-		virtual void renderInstance(Camera& camera, Shader& shader, float animationTime)
-		{
-			glm::mat4 projection = camera.GetProjectionMatrix();
-			glm::mat4 view = camera.GetViewMatrix();
-			shader.use();
-			shader.setMat4("projection", projection);
-			shader.setMat4("view", view);
-
-			drawInstance(shader, animationTime);
-		}
-
-		virtual void renderInstance(Avatar& avatar, Shader& shader, float animationTime)
-		{
-			glm::mat4 projection = avatar.GetProjectionMatrix();
-			glm::mat4 view = avatar.GetViewMatrix();
-			shader.use();
-			shader.setMat4("projection", projection);
-			shader.setMat4("view", view);
-
-			drawInstance(shader, animationTime);
-		}
-
-		void configureInstance()
-		{
-			glm::mat4* modelMatrices;
-			modelMatrices = new glm::mat4[cantidad];
-			srand(glfwGetTime()); // initialize random seed	
-			float radius = 45.0f;
-			float offset = 25.0f;
-			for (unsigned int i = 0; i < cantidad; i++)
-			{
-				glm::mat4 model = glm::mat4(1.0f);
-				// 1. translation: displace along circle with 'radius' in range [-offset, offset]
-				float angle = (float)i / (float)cantidad * 360.0f;
-				float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-				float x = sin(angle) * radius + displacement;
-				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-				float y = displacement * 0.4f; // keep height of asteroid field smaller compared to width of x and z
-				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-				float z = cos(angle) * radius + displacement;
-				model = glm::translate(model, glm::vec3(x, 0, z));
-
-				// 2. scale: Scale between 0.05 and 0.25f
-				float scale = (rand() % 20) / 100.0f + 0.05;
-				model = glm::scale(model, glm::vec3(0.01f));
-
-				// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
-				float rotAngle = (rand() % 360);
-				model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.f, 0.f));
-
-				// 4. now add to list of matrices
-				modelMatrices[i] = model;
-			}
-
-			// configure instanced array
-			// -------------------------
-			unsigned int buffer;
-			glGenBuffers(1, &buffer);
-			glBindBuffer(GL_ARRAY_BUFFER, buffer);
-			glBufferData(GL_ARRAY_BUFFER, cantidad * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
-
-			// set transformation matrices as an instance vertex attribute (with divisor 1)
-			// note: we're cheating a little by taking the, now publicly declared, VAO of the model's mesh(es) and adding new vertexAttribPointers
-			// normally you'd want to do this in a more organized fashion, but for learning purposes this will do.
-			// -----------------------------------------------------------------------------------------------------------------------------------
-			for (unsigned int i = 0; i < meshes.size(); i++)
-			{
-				unsigned int VAO = meshes[i].VAO;
-				glBindVertexArray(VAO);
-				// set attribute pointers for matrix (4 times vec4)
-				glEnableVertexAttribArray(5);
-				glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-				glEnableVertexAttribArray(6);
-				glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-				glEnableVertexAttribArray(7);
-				glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-				glEnableVertexAttribArray(8);
-				glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-
-				glVertexAttribDivisor(5, 1);
-				glVertexAttribDivisor(6, 1);
-				glVertexAttribDivisor(7, 1);
-				glVertexAttribDivisor(8, 1);
-
-				glBindVertexArray(0);
-			}
-
-		}
-
-		void draw(Shader &shader, float animationTime)
+		void draw(Shader& shader)
 		{
 			vector<aiMatrix4x4> transforms;
 
@@ -185,7 +100,29 @@ namespace Cogravi {
 				meshes[i].draw(shader);
 		}
 
-		virtual void render(Camera& camera, Shader &shader, float animationTime)
+		virtual void renderInstance(Camera& camera, Shader& shader)
+		{
+			glm::mat4 projection = camera.GetProjectionMatrix();
+			glm::mat4 view = camera.GetViewMatrix();
+			shader.use();
+			shader.setVec3("viewPos", camera.Position);
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+			drawInstance(shader);
+		}
+
+		virtual void renderInstance(Avatar& avatar, Shader& shader)
+		{
+			glm::mat4 projection = avatar.GetProjectionMatrix();
+			glm::mat4 view = avatar.GetViewMatrix();
+			shader.use();
+			shader.setVec3("viewPos", _glmFromOvrVector(avatar.position));
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+			drawInstance(shader);
+		}
+
+		virtual void render(Camera& camera, Shader& shader)
 		{
 			shader.use();
 			glm::mat4 projection = camera.GetProjectionMatrix();
@@ -205,13 +142,13 @@ namespace Cogravi {
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 			shader.setMat4("model", transform);
-		
+
 			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
-		
-			draw(shader, animationTime);
+
+			draw(shader);
 		}
 
-		virtual void render(Avatar& avatar, Shader& shader, float animationTime)
+		virtual void render(Avatar& avatar, Shader& shader)
 		{
 			shader.use();
 			glm::mat4 projection = avatar.GetProjectionMatrix();
@@ -226,8 +163,7 @@ namespace Cogravi {
 
 			transform = glm::scale(transform, scale);
 
-			glm::vec3 posAvatar = glm::vec3(avatar.position.x, avatar.position.y, avatar.position.z);
-			shader.setVec3("viewPos", posAvatar);
+			shader.setVec3("viewPos", _glmFromOvrVector(avatar.position));
 
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
@@ -235,12 +171,18 @@ namespace Cogravi {
 
 			//glm::mat4 matr_normals_cube = glm::mat4(glm::transpose(glm::inverse(transform)));
 
-			draw(shader, animationTime);
+			draw(shader);
 		}
 
 		virtual void update()
 		{
 
+		}
+
+		void updateTime(float currentFrame)
+		{
+			if (!pause)
+				animationTime = currentFrame - startFrame;
 		}
 
 		void addAnimation(string const& path)
@@ -272,7 +214,70 @@ namespace Cogravi {
 					const aiNodeAnim* node_anim = animation->mChannels[j];
 					mapNodeAnim[index][string(node_anim->mNodeName.data)] = node_anim;
 				}
-			}	
+			}
+		}
+
+		void configureInstance()
+		{
+			glm::mat4* modelMatrices;
+			modelMatrices = new glm::mat4[cantidad];
+			srand(glfwGetTime());
+			float radius = 45.0f;
+			float offset = 25.0f;
+			for (unsigned int i = 0; i < cantidad; i++)
+			{
+				glm::mat4 model = glm::mat4(1.0f);
+
+				float angle = (float)i / (float)cantidad * 360.0f;
+				float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+				float x = sin(angle) * radius + displacement;
+				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+				float y = displacement * 0.4f;
+				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+				float z = cos(angle) * radius + displacement;
+				model = glm::translate(model, glm::vec3(x, 0, z));
+
+
+				float scale = (rand() % 20) / 100.0f + 0.05;
+				model = glm::scale(model, glm::vec3(0.01f));
+
+
+				float rotAngle = (rand() % 360);
+				model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.f, 0.f));
+
+
+				modelMatrices[i] = model;
+			}
+
+
+			unsigned int buffer;
+			glGenBuffers(1, &buffer);
+			glBindBuffer(GL_ARRAY_BUFFER, buffer);
+			glBufferData(GL_ARRAY_BUFFER, cantidad * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+
+			for (unsigned int i = 0; i < meshes.size(); i++)
+			{
+				unsigned int VAO = meshes[i].VAO;
+				glBindVertexArray(VAO);
+
+				glEnableVertexAttribArray(5);
+				glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+				glEnableVertexAttribArray(6);
+				glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+				glEnableVertexAttribArray(7);
+				glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+				glEnableVertexAttribArray(8);
+				glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+				glVertexAttribDivisor(5, 1);
+				glVertexAttribDivisor(6, 1);
+				glVertexAttribDivisor(7, 1);
+				glVertexAttribDivisor(8, 1);
+
+				glBindVertexArray(0);
+			}
+
 		}
 
 		double getDurationAnimation()
@@ -284,7 +289,7 @@ namespace Cogravi {
 
 		void loadModel(string const& path)
 		{
-			scene[0] = import[0].ReadFile(path, 
+			scene[0] = import[0].ReadFile(path,
 				aiProcess_JoinIdenticalVertices |
 				aiProcess_SortByPType |
 				aiProcess_Triangulate |
@@ -300,32 +305,12 @@ namespace Cogravi {
 
 			matrixInverse = scene[0]->mRootNode->mTransformation;
 			matrixInverse.Inverse();
-			//cout << "Num de animaciones: " << scene[0]->mNumAnimations << "\n";
 
 			loadAnimations();
 
 			directory = path.substr(0, path.find_last_of('/'));
-			//cout << "Direc: " << directory << "\n";
-
-			//cout << "scene->HasAnimations() 1: " << scene[0]->HasAnimations() << endl;
-			//cout << "scene->mNumMeshes 1: " << scene[0]->mNumMeshes << endl;
-			//cout << "scene[0]->mAnimations[0]->mNumChannels 1: " << scene[0]->mAnimations[0]->mNumChannels << endl;
-			//cout << "scene[0]->mAnimations[0]->mDuration 1: " << scene[0]->mAnimations[0]->mDuration << endl;
-			//cout << "scene[0]->mAnimations[0]->mTicksPerSecond 1: " << scene[0]->mAnimations[0]->mTicksPerSecond << endl << endl;
-
-			//cout << "		name nodes : " << endl;
-			//showNodeName(scene[0]->mRootNode);
-			//cout << endl;
-
-			//cout << "		name bones : " << endl;
 			processNode(scene[0]->mRootNode, scene[0]);
 
-			//cout << "		name nodes animation : " << endl;
-			/*for (GLuint i = 0; i < scene[0]->mAnimations[0]->mNumChannels; i++)
-			{
-				cout << scene[0]->mAnimations[0]->mChannels[i]->mNodeName.C_Str() << endl;
-			}
-			cout << endl;*/
 			glBindVertexArray(0);
 		}
 
@@ -346,15 +331,6 @@ namespace Cogravi {
 			}
 		}
 
-		void showNodeName(aiNode* node)
-		{
-			cout << node->mName.data << endl;
-			for (GLuint i = 0; i < node->mNumChildren; i++)
-			{
-				showNodeName(node->mChildren[i]);
-			}
-		}
-
 		void processNode(aiNode* node, const aiScene* scene)
 		{
 			MeshA mesh;
@@ -362,7 +338,7 @@ namespace Cogravi {
 			{
 				aiMesh* aiMesh = scene->mMeshes[i];
 				mesh = processMesh(aiMesh, scene);
-				meshes.push_back(mesh); 
+				meshes.push_back(mesh);
 			}
 		}
 
@@ -425,8 +401,6 @@ namespace Cogravi {
 				GLuint bone_index = 0;
 				string bone_name(mesh->mBones[i]->mName.data);
 
-				//cout << mesh->mBones[i]->mName.data << endl;
-
 				if (mapBone.find(bone_name) == mapBone.end())
 				{
 					bone_index = numBones;
@@ -462,13 +436,11 @@ namespace Cogravi {
 				std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
 				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-				cout << "Tiene " << textures.size() << " texturas\n";
-
 				return MeshA(vertices, indices, textures, bones);
 			}
 
 			return MeshA(vertices, indices, this->textures, bones);
-					
+
 		}
 
 		vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, TextureType typeName)
@@ -546,7 +518,7 @@ namespace Cogravi {
 		{
 			if (nodeAnim->mNumPositionKeys == 1)
 				return nodeAnim->mPositionKeys[0].mValue;
-			
+
 			GLuint position_index = findPosition(animationTime, nodeAnim);
 			GLuint next_position_index = position_index + 1;
 			assert(next_position_index < nodeAnim->mNumPositionKeys);
@@ -636,20 +608,20 @@ namespace Cogravi {
 
 			for (GLuint i = 0; i < node->mNumChildren; i++)
 				readNodeHierarchy(animationTime, node->mChildren[i], globalTransform);
-			
+
 		}
 
 		void boneTransform(double second, vector<aiMatrix4x4>& transforms)
 		{
-			aiMatrix4x4 identityMatrix; 
+			aiMatrix4x4 identityMatrix;
 
 			const aiAnimation* animation = animations[currentAnimation];
 
 			if (animation->mTicksPerSecond != 0.0)
-				ticksPerSecond = animation->mTicksPerSecond;			
+				ticksPerSecond = animation->mTicksPerSecond;
 			else
 				ticksPerSecond = 25.0f;
-		
+
 			double timeInTicks = second * ticksPerSecond * sensitivity;
 			float animationTime = fmod(timeInTicks, animation->mDuration);
 
@@ -659,7 +631,7 @@ namespace Cogravi {
 
 			for (GLuint i = 0; i < numBones; i++)
 				transforms[i] = matrixBone[i].finalWorldTransform;
-			
+
 		}
 
 		glm::mat4 aiToGlm(aiMatrix4x4 matrix)

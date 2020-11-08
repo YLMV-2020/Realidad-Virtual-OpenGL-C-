@@ -65,7 +65,6 @@ namespace Cogravi {
 			shader.use();
 
 			shader.setVec3("viewPos", camera.Position);
-
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 			
@@ -78,9 +77,7 @@ namespace Cogravi {
 			glm::mat4 view = avatar.GetViewMatrix();
 			shader.use();
 
-			glm::vec3 posAvatar = glm::vec3(avatar.position.x, avatar.position.y, avatar.position.z);
-			shader.setVec3("viewPos", posAvatar);
-
+			shader.setVec3("viewPos", _glmFromOvrVector(avatar.position));
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 

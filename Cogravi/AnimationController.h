@@ -16,7 +16,8 @@ namespace Cogravi {
             return &instance;
         }
 
-        vector<Animation*> animations;
+        vector<Animation*> animationsPhysics;
+        vector<DynamicGameObject*> animations;
 
         AnimationController()
         {
@@ -25,35 +26,101 @@ namespace Cogravi {
 
         void update()
         {
-            for (Animation*& animation : animations)
+            for (Animation*& animation : animationsPhysics)
+                animation->update();
+
+            for (DynamicGameObject*& animation : animations)
                 animation->update();
         }
 
-        void render(Camera& camera, float animationTime)
+        void render(Camera& camera, Shader& shader, float currentFrame)
         {
-            /*for (Animation*& animation : animations)
-                animation->render(camera, animationTime);*/
+            for (Animation*& animation : animationsPhysics)
+            {
+                animation->updateTime(currentFrame);
+                animation->render(camera, shader);
+            }
+
+            for (DynamicGameObject*& animation : animations)
+            {
+                animation->updateTime(currentFrame);
+                animation->render(camera, shader);
+            }
         }
 
-        void render(Avatar& avatar, float animationTime)
+        void render(Avatar& avatar, Shader& shader, float currentFrame)
         {
-            /*for (Animation*& animation : animations)
-                animation->render(avatar, animationTime);*/
+            for (Animation*& animation : animationsPhysics)
+            {
+                animation->updateTime(currentFrame);
+                animation->render(avatar, shader);
+            }
+
+            for (DynamicGameObject*& animation : animations)
+            {
+                animation->updateTime(currentFrame);
+                animation->render(avatar, shader);
+            }
         }
 
-        void addAnimation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>& textures, Shader shader, BulletWorldController* worldController)
+        void addAnimation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, ColliderType type, BulletWorldController* worldController, Shader &shader, vector<Texture> textures = {}, glm::vec3 colliderSize = glm::vec3(1.0f))
         {
-            /*Animation* animation = new Animation(position, rotation, scale, path, textures, shader);
-            animation->addBodyPhysicsBox(-1 * (animations.size() + 2), worldController);
-            animations.push_back(animation);*/
+            Animation* animation = new Animation(position, rotation, scale, path, shader, textures);
+            animation->shapeScalar = colliderSize;
+
+            switch (type)
+            {
+
+            case ColliderType::BOX:
+                animation->shape_current = 0;
+                animation->addBodyPhysicsBox(-1 * (animationsPhysics.size() + 2), worldController);
+                break;
+            case ColliderType::SPHERE:
+                animation->shape_current = 1;
+                animation->addBodyPhysicsSphere(-1 * (animationsPhysics.size() + 2), worldController);
+                break;
+            case ColliderType::CAPSULE:
+                animation->shape_current = 2;
+                animation->addBodyPhysicsCapsule(-1 * (animationsPhysics.size() + 2), worldController);
+                break;
+            case ColliderType::CYLINDER:
+                animation->shape_current = 3;
+                animation->addBodyPhysicsCylinder(-1 * (animationsPhysics.size() + 2), worldController);
+                break;
+            case ColliderType::CONE:
+                animation->shape_current = 4;
+                animation->addBodyPhysicsCone(-1 * (animationsPhysics.size() + 2), worldController);
+                break;
+            default:
+                break;
+            }
+
+
+            animationsPhysics.push_back(animation);
         }
 
-        Animation* getAnimation(int index)
+        void addAnimation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader& shader, vector<Texture> textures = {})
         {
-            return animations[index];
+            DynamicGameObject* animation = new DynamicGameObject(position, rotation, scale, path, shader, textures);
+            animations.push_back(animation);
         }
 
+        void removeModel(Animation*& animation, BulletWorldController* worldController)
+        {
+            if (!animationsPhysics.empty())
+            {
+                animation->destroy(worldController);
+                animationsPhysics.erase(animationsPhysics.begin() + animation->userIndex);
 
+                for (int i = 0; i < animationsPhysics.size(); i++)
+                {
+                    animationsPhysics[i]->userIndex = i;
+                    animationsPhysics[i]->body->setUserIndex(i);
+                }
+                animation = NULL;
+                delete animation;
+            }
+        }
     };
 }
 #endif
