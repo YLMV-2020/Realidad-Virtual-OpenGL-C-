@@ -46,6 +46,9 @@
     <Filter Include="Archivos de encabezado\OpenCV">
       <UniqueIdentifier>{0a3977ff-378d-4e7e-9e20-7d0a9d178997}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Text">
+      <UniqueIdentifier>{292ae6c0-ad29-4bc2-83cd-65955f4eb48e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OVR_PlatformLoader.cpp">
@@ -182,11 +185,11 @@
     <ClInclude Include="TV.h">
       <Filter>Archivos de encabezado\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>Archivos de encabezado\Application</Filter>
-    </ClInclude>
     <ClInclude Include="GLDebugDrawer.hpp">
       <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Archivos de encabezado\Text</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -256,11 +259,11 @@
     <None Include="assets\shaders\sol.vert">
       <Filter>Archivos de encabezado\GameObjects</Filter>
     </None>
-    <None Include="assets\shaders\text.frag">
-      <Filter>Archivos de encabezado\Application</Filter>
-    </None>
     <None Include="assets\shaders\text.vert">
-      <Filter>Archivos de encabezado\Application</Filter>
+      <Filter>Archivos de encabezado\Text</Filter>
+    </None>
+    <None Include="assets\shaders\text.frag">
+      <Filter>Archivos de encabezado\Text</Filter>
     </None>
   </ItemGroup>
 </Project>

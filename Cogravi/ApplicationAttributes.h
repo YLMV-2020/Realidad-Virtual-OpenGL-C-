@@ -67,6 +67,9 @@ namespace Cogravi
         GLuint framebufferEngine;
         GLuint textureEngine;
 
+        GLuint framebufferTablet;
+        GLuint textureTablet;
+
         long long frameIndex = 0;
 
         ImVec2 displayRender;

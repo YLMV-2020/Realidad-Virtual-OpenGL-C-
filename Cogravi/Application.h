@@ -74,7 +74,7 @@ namespace Cogravi
                 if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
                 {
                     vector<Texture> g;
-                    Texture sd = Texture(Util::loadTexture("assets/textures//azulX.jpg"), TextureType::DIFFUSE);
+                    Texture sd = Texture(Util::loadTexture("assets/textures//terrain//azulX.jpg"), TextureType::DIFFUSE);
                     g.push_back(sd);
                     modelController->addModel(camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 5.0f, 5.0f), "assets/objects/cubo.obj", ColliderType::SPHERE, bulletWorldController, glm::vec3(1.1f), glm::vec3(0.0f), g);
                     //modelController->getModelPhysics(0)->body->applyCentralImpulse(btVector3(0, 20, 0));
@@ -133,13 +133,7 @@ namespace Cogravi
                     if (input->mouseCursorDisabled)
                         input->firstMouse = true;
                 }
-
-                if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-                {
-
-                }
             };
-
         }
 
         void addModels()
@@ -149,6 +143,9 @@ namespace Cogravi
             modelController->addModel(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.1f, 1.1f, 1.1f), "Birthday Scene/Birthday Area.obj");          
             modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "rex/allo.obj", ColliderType::BOX, bulletWorldController, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));
             modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "stove/stove.obj");
+            modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "PIZZA/pizza1.obj");
+            //modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Pro-Bending Arena/probending Arena.obj");
+
 
         }
 
@@ -354,11 +351,14 @@ namespace Cogravi
 
         void renderInicializar()
         {
+            glDepthMask(GL_TRUE);
+            glEnable(GL_DEPTH_TEST);
             inicializarImgui();
             inicializarScene();
             /*inicializarVR();
             avatar->Init();*/
-            vincularFrambufferEngine();
+            util->vincularFrambuffer(framebufferEngine, textureEngine);
+            util->vincularFrambuffer(framebufferTablet, textureTablet);
         }
 
         void renderPc()
@@ -622,15 +622,10 @@ namespace Cogravi
                 presionado = false;
             }
 
+            DockSpace();
+
             glBindFramebuffer(GL_FRAMEBUFFER, framebufferEngine);
             {
-                glEnable(GL_DEPTH_TEST);
-
-                glDepthMask(GL_TRUE);
-                //glEnable(GL_CULL_FACE);
-                //glCullFace(GL_BACK);
-                //glFrontFace(GL_CW);
-
                 glClearColor(0, 0, 0, 0);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -639,20 +634,31 @@ namespace Cogravi
                 modelController->render(*camera, *shaderModel);
                 animationController->render(*camera, *shaderAnimation, lastFrame);
                 player->render(*camera, *shaderAnimation);
-               /* text->RenderText("Yordy Leonidas", 0.0f, 0.0f, 1.0f, *camera, glm::vec3(0, 1, 0));
-                text->RenderText("Yordy MV", 0.0f, 50.0f, 1.0f, *camera, glm::vec3(0, 1, 0));*/
 
                 debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
                 bulletWorldController->dynamicsWorld->debugDrawWorld();
 
-                DockSpace();
                 lightingImGui();
 
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+            glBindFramebuffer(GL_FRAMEBUFFER, framebufferTablet);
+            {
+                glClearColor(0, 0, 0, 0);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                if (modelSelect != NULL)
+                {
+                    text->RenderText(modelSelect->description, 100.0f, 150.0f, 1.0f, *camera, glm::vec3(0, 1, 0));
+                    text->RenderText("Yordy MV", 100.0f, 100.0f, 1.0f, *camera, glm::vec3(0, 1, 0));
+                }
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
             settingsImGui();
             renderImGui();
+            tabletImGui();
 
             terrainImGui();
             cameraImGui();
@@ -908,6 +914,21 @@ namespace Cogravi
             ImVec2 scroll = ImVec2(ImGui::GetScrollX(), ImGui::GetScrollY());
 
             this->mouse = ImVec2(mousePosition.x - sceenPosition.x - scroll.x, mousePosition.y - sceenPosition.y - scroll.y);
+
+            ImGui::End();
+        }
+
+        void tabletImGui()
+        {
+            ImGui::Begin("Tablet", NULL);
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            ImVec2 displayRender = ImGui::GetWindowSize();
+            ImVec2 display = ImGui::GetCursorScreenPos();
+
+            drawList->AddImage(
+                (void*)textureTablet, display,
+                ImVec2(display.x + displayRender.x, display.y + displayRender.y), ImVec2(0, 1), ImVec2(1, 0)
+            );
 
             ImGui::End();
         }
@@ -1187,30 +1208,6 @@ namespace Cogravi
                 ImGui::EndMenuBar();
             }
             ImGui::End();
-        }
-
-        void vincularFrambufferEngine()
-        {
-            glGenFramebuffers(1, &framebufferEngine);
-            glBindFramebuffer(GL_FRAMEBUFFER, framebufferEngine);
-
-            glGenTextures(1, &textureEngine);
-            glBindTexture(GL_TEXTURE_2D, textureEngine);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureEngine, 0);
-
-            unsigned int rbo;
-            glGenRenderbuffers(1, &rbo);
-            glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
-            // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
-            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-                //cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
-                glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
         }
 
         static ovrSession _initOVR()

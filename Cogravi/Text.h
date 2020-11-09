@@ -30,7 +30,7 @@ namespace Cogravi
 			this->shader = *Util::Instance()->myShaders[ShaderType::TEXT];
 			setOptions();
 			loadType(type);
-			//configShader();
+			configShader();
 		}
 
 		void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, Camera &camera, glm::vec3 color)
@@ -40,7 +40,7 @@ namespace Cogravi
 			glDepthFunc(GL_ALWAYS);
 			shader.use();
 
-			glm::mat4 projection = camera.GetProjectionMatrix();
+			/*glm::mat4 projection = camera.GetProjectionMatrix();
 			glm::mat4 view = camera.GetViewMatrix();
 			glm::mat4 model = glm::mat4(1.0f);
 
@@ -49,7 +49,7 @@ namespace Cogravi
 
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
-			shader.setMat4("model", model);
+			shader.setMat4("model", model);*/
 
 			glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
 			glActiveTexture(GL_TEXTURE0);
