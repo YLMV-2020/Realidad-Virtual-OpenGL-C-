@@ -65,7 +65,7 @@ namespace Cogravi {
 
         void addAnimation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, ColliderType type, BulletWorldController* worldController, Shader &shader, vector<Texture> textures = {}, glm::vec3 colliderSize = glm::vec3(1.0f))
         {
-            Animation* animation = new Animation(position, rotation, scale, path, shader, textures);
+            Animation* animation = new Animation(position, rotation, scale, "assets/animations/" + path, shader, textures);
             animation->shapeScalar = colliderSize;
 
             switch (type)
@@ -101,7 +101,7 @@ namespace Cogravi {
 
         void addAnimation(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader& shader, vector<Texture> textures = {})
         {
-            DynamicGameObject* animation = new DynamicGameObject(position, rotation, scale, path, shader, textures);
+            DynamicGameObject* animation = new DynamicGameObject(position, rotation, scale, "assets/animations/" + path, shader, textures);
             animations.push_back(animation);
         }
 

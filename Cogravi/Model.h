@@ -8,7 +8,7 @@ namespace Cogravi
 	class Model :public ModelAttributes, public GameObject
 	{
 	public:		
-	
+		
 		Model(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture> textures = {}) :
 			GameObject(position, rotation, scale, path, textures)
 		{
@@ -37,7 +37,6 @@ namespace Cogravi
 
 			transform = glm::scale(transform, scale);
 
-			shader.setVec3("lightPos", glm::vec3(2, 4, 0));
 			shader.setVec3("viewPos", camera.Position);
 			
 			shader.setMat4("model", transform);
@@ -56,7 +55,6 @@ namespace Cogravi
 
 			transform = glm::mat4(1.0f);
 
-
 			transform = transform * physicsMatrix;
 			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
 
@@ -67,7 +65,6 @@ namespace Cogravi
 
 			transform = glm::scale(transform, scale);
 
-			shader.setVec3("lightPos", glm::vec3(2, 4, 0));
 			shader.setVec3("viewPos", glm::vec3(avatar.position.x, avatar.position.y, avatar.position.z));
 
 			shader.setMat4("model", transform);

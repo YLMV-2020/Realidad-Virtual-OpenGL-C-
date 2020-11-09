@@ -108,11 +108,11 @@ namespace Cogravi
 		unsigned int cubeVAO, cubeVBO;
 		unsigned int skyboxVAO, skyboxVBO;
 
-		Skybox(const string& nameSkybox, const string& type, Shader shader, Shader skyboxShader)
+		Skybox(const string& nameSkybox, const string& type)
 		{
 			this->nameSkybox = nameSkybox;
-			this->shader = shader;
-			this->skyboxShader = skyboxShader;
+			this->shader = *Util::Instance()->myShaders[ShaderType::CUBE_MAP];
+			this->skyboxShader = *Util::Instance()->myShaders[ShaderType::SKYBOX];;
 
 			loadSkybox(nameSkybox, type);
 			configCubeMap();

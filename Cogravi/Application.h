@@ -145,32 +145,28 @@ namespace Cogravi
         void addModels()
         {
             vector<Texture> texturesLoad;
+            modelController->addModel(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "tunel/tunel.obj");     
+            modelController->addModel(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.1f, 1.1f, 1.1f), "Birthday Scene/Birthday Area.obj");          
+            modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "rex/allo.obj", ColliderType::BOX, bulletWorldController, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));
+            modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "stove/stove.obj");
 
-            //modelController->addModel(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), "assets/objects/mirana/mirana.obj");
-            modelController->addModel(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "assets/objects/tunel/tunel.obj");
-            //modelController->addModel(glm::vec3(-10.0f, 3.5f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/animations/helicoptero/camcopters100.obj");
-            //modelController->addModel(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.1f, 2.1f, 2.1f), "assets/objects/Bar/Bar.obj");          
-            modelController->addModel(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.1f, 1.1f, 1.1f), "assets/objects/Birthday Scene/Birthday Area.obj");          
-            modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/rex/allo.obj", ColliderType::BOX, bulletWorldController, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));
-            // translate = (0,-2.5,0.39)
-            // sizeCollider = (1.48,2.47,5.57)
         }
 
         void addAnimations()
         {
-            animationController->addAnimation(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), "assets/animations/doctora/doctora.dae", *shaderAnimation);
+            animationController->addAnimation(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), "doctora/doctora.dae", *shaderAnimation);
         }
 
         void loadTexturesImGui()
         {
-            texturesImGui.push_back(Util::loadTexture("assets\\textures\\VR.png"));
+            texturesImGui.push_back(Util::loadTexture("assets\\textures\\imgui\\VR.png"));
         }
 
         void loadTextureObjects()
         {
-            textureObjects.push_back(Util::loadTexture("assets\\textures\\tierra.png"));
-            textureObjects.push_back(Util::loadTexture("assets\\textures\\mercurio.png"));
-            textureObjects.push_back(Util::loadTexture("assets\\textures\\rex.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\tierra.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\mercurio.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\rex.png"));
         }
 
         void loadTextureSkyboxs()
@@ -184,13 +180,13 @@ namespace Cogravi
 
         void loadTextureFloors()
         {
-            textureFloors.push_back(Util::loadTexture("assets\\textures\\marble.jpg"));
-            textureFloors.push_back(Util::loadTexture("assets\\textures\\wall.jpg"));
-            textureFloors.push_back(Util::loadTexture("assets\\textures\\azulX.jpg"));
-            textureFloors.push_back(Util::loadTexture("assets\\textures\\tileable.jpg"));
-            textureFloors.push_back(Util::loadTexture("assets\\textures\\grassyCliff.png"));
-            textureFloors.push_back(Util::loadTexture("assets\\textures\\TiledConcrete.png"));
-            textureFloors.push_back(Util::loadTexture("assets\\textures\\wood.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\marble.jpg"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\wall.jpg"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\azulX.jpg"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\tileable.jpg"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\grassyCliff.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\TiledConcrete.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\wood.png"));
         }
 
         void inicializarScene()
@@ -200,8 +196,8 @@ namespace Cogravi
 
             avatar = new Avatar(bulletWorldController);
 
-            terrain = new Terrain("assets\\textures\\marble.jpg", glm::vec3(1000, -0.01f, 1000), 500.0f, *util->myShaders[ShaderType::TERRAIN], bulletWorldController);
-            skybox = new Skybox("bosque", "png", *util->myShaders[ShaderType::CUBE_MAP], *util->myShaders[ShaderType::SKYBOX]);
+            terrain = new Terrain("marble.jpg", glm::vec3(100, -0.01f, 100), 50.0f, bulletWorldController);
+            skybox = new Skybox("bosque", "png");
 
             debugDrawer = new DebugDrawer();
             debugDrawer->setDebugMode(0);
@@ -554,7 +550,6 @@ namespace Cogravi
             static bool presionado = false;
             static int index = 0;
             static Model* modelSelect = NULL;
-            static btCollisionShape* aulaSelect = NULL;
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
@@ -570,6 +565,7 @@ namespace Cogravi
             modelController->update();
             player->input(window, deltaTime);
             player->update();
+            player->updateTime(lastFrame);
 
             input->processInput(deltaTime);
 
@@ -601,31 +597,28 @@ namespace Cogravi
                         if (index >= 0 && index < 100)
                         {
                             modelSelect = getModel(index);
-                            //aulaSelect = aula->shape[index];
                         }
                         presionado = true;
                     }
 
-                    if (modelSelect != NULL) {
+                    if (modelSelect != NULL && index >= 0) 
+                    {
                         btVector3 pos = RayCallback.m_hitPointWorld;
-
                         btTransform t;
                         t.setIdentity();
-                        t.setOrigin(btVector3(pos.getX(), modelSelect->shapeScalar.y + 0.1f, pos.getZ()));
+                        t.setOrigin(btVector3(pos.getX(), modelSelect->position.y, pos.getZ()));
 
-                        if (index >= 0)
-                        {
-                            modelSelect->body->setWorldTransform(t);
-                            //modelSelect->position = glm::vec3(pos.getX(), pos.getY(), pos.getZ());
-                            //modelSelect->body->applyForce(btVector3(0, 1, 0), btVector3(5, 1, 0));
-                        }
+                        btQuaternion quat;
+                        quat.setEulerZYX(glm::radians(modelSelect->rotate.z), glm::radians(modelSelect->rotate.y), glm::radians(modelSelect->rotate.x));
+
+                        t.setRotation(quat);
+                        modelSelect->body->setWorldTransform(t);
                     }
                 }
             }
             else
             {
                 index = -1;
-                //modelSelect = NULL;
                 presionado = false;
             }
 
@@ -759,7 +752,7 @@ namespace Cogravi
             if (ImGui::Checkbox("Draw AABB", &isDrawAABB))
                 debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawAabb);
 
-            if (ImGui::Checkbox("modelController Wireframe", &isWireframe))
+            if (ImGui::Checkbox("Model Wireframe", &isWireframe))
             {
                 if (isWireframe)
                     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -795,19 +788,34 @@ namespace Cogravi
                 ImGui::Text("Transform");
                 ImGui::DragFloat3("Position", glm::value_ptr(modelSelect->position), 0.01f);
                 ImGui::DragFloat3("Translate", glm::value_ptr(modelSelect->translate), 0.01f);
-                ImGui::DragFloat3("Rotation", glm::value_ptr(modelSelect->rotation), 0.1);
+                if(ImGui::DragFloat3("Rotation", glm::value_ptr(modelSelect->rotate), 0.1f))
+                {
+                    modelSelect->rotation = modelSelect->rotate;
+                    btTransform t;
+                    t.setIdentity();
+                    t.setOrigin(btVector3(modelSelect->position.x, modelSelect->position.y, modelSelect->position.z));
+
+                    btQuaternion quat;
+                    quat.setEulerZYX(glm::radians(modelSelect->rotation.z), glm::radians(modelSelect->rotation.y), glm::radians(modelSelect->rotation.x));
+
+                    t.setRotation(quat);
+                    modelSelect->body->setWorldTransform(t);
+
+                    t.getRotation().getEulerZYX(modelSelect->rotation.z, modelSelect->rotation.y, modelSelect->rotation.x);
+                   
+                }
                 ImGui::DragFloat3("Scale", glm::value_ptr(modelSelect->scale), 0.01f, 0.01f, 10.0f);
 
                 ImGui::Text("Collider");
 
                 const char* shapes[] = { "Box", "Sphere", "Capsule", "Cylinder", "Cone","Mesh" };
+
                 if (ImGui::Combo("Shape", &modelSelect->shape_current, shapes, IM_ARRAYSIZE(shapes)))
                 {
                     modelSelect->shapeScalar = glm::vec3(1.0f);
                     modelSelect->changeBodyPhysics(bulletWorldController);
                 }
-                /*ImGui::DragFloat3("Center", rotation, 0.1);
-                ImGui::DragFloat3("Size", scale, 0.1);*/
+
                 if (modelSelect->shape_current == 1)
                 {
                     if (ImGui::DragFloat("Radius", glm::value_ptr(modelSelect->shapeScalar), 0.1f))
@@ -910,7 +918,7 @@ namespace Cogravi
 
             if (ImGui::ImageButton((void*)textureObjects[0], ImVec2(100, 100)))
             {
-                modelController->addModel(glm::vec3(camera->Position.x, 3.50f, camera->Position.z), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), "assets/objects/tierra/tierra.3ds", ColliderType::SPHERE, bulletWorldController, glm::vec3(5.9f, 0.0f, 0.0f));
+                modelController->addModel(glm::vec3(camera->Position.x, 3.50f, camera->Position.z), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.05f, 0.05f, 0.05f), "tierra/tierra.3ds", ColliderType::SPHERE, bulletWorldController, glm::vec3(2.9f));
             }
             ImGui::SameLine();
             if (ImGui::ImageButton((void*)textureObjects[1], ImVec2(100, 100)))
@@ -918,18 +926,16 @@ namespace Cogravi
                 vector<Texture> textures;
                 Texture txt(Util::loadTexture("assets/objects/mercurio/2k_mercury.jpg"), TextureType::DIFFUSE);
                 textures.push_back(txt);
-                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.001f, 0.001f, 0.001f), "assets/objects/mercurio/mercurio.obj", ColliderType::SPHERE, bulletWorldController, glm::vec3(5.76f, 0.0f, 0.0f), {}, textures);
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.001f, 0.001f, 0.001f), "mercurio/mercurio.obj", ColliderType::SPHERE, bulletWorldController, glm::vec3(2.1f, 0.0f, 0.0f), glm::vec3(0.0f), textures);
             }
 
             ImGui::SameLine();
+
             if (ImGui::ImageButton((void*)textureObjects[2], ImVec2(100, 100)))
             {
-                modelController->addModel(camera->Front + camera->Position, glm::vec3(-90.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "assets/objects/rex/allo.obj", ColliderType::BOX, bulletWorldController, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "rex/allo.obj", ColliderType::BOX, bulletWorldController, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));
                
             }
-
-           
-
 
             ImGui::End();
         }
