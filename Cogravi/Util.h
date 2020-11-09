@@ -63,6 +63,8 @@ namespace Cogravi {
         map<ShaderType, Shader*> myShaders;
         map<TextureType, string> typeTexture;
 
+        
+
         Util()
         {
             inicializarShaders();

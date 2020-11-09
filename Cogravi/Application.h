@@ -144,6 +144,7 @@ namespace Cogravi
             modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "rex/allo.obj", ColliderType::BOX, bulletWorldController, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));
             modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "stove/stove.obj");
             modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "PIZZA/pizza1.obj");
+            //modelController->addModel(glm::vec3(110.0f, 0.0f, 110.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "start/start.obj");
             //modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Pro-Bending Arena/probending Arena.obj");
 
 
@@ -191,7 +192,7 @@ namespace Cogravi
             util = Util::Instance();
             bulletWorldController = new BulletWorldController();
 
-            avatar = new Avatar(bulletWorldController);
+            //avatar = new Avatar(bulletWorldController);
 
             terrain = new Terrain("marble.jpg", glm::vec3(100, -0.01f, 100), 50.0f, bulletWorldController);
             skybox = new Skybox("bosque", "png");
@@ -206,7 +207,7 @@ namespace Cogravi
             animationController = new AnimationController();
 
             luz = Lighting::Instance();
-            text = new Text("Retro Computer");
+            text = new Text("Arial.ttf");
 
             loadTextureFloors();
             loadTextureObjects();
@@ -597,12 +598,19 @@ namespace Cogravi
                         if (index >= 0 && index < 100)
                         {
                             modelSelect = getModel(index);
+                            if (modelSelect->description.font != lastFont)
+                            {
+                                text->loadType(modelSelect->description.fontPath);
+                                lastFont = modelSelect->description.font;
+                            }
                         }
                         presionado = true;
                     }
 
                     if (modelSelect != NULL && index >= 0) 
                     {
+                        
+
                         btVector3 pos = RayCallback.m_hitPointWorld;
                         btTransform t;
                         t.setIdentity();
@@ -650,8 +658,9 @@ namespace Cogravi
 
                 if (modelSelect != NULL)
                 {
-                    text->RenderText(modelSelect->description, 100.0f, 150.0f, 1.0f, *camera, glm::vec3(0, 1, 0));
-                    text->RenderText("Yordy MV", 100.0f, 100.0f, 1.0f, *camera, glm::vec3(0, 1, 0));
+                    //AGREGAR INTEFRZAF PARA TIIPO DE LETRA, COLOR, TAMAÑAO,
+                    text->RenderText(modelSelect->description.bloc, 100.0f, 750.0f, 1.0f, modelSelect->description.color);
+
                 }
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -814,7 +823,7 @@ namespace Cogravi
 
                 ImGui::Text("Collider");
 
-                const char* shapes[] = { "Box", "Sphere", "Capsule", "Cylinder", "Cone","Mesh" };
+                static const char* shapes[] = { "Box", "Sphere", "Capsule", "Cylinder", "Cone","Mesh" };
 
                 if (ImGui::Combo("Shape", &modelSelect->shape_current, shapes, IM_ARRAYSIZE(shapes)))
                 {
@@ -849,10 +858,20 @@ namespace Cogravi
                 }
 
                 ImGui::Separator();
+                ImGui::Text("Font");
+                static const char* fonts[] = { "Arial", "Retro Computer"};
+                static const string format[] = { ".ttf", ".otf" };
 
+                if (ImGui::Combo("Type", &modelSelect->description.font, fonts, IM_ARRAYSIZE(fonts)))
+                {
+                    lastFont = modelSelect->description.font;
+                    modelSelect->description.fontPath = string(fonts[lastFont]) + format[lastFont];
+                    text->loadType(modelSelect->description.fontPath);
+                }
+                ImGui::ColorEdit3("Color", glm::value_ptr(modelSelect->description.color));
                 ImGui::Text("Description");
 
-                ImGui::InputTextMultiline(" ", modelSelect->description, sizeof(modelSelect->description));
+                ImGui::InputTextMultiline(" ", modelSelect->description.bloc, sizeof(modelSelect->description));
 
                 //// Basic columns
                 //if (ImGui::TreeNode("Basic"))
@@ -921,6 +940,9 @@ namespace Cogravi
         void tabletImGui()
         {
             ImGui::Begin("Tablet", NULL);
+
+            
+
             ImDrawList* drawList = ImGui::GetWindowDrawList();
             ImVec2 displayRender = ImGui::GetWindowSize();
             ImVec2 display = ImGui::GetCursorScreenPos();

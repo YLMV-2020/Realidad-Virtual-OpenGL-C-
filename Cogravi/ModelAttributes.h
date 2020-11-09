@@ -10,6 +10,14 @@
 
 namespace Cogravi
 {
+	struct Description
+	{
+		char bloc[200];
+		glm::vec3 color = { 1.0f, 1.0f, 1.0f };
+		GLint font = 0;
+		string fontPath = "Arial.ttf";
+	};
+
 	class ModelAttributes
 	{
 	public:
@@ -25,7 +33,7 @@ namespace Cogravi
 		glm::vec3 rotate;
 		glm::mat4 physicsMatrix;
 
-		char description[200];
+		Description description;
 		ColliderType colliderType;
 
 		//Collider

@@ -33,23 +33,12 @@ namespace Cogravi
 			configShader();
 		}
 
-		void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, Camera &camera, glm::vec3 color)
+		void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
 		{
 			glEnable(GL_CULL_FACE);
 			glEnable(GL_BLEND);
 			glDepthFunc(GL_ALWAYS);
 			shader.use();
-
-			/*glm::mat4 projection = camera.GetProjectionMatrix();
-			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 model = glm::mat4(1.0f);
-
-			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-			model = glm::scale(model, glm::vec3(0.10f, 0.10f, 0.10f));
-
-			shader.setMat4("projection", projection);
-			shader.setMat4("view", view);
-			shader.setMat4("model", model);*/
 
 			glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
 			glActiveTexture(GL_TEXTURE0);
@@ -98,13 +87,12 @@ namespace Cogravi
 
 		void setOptions()
 		{
-			//glEnable(GL_CULL_FACE);
-			//glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 
 		void loadType(std::string type)
 		{
+			Characters.clear();
 			// FreeType
 			FT_Library ft;
 			// All functions return a value different than 0 whenever an error occurred
@@ -113,7 +101,7 @@ namespace Cogravi
 
 			// Load font as face
 			FT_Face face;
-			std::string font = "assets/fonts/" + type + ".otf";
+			std::string font = "assets/fonts/" + type;
 			if (FT_New_Face(ft, font.c_str(), 0, &face))
 				std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 

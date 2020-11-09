@@ -71,6 +71,7 @@ namespace Cogravi
         GLuint textureTablet;
 
         long long frameIndex = 0;
+        GLint lastFont = 0;
 
         ImVec2 displayRender;
         ImVec2 display;
