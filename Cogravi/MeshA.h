@@ -57,6 +57,8 @@ namespace Cogravi {
         GLuint VBO_bones;
         GLuint EBO_indices;
 
+        Util* Util;
+
         MeshA() {};
 
         MeshA(vector<VertexA> vertices, vector<unsigned int> indices, vector<Cogravi::Texture> textures, vector<VertexBoneData> bones)
@@ -65,6 +67,8 @@ namespace Cogravi {
             this->indices = indices;
             this->textures = textures;
             this->bones = bones;
+
+            Util = Util::Instance();
 
             setupMesh();
         }
@@ -75,7 +79,7 @@ namespace Cogravi {
             {
                 glActiveTexture(GL_TEXTURE0 + i);
                 TextureType type = textures[i].type;
-                glUniform1i(glGetUniformLocation(shader.ID, ("material." + Util::Instance()->typeTexture[type]).c_str()), i);
+                glUniform1i(glGetUniformLocation(shader.ID, ("material." + Util->typeTexture[type]).c_str()), i);
                 glBindTexture(GL_TEXTURE_2D, textures[i].id);
             }
 

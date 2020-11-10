@@ -21,11 +21,15 @@ namespace Cogravi {
         vector<Texture> textures;
         GLuint VAO, VBO, EBO;
 
+        Util* Util;
+
         MeshM(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> &textures)
         {
             this->vertices = vertices;
             this->indices = indices;
             this->textures = textures;
+
+            Util = Util::Instance();
 
             setupMesh();
         }
@@ -41,7 +45,7 @@ namespace Cogravi {
             {
                 glActiveTexture(GL_TEXTURE0 + i);
                 TextureType type = textures[i].type;
-                glUniform1i(glGetUniformLocation(shader.ID, ("material." + Util::Instance()->typeTexture[type]).c_str()), i);
+                glUniform1i(glGetUniformLocation(shader.ID, ("material." + Util->typeTexture[type]).c_str()), i);
                 glBindTexture(GL_TEXTURE_2D, textures[i].id);
             }
 

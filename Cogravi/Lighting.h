@@ -4,7 +4,6 @@
 namespace Cogravi
 {
 
-
 	struct LuzDireccional
 	{
 		glm::vec3 direction;

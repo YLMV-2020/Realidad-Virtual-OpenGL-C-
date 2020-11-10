@@ -142,8 +142,9 @@ namespace Cogravi
             modelController->addModel(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "tunel/tunel.obj");     
             modelController->addModel(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.1f, 1.1f, 1.1f), "Birthday Scene/Birthday Area.obj");          
             modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "rex/allo.obj", ColliderType::BOX, bulletWorldController, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));
-            modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "stove/stove.obj");
-            modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "PIZZA/pizza1.obj");
+            modelController->addModel(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "stove/stove.obj");
+            modelController->addModel(glm::vec3(-10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "PIZZA/pizza1.obj");
+            //modelController->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "tablet/tablet.obj", ColliderType::BOX, bulletWorldController, glm::vec3(0.63f, 0.94f, 0.09f), glm::vec3(0.0f, -0.95f, 0.0f));
             //modelController->addModel(glm::vec3(110.0f, 0.0f, 110.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "start/start.obj");
             //modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Pro-Bending Arena/probending Arena.obj");
 
@@ -190,7 +191,7 @@ namespace Cogravi
         void inicializarScene()
         {
             util = Util::Instance();
-            bulletWorldController = new BulletWorldController();
+            bulletWorldController = BulletWorldController::Instance();
 
             //avatar = new Avatar(bulletWorldController);
 
@@ -203,11 +204,13 @@ namespace Cogravi
             bulletWorldController->dynamicsWorld->setDebugDrawer(debugDrawer);
             debugDrawer->ToggleDebugFlag(btIDebugDraw::DBG_DrawWireframe);
 
-            modelController = new ModelController();
-            animationController = new AnimationController();
+            modelController = ModelController::Instance();
+            animationController = AnimationController::Instance();
 
             luz = Lighting::Instance();
             text = new Text("Arial.ttf");
+
+            tablet = Tablet::Instance();
 
             loadTextureFloors();
             loadTextureObjects();
@@ -220,7 +223,7 @@ namespace Cogravi
             shaderInstanceDynamic = util->myShaders[ShaderType::INSTANCE_DYNAMIC];
             shaderSol = util->myShaders[ShaderType::SOL];
 
-            player = new Player(*shaderAnimation, bulletWorldController);
+            player = new Player(*shaderAnimation);
             camera = new Camera(player->body);
             input = new InputProcessor(window, camera);
 
@@ -360,6 +363,8 @@ namespace Cogravi
             avatar->Init();*/
             util->vincularFrambuffer(framebufferEngine, textureEngine);
             util->vincularFrambuffer(framebufferTablet, textureTablet);
+
+            tablet->updateTexture(textureTablet);
         }
 
         void renderPc()
@@ -570,8 +575,11 @@ namespace Cogravi
 
             input->processInput(deltaTime);
 
+            
+
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
             {
+                
                 glm::vec3 out_origin;
                 glm::vec3 out_direction;
                 bulletWorldController->screenPosToWorldRay(
@@ -639,6 +647,7 @@ namespace Cogravi
 
                 skybox->render(*camera, luz->isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
                 terrain->render(*camera, luz->isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
+                //tablet->render(*camera, *shaderModel);
                 modelController->render(*camera, *shaderModel);
                 animationController->render(*camera, *shaderAnimation, lastFrame);
                 player->render(*camera, *shaderAnimation);
@@ -660,6 +669,10 @@ namespace Cogravi
                 {
                     //AGREGAR INTEFRZAF PARA TIIPO DE LETRA, COLOR, TAMAÑAO,
                     text->RenderText(modelSelect->description.bloc, 100.0f, 750.0f, 1.0f, modelSelect->description.color);
+                    text->RenderText(modelSelect->description.bloc, 100.0f, 700.0f, 1.0f, modelSelect->description.color);
+                    text->RenderText(modelSelect->description.bloc, 100.0f, 650.0f, 1.0f, modelSelect->description.color);
+                    text->RenderText(modelSelect->description.bloc, 100.0f, 600.0f, 1.0f, modelSelect->description.color);
+                    text->RenderText(modelSelect->description.bloc, 100.0f, 550.0f, 1.0f, modelSelect->description.color);
 
                 }
             }

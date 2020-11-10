@@ -13,12 +13,13 @@ namespace Cogravi
 
 	public:
 
-		btDiscreteDynamicsWorld * dynamicsWorld; //Mundo físico para bullet
+		static BulletWorldController* Instance()
+		{
+			static BulletWorldController instance;
+			return &instance;
+		}
 
-		//Vectores a punteros de los elementos de Bullet
-		//vector<btRigidBody*> rigidBodies;
-		//vector<btDefaultMotionState*> motionStates;
-		//vector<btCollisionShape*> collisionShapes;
+		btDiscreteDynamicsWorld * dynamicsWorld; //Mundo físico para bullet
 
 		//Parámetros de configuración del mundo Bullet
 		btDefaultCollisionConfiguration     collisionConfiguration;

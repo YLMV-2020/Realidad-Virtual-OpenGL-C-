@@ -88,50 +88,42 @@ namespace Cogravi {
 		{		
 			glm::mat4* modelMatrices;
 			modelMatrices = new glm::mat4[cantidad];
-			srand(time(NULL)); // initialize random seed	
+			srand(time(NULL)); 
 			float radius = 65.0f;
 			float offset = 25.0f;
 			for (unsigned int i = 0; i < cantidad; i++)
 			{
 				glm::mat4 model = glm::mat4(1.0f);
-				// 1. translation: displace along circle with 'radius' in range [-offset, offset]
+				
 				float angle = (float)i / (float)cantidad * 360.0f;
 				float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 				float x = sin(angle) * radius + displacement;
 				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-				float y = 0.0f; // keep height of asteroid field smaller compared to width of x and z
+				float y = 0.0f;
 				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 				float z = cos(angle) * radius + displacement;
 				model = glm::translate(model, glm::vec3(x, y, z));
 
-				// 2. scale: Scale between 0.05 and 0.25f
 				float scale = (rand() % 20) / 100.0f + 0.05;
 				model = glm::scale(model, glm::vec3(scale*2));
 
-				// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
 				float rotAngle = (rand() % 360);
 				//model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
 
-				// 4. now add to list of matrices
 				modelMatrices[i] = model;
 			}
 
-			// configure instanced array
-			// -------------------------
+
 			unsigned int buffer;
 			glGenBuffers(1, &buffer);
 			glBindBuffer(GL_ARRAY_BUFFER, buffer);
 			glBufferData(GL_ARRAY_BUFFER, cantidad * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
-
-			// set transformation matrices as an instance vertex attribute (with divisor 1)
-			// note: we're cheating a little by taking the, now publicly declared, VAO of the model's mesh(es) and adding new vertexAttribPointers
-			// normally you'd want to do this in a more organized fashion, but for learning purposes this will do.
-			// -----------------------------------------------------------------------------------------------------------------------------------
+			
 			for (unsigned int i = 0; i < meshes.size(); i++)
 			{
 				unsigned int VAO = meshes[i].VAO;
 				glBindVertexArray(VAO);
-				// set attribute pointers for matrix (4 times vec4)
+
 				glEnableVertexAttribArray(3);
 				glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
 				glEnableVertexAttribArray(4);
@@ -156,7 +148,7 @@ namespace Cogravi {
 			shader.use();
 
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
+			glm::mat4 projection = camera.GetProjectionMatrix();
 
 			transform = glm::mat4(1.0f);
 

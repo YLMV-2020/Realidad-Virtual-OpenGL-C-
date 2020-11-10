@@ -44,6 +44,7 @@ using namespace std;
 #include "Player.h"
 #include "TV.h"
 #include "Text.h"
+#include "Tablet.h"
 
 using namespace Cogravi;
 
@@ -97,8 +98,8 @@ namespace Cogravi
         ModelController* modelController;
         AnimationController* animationController;
         
-        Lighting* luz;
         Player* player;
+        Tablet* tablet;
 
         Shader* shaderModel;
         Shader* shaderAnimation;
@@ -106,6 +107,7 @@ namespace Cogravi
         Shader* shaderInstance;
         Shader* shaderInstanceDynamic;
 
+        Lighting* luz;
         Shader* shaderSol;
 
         bool isDrawWireframe = true;

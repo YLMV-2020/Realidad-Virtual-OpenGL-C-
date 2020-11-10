@@ -43,9 +43,6 @@
     <Filter Include="Archivos de encabezado\GameObjects">
       <UniqueIdentifier>{15483375-cd71-4053-9b26-fd181615753b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Archivos de encabezado\OpenCV">
-      <UniqueIdentifier>{0a3977ff-378d-4e7e-9e20-7d0a9d178997}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Archivos de encabezado\Text">
       <UniqueIdentifier>{292ae6c0-ad29-4bc2-83cd-65955f4eb48e}</UniqueIdentifier>
     </Filter>
@@ -190,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Archivos de encabezado\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Tablet.h">
+      <Filter>Archivos de encabezado\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -16,10 +16,10 @@ namespace Cogravi
 		float RUN_SPEED = 3.0f;
 		float TURN_SPEED = 160.0f;
 
-		Player(Shader& shader, BulletWorldController *worldController):
+		Player(Shader& shader):
 			Animation(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.01f), "assets/animations/archer/Orc Idle.dae", shader)
 		{
-			addBodyPhysicsCapsule(111299, worldController);
+			addBodyPhysicsCapsule(111299, BulletWorldController::Instance());
 			shape->setLocalScaling(btVector3(0.40f, 1.0f, 0.0f));
 			addAnimation("Female Tough Walk.dae");
 		}
