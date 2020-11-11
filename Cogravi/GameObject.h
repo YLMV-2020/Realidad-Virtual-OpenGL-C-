@@ -52,6 +52,23 @@ namespace Cogravi {
 				meshes[i].draw(shader);
 		}
 
+		void drawFramebuffer(Shader& shader, int index)
+		{
+			for (unsigned int i = 0; i < meshes.size(); i++)
+			{
+				if (index == i)
+				{
+					shader.setBool("isTextureFrambuffer", true);
+					meshes[i].draw(shader);
+					shader.setBool("isTextureFrambuffer", false);
+				}
+				else
+				{
+					meshes[i].draw(shader);
+				}
+			}
+		}
+
 		void drawInstance(Shader &shader)
 		{
 			for (unsigned int i = 0; i < meshes.size(); i++)

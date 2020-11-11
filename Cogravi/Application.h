@@ -144,6 +144,7 @@ namespace Cogravi
             modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "rex/allo.obj", ColliderType::BOX, bulletWorldController, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));
             modelController->addModel(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "stove/stove.obj");
             modelController->addModel(glm::vec3(-10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "PIZZA/pizza1.obj");
+            //modelController->addModel(glm::vec3(-10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "bill/house.obj");
             //modelController->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "tablet/tablet.obj", ColliderType::BOX, bulletWorldController, glm::vec3(0.63f, 0.94f, 0.09f), glm::vec3(0.0f, -0.95f, 0.0f));
             //modelController->addModel(glm::vec3(110.0f, 0.0f, 110.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "start/start.obj");
             //modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Pro-Bending Arena/probending Arena.obj");
@@ -651,6 +652,7 @@ namespace Cogravi
                 modelController->render(*camera, *shaderModel);
                 animationController->render(*camera, *shaderAnimation, lastFrame);
                 player->render(*camera, *shaderAnimation);
+                tablet->render(*camera, *shaderModel);
 
                 debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
                 bulletWorldController->dynamicsWorld->debugDrawWorld();
@@ -953,8 +955,6 @@ namespace Cogravi
         void tabletImGui()
         {
             ImGui::Begin("Tablet", NULL);
-
-            
 
             ImDrawList* drawList = ImGui::GetWindowDrawList();
             ImVec2 displayRender = ImGui::GetWindowSize();

@@ -73,12 +73,12 @@ namespace Cogravi {
             setupMesh();
         }
 
-        void draw(Shader &shader)
+        void draw(Shader& shader)
         {
             for (int i = 0; i < textures.size(); i++)
             {
                 glActiveTexture(GL_TEXTURE0 + i);
-                TextureType type = textures[i].type;
+                TextureType type = textures[i].type;              
                 glUniform1i(glGetUniformLocation(shader.ID, ("material." + Util->typeTexture[type]).c_str()), i);
                 glBindTexture(GL_TEXTURE_2D, textures[i].id);
             }
@@ -95,7 +95,7 @@ namespace Cogravi {
             {
                 glActiveTexture(GL_TEXTURE0 + i);
                 TextureType type = textures[i].type;
-                glUniform1i(glGetUniformLocation(shader.ID, ("material." + Util::Instance()->typeTexture[type]).c_str()), i);
+                glUniform1i(glGetUniformLocation(shader.ID, ("material." + Util->typeTexture[type]).c_str()), i);
                 glBindTexture(GL_TEXTURE_2D, textures[i].id);
             }
             glBindVertexArray(VAO);

@@ -74,6 +74,36 @@ namespace Cogravi
 			draw(shader);
 		}
 
+		void renderFramebuffer(Camera& camera, Shader& shader, unsigned int meshIndex)
+		{
+			shader.use();
+
+			glm::mat4 view = camera.GetViewMatrix();
+			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
+
+			transform = glm::mat4(1.0f);
+
+			transform = transform * physicsMatrix;
+			//transform = glm::translate(transform, glm::vec3(position.x , position.y , position.z ));
+			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
+			//transform = glm::translate(transform, glm::vec3(position.x + translate.x, position.y + translate.y, position.z + translate.z));
+
+			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+			transform = glm::scale(transform, scale);
+
+			shader.setVec3("viewPos", camera.Position);
+
+			shader.setMat4("model", transform);
+			shader.setMat4("view", view);
+			shader.setMat4("projection", projection);
+
+			drawFramebuffer(shader, meshIndex);
+			
+		}
+
 		void update() override
 		{
 			

@@ -18,6 +18,10 @@ namespace Cogravi {
 
         vector<Model*> modelsPhysics;
         vector<GameObject*> models;
+        Model* tablet;
+
+        GLuint modelsDynamicSize = 0;
+        GLuint modelStaticSize = 0;
 
         ModelController()
         {
@@ -35,9 +39,9 @@ namespace Cogravi {
 
         void render(Camera& camera, Shader& shader)
         {
-            for (Model*& model : modelsPhysics)
-                model->render(camera, shader);
-
+            for (unsigned int i = 1; i < modelsDynamicSize; i++)
+                modelsPhysics[i]->render(camera, shader);
+            
             for (GameObject*& model : models)
                 model->render(camera, shader);
         }
@@ -53,7 +57,6 @@ namespace Cogravi {
 
         void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, ColliderType type, BulletWorldController* worldController, glm::vec3 colliderSize = glm::vec3(1.0f), glm::vec3 translateCollider  = glm::vec3(0.0f), vector<Texture> textures = {})
         {
-
             Model* model = new Model(position, rotation, scale, "assets/objects/" + path, textures);
             model->translate = translateCollider;
             model->shapeScalar = colliderSize;
@@ -91,12 +94,14 @@ namespace Cogravi {
 
             model->shapeScalar = glm::vec3(1.0f);
             modelsPhysics.push_back(model);
+            modelsDynamicSize++;
         }
 
         void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture> textures = {})
         {
             GameObject* model = new GameObject(position, rotation, scale, "assets/objects/" + path, textures);
             models.push_back(model);
+            modelStaticSize++;
         }
 
         void removeModel(Model*& model, BulletWorldController* worldController)
@@ -117,7 +122,7 @@ namespace Cogravi {
         }
 
 
-        Model* getModelPhysics(int index)
+        Model*& getModelPhysics(int index)
         {
             return modelsPhysics[index];
         }

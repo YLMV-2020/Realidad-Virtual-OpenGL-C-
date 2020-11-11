@@ -39,7 +39,7 @@ namespace Cogravi {
 
         }
 
-        void draw(Shader &shader)
+        void draw(Shader& shader)
         {
             for (unsigned int i = 0; i < textures.size(); i++)
             {
