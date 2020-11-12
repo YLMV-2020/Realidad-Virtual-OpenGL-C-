@@ -18,7 +18,6 @@ namespace Cogravi {
 
         vector<Model*> modelsPhysics;
         vector<GameObject*> models;
-        Model* tablet;
 
         GLuint modelsDynamicSize = 0;
         GLuint modelStaticSize = 0;
@@ -110,8 +109,9 @@ namespace Cogravi {
             {
                 model->destroy(worldController);
                 modelsPhysics.erase(modelsPhysics.begin() + model->userIndex);
+                modelsDynamicSize--;
 
-                for (int i = 0; i < modelsPhysics.size(); i++)
+                for (int i = 0; i < modelsDynamicSize; i++)
                 {
                     modelsPhysics[i]->userIndex = i;
                     modelsPhysics[i]->body->setUserIndex(i);

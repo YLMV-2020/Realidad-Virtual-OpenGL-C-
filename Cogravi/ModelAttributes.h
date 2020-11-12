@@ -12,8 +12,11 @@ namespace Cogravi
 {
 	struct Description
 	{
-		char bloc[200];
+		char bloc[500];
+		vector<string> printf;
+		GLuint printfSize;
 		glm::vec3 color = { 1.0f, 1.0f, 1.0f };
+		glm::vec3 colorBG = { 0.764f, 0.764f, 0.764f };
 		GLint font = 0;
 		string fontPath = "Arial.ttf";
 	};

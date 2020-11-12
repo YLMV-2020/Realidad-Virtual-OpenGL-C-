@@ -71,7 +71,7 @@ namespace Cogravi
         {
             teclado = [&](int key, int sancode, int action, int mods)
             {
-                if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+                if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
                 {
                     vector<Texture> g;
                     Texture sd = Texture(Util::loadTexture("assets/textures//terrain//azulX.jpg"), TextureType::DIFFUSE);
@@ -148,8 +148,6 @@ namespace Cogravi
             //modelController->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "tablet/tablet.obj", ColliderType::BOX, bulletWorldController, glm::vec3(0.63f, 0.94f, 0.09f), glm::vec3(0.0f, -0.95f, 0.0f));
             //modelController->addModel(glm::vec3(110.0f, 0.0f, 110.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "start/start.obj");
             //modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Pro-Bending Arena/probending Arena.obj");
-
-
         }
 
         void addAnimations()
@@ -575,12 +573,10 @@ namespace Cogravi
             player->updateTime(lastFrame);
 
             input->processInput(deltaTime);
-
-            
+         
 
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
             {
-                
                 glm::vec3 out_origin;
                 glm::vec3 out_direction;
                 bulletWorldController->screenPosToWorldRay(
@@ -604,9 +600,9 @@ namespace Cogravi
                         index = (int)RayCallback.m_collisionObject->getUserIndex();
                         if (index != -1)
                             modelSelect = NULL;
-                        if (index >= 0 && index < 100)
+                        if (index >= 1 && index < 100)
                         {
-                            modelSelect = getModel(index);
+                            modelSelect = modelController->getModelPhysics(index);
                             if (modelSelect->description.font != lastFont)
                             {
                                 text->loadType(modelSelect->description.fontPath);
@@ -618,8 +614,6 @@ namespace Cogravi
 
                     if (modelSelect != NULL && index >= 0) 
                     {
-                        
-
                         btVector3 pos = RayCallback.m_hitPointWorld;
                         btTransform t;
                         t.setIdentity();
@@ -662,23 +656,7 @@ namespace Cogravi
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-            glBindFramebuffer(GL_FRAMEBUFFER, framebufferTablet);
-            {
-                glClearColor(0, 0, 0, 0);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-                if (modelSelect != NULL)
-                {
-                    //AGREGAR INTEFRZAF PARA TIIPO DE LETRA, COLOR, TAMAÑAO,
-                    text->RenderText(modelSelect->description.bloc, 100.0f, 750.0f, 1.0f, modelSelect->description.color);
-                    text->RenderText(modelSelect->description.bloc, 100.0f, 700.0f, 1.0f, modelSelect->description.color);
-                    text->RenderText(modelSelect->description.bloc, 100.0f, 650.0f, 1.0f, modelSelect->description.color);
-                    text->RenderText(modelSelect->description.bloc, 100.0f, 600.0f, 1.0f, modelSelect->description.color);
-                    text->RenderText(modelSelect->description.bloc, 100.0f, 550.0f, 1.0f, modelSelect->description.color);
-
-                }
-            }
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+           
 
             settingsImGui();
             renderImGui();
@@ -731,12 +709,6 @@ namespace Cogravi
                 glfwPollEvents();
             }
             return 0;
-        }
-
-        Model* getModel(int index)
-        {
-            return modelController->getModelPhysics(index);
-            //return NULL;
         }
 
         void settingsImGui()
@@ -882,53 +854,66 @@ namespace Cogravi
                     lastFont = modelSelect->description.font;
                     modelSelect->description.fontPath = string(fonts[lastFont]) + format[lastFont];
                     text->loadType(modelSelect->description.fontPath);
+                    renderFont(modelSelect);
                 }
-                ImGui::ColorEdit3("Color", glm::value_ptr(modelSelect->description.color));
+                if (ImGui::ColorEdit3("Color", glm::value_ptr(modelSelect->description.color)))
+                {
+                    renderFont(modelSelect);
+                }
+                if (ImGui::ColorEdit3("Background Color", glm::value_ptr(modelSelect->description.colorBG)))
+                {
+                    renderFont(modelSelect);
+                }
                 ImGui::Text("Description");
 
-                ImGui::InputTextMultiline(" ", modelSelect->description.bloc, sizeof(modelSelect->description));
+                if (ImGui::InputTextMultiline(" ", modelSelect->description.bloc, sizeof(modelSelect->description.bloc)))
+                {
+                    GLuint tam = strlen(modelSelect->description.bloc);
+                    GLuint fila = 0;
 
-                //// Basic columns
-                //if (ImGui::TreeNode("Basic"))
-                //{
-                //    
+                    modelSelect->description.printf.clear();
+                    modelSelect->description.printf.push_back("");
+                    modelSelect->description.printfSize = fila + 1;
 
-                //    ImGui::Text("With border:");
-                //    ImGui::Columns(4, "mycolumns"); // 4-ways, with border
-                //    ImGui::Separator();
-                //    ImGui::Text("ID"); ImGui::NextColumn();
-                //    ImGui::Text("Name"); ImGui::NextColumn();
-                //    ImGui::Text("Path"); ImGui::NextColumn();
-                //    ImGui::Text("Hovered"); ImGui::NextColumn();
-                //    ImGui::Separator();
-                //    const char* names[3] = { "One", "Two", "Three" };
-                //    const char* paths[3] = { "/path/one", "/path/two", "/path/three" };
-                //    static int selected = -1;
-                //    for (int i = 0; i < 3; i++)
-                //    {
-                //        char label[32];
-                //        sprintf(label, "%04d", i);
-                //        if (ImGui::Selectable(label, selected == i, ImGuiSelectableFlags_SpanAllColumns))
-                //            selected = i;
-                //        bool hovered = ImGui::IsItemHovered();
-                //        ImGui::NextColumn();
-                //        ImGui::Text(names[i]); ImGui::NextColumn();
-                //        ImGui::Text(paths[i]); ImGui::NextColumn();
-                //        ImGui::Text("%d", hovered); ImGui::NextColumn();
-                //    }
-                //    ImGui::Columns(1);
-                //    ImGui::Separator();
-                //    ImGui::TreePop();
-                //}
+                    for (int i = 0; i < tam; i++)
+                    {
+                        char c = modelSelect->description.bloc[i];
+                        if (c == '\n' || modelSelect->description.printf[fila].size() >= 44)
+                        {
+                            modelSelect->description.printf.push_back("");
+                            modelSelect->description.printfSize = ++fila + 1;
+                            continue;
+                        }
+                        if (fila < 13)
+                            modelSelect->description.printf[fila] += c;
+                    }
+
+                    renderFont(modelSelect);
+                }            
                 ImGui::Separator();
                 if (ImGui::Button("Eliminar", ImVec2(100, 50)))
                 {
                     modelController->removeModel(modelSelect, bulletWorldController);
                 }
+            }
+            ImGui::End();
+        }
+
+        void renderFont(Model*& modelSelect)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, framebufferTablet);
+            {
+                glClearColor(modelSelect->description.colorBG.x, modelSelect->description.colorBG.y, modelSelect->description.colorBG.z, 1);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                //AGREGAR INTEFRZAF PARA TIIPO DE LETRA, COLOR, TAMAÑAO,
+                for (int i = 0; i < modelSelect->description.printfSize; i++)
+                {
+                    text->RenderText(modelSelect->description.printf[i], 100.0f, 700.0f - (50 * i), 1.0f, modelSelect->description.color);
+                }
 
             }
-
-            ImGui::End();
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
 
         void renderImGui()
