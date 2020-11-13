@@ -37,6 +37,12 @@ namespace Cogravi {
         NORMAL
     };
 
+    enum class CameraType
+    {
+        FIRST_PERSON,
+        THIRD_PERSON
+    };
+
     struct Texture {
         GLuint id;
         TextureType type;

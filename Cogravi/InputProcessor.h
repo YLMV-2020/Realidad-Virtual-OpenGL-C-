@@ -31,7 +31,6 @@ namespace Cogravi
             glfwGetWindowSize(window, &lastX, &lastY);
             lastX = lastX / 2;
             lastY = lastY / 2;
-
         }
 
         void processMouse(double xpos, double ypos)
@@ -49,7 +48,7 @@ namespace Cogravi
             }
 
             float xoffset = xpos - lastX;
-            float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+            float yoffset = lastY - ypos; 
             lastX = xpos;
             lastY = ypos;
 
@@ -59,40 +58,39 @@ namespace Cogravi
 
         void processMouseMovement(float xoffset, float yoffset)
         {
-            float sensitivity = 0.1f; // change this value to your liking
+            float sensitivity = 0.1f; 
             xoffset *= sensitivity;
             yoffset *= sensitivity;
 
-            camera->setYaw(camera->getYaw() + xoffset);
-            camera->setPitch(camera->getPitch() + yoffset);
-            // make sure that when pitch is out of bounds, screen doesn't get flipped
-            if (camera->getPitch() > 89.0f)
-                camera->setPitch(89.0f);
-            if (camera->getPitch() < -89.0f)
-                camera->setPitch(-89.0f);
+            camera->yaw += xoffset;
+            camera->pitch += yoffset;
+
+            if (camera->pitch > 89.0f)
+                camera->pitch = 89.0f;
+            if (camera->pitch < -89.0f)
+                camera->pitch = -89.0f;
 
             glm::vec3 front;
-            front.x = cos(glm::radians(camera->getYaw())) * cos(glm::radians(camera->getPitch()));
-            front.y = sin(glm::radians(camera->getPitch()));
-            front.z = sin(glm::radians(camera->getYaw())) * cos(glm::radians(camera->getPitch()));
+            front.x = cos(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
+            front.y = sin(glm::radians(camera->pitch));
+            front.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
             front = glm::normalize(front);
 
-            camera->setFront(front);
+            camera->Front = front;
         }
 
         void processInput(float deltaTime)
         {
             float cameraSpeed = camera->speed * deltaTime * 20.0f;
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-                camera->setPosition(camera->getPosition() + cameraSpeed * camera->getFront());
+                camera->Position = camera->Position + cameraSpeed * camera->Front;
             if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-                camera->setPosition(camera->getPosition() - cameraSpeed * camera->getFront());
+                camera->Position = camera->Position - cameraSpeed * camera->Front;
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-                camera->setPosition(camera->getPosition() - glm::normalize(glm::cross(camera->getFront(), camera->getUp())) * cameraSpeed);
+                camera->Position = camera->Position - glm::normalize(glm::cross(camera->Front, camera->Up)) * cameraSpeed;
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-                camera->setPosition(camera->getPosition() + glm::normalize(glm::cross(camera->getFront(), camera->getUp())) * cameraSpeed);
+                camera->Position = camera->Position + glm::normalize(glm::cross(camera->Front, camera->Up)) * cameraSpeed;
         }
-		
 
 	};
 }

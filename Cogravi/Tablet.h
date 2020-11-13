@@ -5,8 +5,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h> 
 
-#define TABLET_ID 2020
-
 #include "MeshM.h"
 
 namespace Cogravi {
@@ -27,7 +25,7 @@ namespace Cogravi {
 
 		Tablet()
 		{
-			ModelController::Instance()->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "tablet/tablet.obj", ColliderType::BOX, BulletWorldController::Instance(), glm::vec3(0.63f, 0.94f, 0.09f), glm::vec3(0.0f, -0.95f, 0.0f));
+			ModelController::Instance()->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "tablet/tablet.obj", ColliderType::BOX, glm::vec3(0.63f, 0.94f, 0.09f), glm::vec3(0.0f, -0.95f, 0.0f));
 			model = ModelController::Instance()->getModelPhysics(0);
 		}
 
@@ -39,6 +37,11 @@ namespace Cogravi {
 		void render(Camera& camera, Shader& shader)
 		{
 			model->renderFramebuffer(camera, shader, 2);
+		}
+
+		void render(Avatar& avatar, Shader& shader)
+		{
+			model->renderFramebuffer(avatar, shader, 2);
 		}
 
 

@@ -138,8 +138,6 @@ static void _computeWorldPose(const ovrAvatarSkinnedMeshPose& localPose, glm::ma
 	}
 }
 
-
-
 /************************************************************************************
 * Wrappers for GL representations of avatar assets
 ************************************************************************************/
@@ -165,13 +163,10 @@ static MeshData* _loadMesh(const ovrAvatarMeshAssetData* data)
 	glGenVertexArrays(1, &mesh->vertexArray);
 	glGenBuffers(1, &mesh->vertexBuffer);
 	glGenBuffers(1, &mesh->elementBuffer);
-	//cout << "x: " << data->vertexBuffer->x << "\n";
-	//cout << "y: " << data->vertexBuffer->y << "\n";
-	//cout << "z: " << data->vertexBuffer->z << "\n";
+
 	vertex.push_back(glm::vec3(data->vertexBuffer->x, data->vertexBuffer->y, data->vertexBuffer->z));
 	indices.push_back((int)data->indexBuffer);
 	
-
 	// Bind the vertex buffer and assign the vertex data
 	glBindVertexArray(mesh->vertexArray);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBuffer);

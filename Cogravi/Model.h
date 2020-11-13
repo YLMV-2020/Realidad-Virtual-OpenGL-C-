@@ -22,7 +22,7 @@ namespace Cogravi
 			shader.use();
 
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
+			glm::mat4 projection = camera.GetProjectionMatrix();
 
 			transform = glm::mat4(1.0f);
 			
@@ -50,8 +50,8 @@ namespace Cogravi
 		{
 			shader.use();
 
-			glm::mat4 view = avatar.view;
-			glm::mat4 projection = avatar.proj;
+			glm::mat4 view = avatar.GetViewMatrix();
+			glm::mat4 projection = avatar.GetProjectionMatrix();
 
 			transform = glm::mat4(1.0f);
 
@@ -79,7 +79,7 @@ namespace Cogravi
 			shader.use();
 
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
+			glm::mat4 projection = camera.GetProjectionMatrix();
 
 			transform = glm::mat4(1.0f);
 
@@ -104,6 +104,36 @@ namespace Cogravi
 			
 		}
 
+		void renderFramebuffer(Avatar& avatar, Shader& shader, unsigned int meshIndex)
+		{
+			shader.use();
+
+			glm::mat4 view = avatar.GetViewMatrix();
+			glm::mat4 projection = avatar.GetProjectionMatrix();
+
+			transform = glm::mat4(1.0f);
+
+			transform = transform * physicsMatrix;
+			//transform = glm::translate(transform, glm::vec3(position.x , position.y , position.z ));
+			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
+			//transform = glm::translate(transform, glm::vec3(position.x + translate.x, position.y + translate.y, position.z + translate.z));
+
+			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+			transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+			transform = glm::scale(transform, scale);
+
+			shader.setVec3("viewPos", _glmFromOvrVector(avatar.position));
+
+			shader.setMat4("model", transform);
+			shader.setMat4("view", view);
+			shader.setMat4("projection", projection);
+
+			drawFramebuffer(shader, meshIndex);
+
+		}
+
 		void update() override
 		{
 			
@@ -114,7 +144,7 @@ namespace Cogravi
 			
 		}
 
-		void addBodyPhysicsMesh(int userIndex, BulletWorldController* worldController)
+		void addBodyPhysicsMesh(int userIndex)
 		{
 			this->userIndex = userIndex;
 			btTriangleMesh *trimesh = new btTriangleMesh();
@@ -141,46 +171,49 @@ namespace Cogravi
 			}
 
 			this->shape = new btConvexTriangleMeshShape(trimesh);
-			bodyPhysicsConfiguration(worldController);
+			bodyPhysicsConfiguration();
 		}
 		
-		void addBodyPhysicsBox(int userIndex, BulletWorldController* worldController)
+		void addBodyPhysicsBox(int userIndex)
 		{
 			this->userIndex = userIndex;
 			this->shape = new btBoxShape(btVector3(shapeScalar.x, shapeScalar.y, shapeScalar.z));
-			bodyPhysicsConfiguration(worldController);
+			bodyPhysicsConfiguration();
 		}
 
-		void addBodyPhysicsSphere(int userIndex, BulletWorldController* worldController)
+		void addBodyPhysicsSphere(int userIndex)
 		{
 			this->userIndex = userIndex;
 			this->shape = new btSphereShape(btScalar(shapeScalar.x));
-			bodyPhysicsConfiguration(worldController);
+			bodyPhysicsConfiguration();
 		}
 
-		void addBodyPhysicsCapsule(int userIndex, BulletWorldController* worldController)
+		void addBodyPhysicsCapsule(int userIndex)
 		{
 			this->userIndex = userIndex;
 			this->shape = new btCapsuleShape(btScalar(shapeScalar.x), btScalar(shapeScalar.y));
-			bodyPhysicsConfiguration(worldController);
+			bodyPhysicsConfiguration();
 		}
 
-		void addBodyPhysicsCylinder(int userIndex, BulletWorldController* worldController)
+		void addBodyPhysicsCylinder(int userIndex)
 		{
 			this->userIndex = userIndex;
 			this->shape = new btCylinderShape(btVector3(shapeScalar.x, shapeScalar.y, shapeScalar.z));
-			bodyPhysicsConfiguration(worldController);
+			bodyPhysicsConfiguration();
 		}
 
-		void addBodyPhysicsCone(int userIndex, BulletWorldController* worldController)
+		void addBodyPhysicsCone(int userIndex)
 		{
 			this->userIndex = userIndex;
 			this->shape = new btConeShape(btScalar(shapeScalar.x), btScalar(shapeScalar.y));
-			bodyPhysicsConfiguration(worldController);
+			bodyPhysicsConfiguration();
 		}
 
-		void bodyPhysicsConfiguration(BulletWorldController* worldController)
+		void bodyPhysicsConfiguration()
 		{
+
+			BulletWorldController* worldController = BulletWorldController::Instance();
+
 			btTransform transform;
 			transform.setIdentity();
 			transform.setOrigin(btVector3(position.x, position.y, position.z));
@@ -212,41 +245,41 @@ namespace Cogravi
 
 		}
 
-		void changeBodyPhysics(BulletWorldController* worldController)
+		void changeBodyPhysics()
 		{
-			//worldController->dynamicsWorld->add
-			worldController->dynamicsWorld->removeRigidBody(body);
+
+			BulletWorldController::Instance()->dynamicsWorld->removeRigidBody(body);
 			body = NULL;
 			shape = NULL;
 
 			switch (shape_current)
 			{
 			case 0:
-				addBodyPhysicsBox(userIndex, worldController);
+				addBodyPhysicsBox(userIndex);
 				break;
 			case 1:
-				addBodyPhysicsSphere(userIndex, worldController);
+				addBodyPhysicsSphere(userIndex);
 				break;
 			case 2:
-				addBodyPhysicsCapsule(userIndex, worldController);
+				addBodyPhysicsCapsule(userIndex);
 				break;
 			case 3:
-				addBodyPhysicsCylinder(userIndex, worldController);
+				addBodyPhysicsCylinder(userIndex);
 				break;
 			case 4:
-				addBodyPhysicsCone(userIndex, worldController);
+				addBodyPhysicsCone(userIndex);
 				break;
 			case 5:
-				addBodyPhysicsMesh(userIndex, worldController);
+				addBodyPhysicsMesh(userIndex);
 				break;
 			default:
 				break;
-			}			
-				
+			}						
 		}
 
-		void destroy(BulletWorldController* worldController)
+		void destroy()
 		{
+			BulletWorldController* worldController = BulletWorldController::Instance();
 			//Obtenemos todos los componentes de colision del mundo
 			btCollisionObjectArray arr = worldController->dynamicsWorld->getCollisionObjectArray();
 

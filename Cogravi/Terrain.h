@@ -65,8 +65,8 @@ namespace Cogravi
 		{
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);
-			glm::mat4 view = avatar.view;
-			glm::mat4 projection = avatar.proj;
+			glm::mat4 view = avatar.GetViewMatrix();
+			glm::mat4 projection = avatar.GetProjectionMatrix();
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
 			shader.setVec3("ambient", ambient);

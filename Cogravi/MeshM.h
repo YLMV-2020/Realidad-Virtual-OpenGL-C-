@@ -1,7 +1,8 @@
 #ifndef MESH_M_HEADER
 #define MESH_M_HEADER
 
-namespace Cogravi {
+namespace Cogravi 
+{
 
     struct Vertex
     {

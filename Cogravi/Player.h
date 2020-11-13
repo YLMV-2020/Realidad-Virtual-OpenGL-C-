@@ -49,7 +49,7 @@ namespace Cogravi
 			draw(shader);
 		}
 
-		void update()
+		void update(GLFWwindow* window, float deltaTime, float currentFrame)
 		{
 			float height = body->getWorldTransform().getOrigin().getY();
 			float heightTarget = height > position.y ? height : position.y + 1;
@@ -67,6 +67,9 @@ namespace Cogravi
 
 			//body->setWorldTransform(target);
 			body->setCenterOfMassTransform(target);
+
+			input(window, deltaTime);
+			updateTime(currentFrame);
 		}
 
 		void input(GLFWwindow* window, float deltaTime)

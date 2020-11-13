@@ -150,8 +150,8 @@ namespace Cogravi
 			// draw scene as normal
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);
-			glm::mat4 view = avatar.view;
-			glm::mat4 projection = avatar.proj;
+			glm::mat4 view = avatar.GetViewMatrix();
+			glm::mat4 projection = avatar.GetProjectionMatrix();
 			shader.setMat4("model", model);
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
@@ -162,7 +162,7 @@ namespace Cogravi
 			// draw skybox as last
 			glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 			skyboxShader.use();
-			view = glm::mat4(glm::mat3(avatar.view)); // remove translation from the view matrix
+			view = glm::mat4(glm::mat3(view)); // remove translation from the view matrix
 			skyboxShader.setMat4("view", view);
 			skyboxShader.setMat4("projection", projection);
 			skyboxShader.setVec3("ambient", ambient);

@@ -37,6 +37,7 @@ using namespace std;
 #include "DebugDrawer.h"
 #include "AnimationController.h"
 #include "ModelController.h"
+#include "AvatarController.h"
 #include "PlayerController.h"
 #include "Aula.h"
 #include "InputProcessor.h"
@@ -97,7 +98,7 @@ namespace Cogravi
 
         ModelController* modelController;
         AnimationController* animationController;
-        
+
         Player* player;
         Tablet* tablet;
 
@@ -119,6 +120,7 @@ namespace Cogravi
         int HEIGHT_VR = 986;
 
         Avatar* avatar;
+        AvatarController* avatarController;
         ovrSession ovr;
 
         ovrMicrophoneHandle mic;

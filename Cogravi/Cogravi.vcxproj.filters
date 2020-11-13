@@ -191,6 +191,9 @@
     <ClInclude Include="Tablet.h">
       <Filter>Archivos de encabezado\GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="AvatarController.h">
+      <Filter>Archivos de encabezado\AvatarVR</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\model.frag">
