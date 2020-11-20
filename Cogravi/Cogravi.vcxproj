@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\include\OVR;$(SolutionDir)\include\OVRAvatarSDK;$(SolutionDir)\include\OVRPlatform;$(SolutionDir)\include\BulletPhysics;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\include\OVR;$(SolutionDir)\include\OVRAvatarSDK;$(SolutionDir)\include\OVRPlatform;$(SolutionDir)\include\BulletPhysics;$(SolutionDir)\include\irrklang;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -99,7 +99,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;glew32.lib;LibOVR.lib;libovravatar.lib;LibOVRPlatform64_1.lib;Bullet2FileLoader_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletSoftBody_Debug.lib;BulletWorldImporter_Debug.lib;LinearMath_Debug.lib;assimpd.lib;opencv_world450d.lib;opencv_world450.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;glew32.lib;LibOVR.lib;libovravatar.lib;LibOVRPlatform64_1.lib;Bullet2FileLoader_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletSoftBody_Debug.lib;BulletWorldImporter_Debug.lib;LinearMath_Debug.lib;opencv_world450d.lib;opencv_world450.lib;freetyped.lib;irrKlang.lib;assimpd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -177,6 +177,8 @@
     <ClInclude Include="ModelAttributes.h" />
     <ClInclude Include="ModelController.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Pokebola.h" />
+    <ClInclude Include="PokebolaController.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Tablet.h" />

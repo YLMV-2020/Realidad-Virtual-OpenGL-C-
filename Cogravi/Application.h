@@ -3,6 +3,8 @@
 
 #include "ApplicationAttributes.h"
 
+#include <irrKlang.h>
+
 namespace Cogravi
 {
     class Application :public ApplicationAttributes
@@ -75,15 +77,13 @@ namespace Cogravi
                 {
                     float force = 20.0f;
                     glm::vec3 impulse = camera->Front * force;
-                    modelController->addBullet(camera->Position + camera->Front, impulse);
-        
+                    pokebolaController->addPokebola(camera->Position + camera->Front, impulse); 
                 }
 
                 if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
                 {
                     isEngine = true;
                     isVr = false;
-                    isPc = false;
                     glViewport(0, 0, WIDTH, HEIGHT);
                 }
 
@@ -93,7 +93,7 @@ namespace Cogravi
             {
                 if (isEngine)
                     glViewport(0, 0, WIDTH, HEIGHT);
-                else if (isPc || isVr)
+                else if (isVr)
                     glViewport(0, 0, width, height);
             };
 
@@ -128,12 +128,9 @@ namespace Cogravi
         void addModels()
         {
             vector<Texture> texturesLoad;
-            modelController->addModel(glm::vec3(0.0f, 0.00f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "tunel/tunel.obj");     
-            modelController->addModel(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.1f, 1.1f, 1.1f), "Birthday Scene/Birthday Area.obj");          
+            modelController->addModel(glm::vec3(0.0f, 0.10f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "tunel/tunel.obj");        
             modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "rex/allo.obj", ColliderType::BOX, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));
-            modelController->addModel(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "stove/stove.obj");
-            modelController->addModel(glm::vec3(-10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "PIZZA/pizza1.obj");
-            modelController->addModel(glm::vec3(-10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "bullet/bullet.obj", ColliderType::BOX);
+            modelController->addModel(glm::vec3(120.0f, 0.10f, -20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Modern Interior/modern interior.obj");
             //modelController->addModel(glm::vec3(-10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "bill/house.obj");
             //modelController->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "tablet/tablet.obj", ColliderType::BOX, bulletWorldController, glm::vec3(0.63f, 0.94f, 0.09f), glm::vec3(0.0f, -0.95f, 0.0f));
             //modelController->addModel(glm::vec3(110.0f, 0.0f, 110.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "start/start.obj");
@@ -142,7 +139,7 @@ namespace Cogravi
 
         void addAnimations()
         {
-            animationController->addAnimation(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "doctora/doctora.dae", *shaderAnimation);
+            animationController->addAnimation(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "doctora/doctora.dae", *shaderAnimation);        
         }
 
         void loadTexturesImGui()
@@ -182,7 +179,7 @@ namespace Cogravi
             util = Util::Instance();
             bulletWorldController = BulletWorldController::Instance();
 
-            terrain = new Terrain("marble.jpg", glm::vec3(100, -0.01f, 100), 50.0f, bulletWorldController);
+            terrain = new Terrain("marble.jpg", glm::vec3(1000, -0.01f, 1000), 500.0f);
             skybox = new Skybox("bosque", "png");
 
             debugDrawer = new DebugDrawer();
@@ -201,6 +198,7 @@ namespace Cogravi
             text = new Text("Arial.ttf");
 
             tablet = Tablet::Instance();
+            pokebolaController = PokebolaController::Instance();
 
             loadTextureFloors();
             loadTextureObjects();
@@ -355,28 +353,6 @@ namespace Cogravi
             util->vincularFrambuffer(framebufferTablet, textureTablet);
 
             tablet->updateTexture(textureTablet);
-        }
-
-        void renderPc()
-        {
-            glClearColor(0, 0, 0, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            glm::mat4 ProjectionMatrix = camera->GetProjectionMatrix();
-            glm::mat4 ViewMatrix = camera->GetViewMatrix();
-
-            bulletWorldController->physics_step(60.0f);
-
-
-            /* skybox->render(*camera);
-             terrain->render(*camera);*/
-             /*modelController->render(*camera);
-             animations->render(*camera, animationTime);*/
-
-            debugDrawer->SetMatrices(ViewMatrix, ProjectionMatrix);
-            bulletWorldController->dynamicsWorld->debugDrawWorld();
-            //debugDrawer->color = glm::vec3(0, 1, 0);
-
         }
 
         void renderRV()
@@ -559,12 +535,17 @@ namespace Cogravi
             glm::mat4 ProjectionMatrix = camera->GetProjectionMatrix();
             glm::mat4 ViewMatrix = camera->GetViewMatrix();
 
-            //bulletWorldController->physics_step(ImGui::GetIO().Framerate);
-            bulletWorldController->physics_step(60.f);
+            bulletWorldController->physics_step(ImGui::GetIO().Framerate);
+            //bulletWorldController->physics_step(60.f);
 
             camera->update();
             modelController->update();
             animationController->update();
+           
+            if (pokebolaController->update(modelSelect, lastFrame))
+            {
+                renderFont(modelSelect);
+            }
 
             player->update(window, deltaTime, lastFrame);
             input->processInput(deltaTime);       
@@ -638,6 +619,7 @@ namespace Cogravi
                 terrain->render(*camera, luz->isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
                 modelController->render(*camera, *shaderModel);
                 animationController->render(*camera, *shaderAnimation, lastFrame);
+                pokebolaController->render(*camera, *shaderModel);
                 player->render(*camera, *shaderAnimation);
                 tablet->render(*camera, *shaderModel);
 
@@ -648,8 +630,6 @@ namespace Cogravi
 
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-           
 
             settingsImGui();
             renderImGui();
@@ -762,7 +742,6 @@ namespace Cogravi
                 {
                     glfwSetWindowSize(window, WIDTH_VR, HEIGHT_VR);
                     isEngine = false;
-                    isPc = false;
                     isVr = true;
                 }
             }
@@ -897,7 +876,6 @@ namespace Cogravi
                 glClearColor(modelSelect->description.colorBG.x, modelSelect->description.colorBG.y, modelSelect->description.colorBG.z, 1);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                //AGREGAR INTEFRZAF PARA TIIPO DE LETRA, COLOR, TAMAÑAO,
                 for (int i = 0; i < modelSelect->description.printfSize; i++)
                 {
                     text->RenderText(modelSelect->description.printf[i], 100.0f, 700.0f - (50 * i), 1.0f, modelSelect->description.color);

@@ -18,7 +18,7 @@ namespace Cogravi
 
 		float planeVertices[30];
 
-		Terrain(string path, glm::vec3 volumen, float repeat, BulletWorldController* bulletWorldController)
+		Terrain(string path, glm::vec3 volumen, float repeat)
 		{
 			this->shader = *Util::Instance()->myShaders[ShaderType::TERRAIN];
 			this->volumen = volumen;
@@ -34,7 +34,7 @@ namespace Cogravi
 
 			btRigidBody* body = new btRigidBody(info);
 
-			bulletWorldController->dynamicsWorld->addRigidBody(body);
+			BulletWorldController::Instance()->dynamicsWorld->addRigidBody(body);
 
 			path = "assets\\textures\\terrain\\" + path;
 			floorTexture = Util::loadTexture(path.c_str());
@@ -48,7 +48,7 @@ namespace Cogravi
 			shader.use();
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::mat4 view = camera.GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(camera.FOV), (float)WIDTH / (float)HEIGHT, camera.NEAR, camera.FAR);
+			glm::mat4 projection = camera.GetProjectionMatrix();
 			shader.setMat4("view", view);
 			shader.setMat4("projection", projection);
 			shader.setVec3("ambient", ambient);
@@ -135,7 +135,7 @@ namespace Cogravi
 		void configShader()
 		{
 			shader.use();
-			shader.setInt("texture1", 0);
+			shader.setInt("textureT", 0);
 		}
 	};
 }

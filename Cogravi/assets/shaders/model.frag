@@ -82,6 +82,9 @@ void main()
             result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);    
     }
 
+    if(texture(material.diffuse, TexCoords).a < 0.1)
+        discard;
+
     if(isLightSpot) 
         result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
     

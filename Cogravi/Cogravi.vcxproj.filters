@@ -46,6 +46,9 @@
     <Filter Include="Archivos de encabezado\Text">
       <UniqueIdentifier>{292ae6c0-ad29-4bc2-83cd-65955f4eb48e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Pokebola">
+      <UniqueIdentifier>{dafa11ce-5cd3-43c7-8693-8e3e785232ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OVR_PlatformLoader.cpp">
@@ -193,6 +196,12 @@
     </ClInclude>
     <ClInclude Include="AvatarController.h">
       <Filter>Archivos de encabezado\AvatarVR</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokebola.h">
+      <Filter>Archivos de encabezado\Pokebola</Filter>
+    </ClInclude>
+    <ClInclude Include="PokebolaController.h">
+      <Filter>Archivos de encabezado\Pokebola</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

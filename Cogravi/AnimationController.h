@@ -105,6 +105,13 @@ namespace Cogravi {
             animations.push_back(animation);
         }
 
+        void loadAnimation(const string& path, int index)
+        {
+            int tam = animations.size();
+            if (tam <= index && index < 0) return;
+            animations[index]->addAnimation(path);
+        }
+
         void removeModel(Animation*& animation, BulletWorldController* worldController)
         {
             if (!animationsPhysics.empty())

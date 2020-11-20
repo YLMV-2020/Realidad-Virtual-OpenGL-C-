@@ -17,7 +17,6 @@ namespace Cogravi {
         }
 
         vector<Model*> modelsPhysics;
-        vector<Model*> bullets;
         vector<GameObject*> models;
 
         GLuint modelsDynamicSize = 0;
@@ -35,9 +34,6 @@ namespace Cogravi {
 
             for (GameObject*& model : models)
                 model->update();
-
-            for (Model*& bullet : bullets)
-                bullet->update();
         }
 
         void render(Camera& camera, Shader& shader)
@@ -48,8 +44,6 @@ namespace Cogravi {
             for (GameObject*& model : models)
                 model->render(camera, shader);
 
-            for (Model*& bullet : bullets)
-                bullet->render(camera, shader);
         }
 
         void render(Avatar& avatar, Shader& shader)
@@ -59,9 +53,6 @@ namespace Cogravi {
 
             for (GameObject*& model : models)
                 model->render(avatar, shader);
-
-            for (Model*& bullet : bullets)
-                bullet->render(avatar, shader);
         }
 
         void addModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, ColliderType type, glm::vec3 colliderSize = glm::vec3(1.0f), glm::vec3 translateCollider  = glm::vec3(0.0f), vector<Texture> textures = {})
@@ -113,24 +104,7 @@ namespace Cogravi {
             modelStaticSize++;
         }
 
-        void addBullet(glm::vec3 position, glm::vec3 impulse)
-        {
-            Model* bullet = new Model(position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), "assets/objects/pokebola/pokebola.obj");
-            bullet->translate = glm::vec3(0.0f, 0.0f, 0.03f);
-            bullet->shapeScalar = glm::vec3(0.06f);
-            bullet->shape_current = 0;
-            //bullet->mass = 10.0f;
-            bullet->addBodyPhysicsSphere(bullets.size() + 100);
-
-            bullet->body->setRestitution(0.5f);
-            bullet->body->setFriction(0.3f);
-            bullet->body->setRollingFriction(0.3f);
-            bullet->body->setAngularFactor(btVector3(1.0f, 1.0f, 1.0f));
-            bullet->body->applyCentralImpulse(btVector3(impulse.x, impulse.y, impulse.z));
-
-            bullets.push_back(bullet);
-
-        }
+        
 
         void removeModel(Model*& model)
         {

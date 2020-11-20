@@ -37,6 +37,7 @@ using namespace std;
 #include "DebugDrawer.h"
 #include "AnimationController.h"
 #include "ModelController.h"
+#include "PokebolaController.h"
 #include "AvatarController.h"
 #include "PlayerController.h"
 #include "Aula.h"
@@ -58,7 +59,6 @@ namespace Cogravi
         GLFWwindow* window;
 
         bool isEngine = true;
-        bool isPc = false;
         bool isVr = false;
 
         ImVec2 mouse;
@@ -98,6 +98,8 @@ namespace Cogravi
 
         ModelController* modelController;
         AnimationController* animationController;
+
+        PokebolaController* pokebolaController;
 
         Player* player;
         Tablet* tablet;

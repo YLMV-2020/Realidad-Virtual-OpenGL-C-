@@ -29,15 +29,15 @@ namespace Cogravi {
             {
                 if (avatar->touchState.Buttons == ovrTouch_A)
                 {
-                    addBullet(20.0f);
+                    addPokebola(20.0f);
                 }
             }
         }
 
-        void addBullet(float force)
+        void addPokebola(float force)
         {
-            ModelController* modelController = ModelController::Instance();          
-            modelController->addBullet(_glmFromOvrVector(avatar->leftHandPosition) + avatar->eyeForward, avatar->eyeForward * force);
+            PokebolaController* pokebolaController = PokebolaController::Instance();
+            pokebolaController->addPokebola(_glmFromOvrVector(avatar->leftHandPosition) + avatar->eyeForward, avatar->eyeForward * force);
         }
 
     };
