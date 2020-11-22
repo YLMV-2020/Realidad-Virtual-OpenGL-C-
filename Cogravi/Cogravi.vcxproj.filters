@@ -75,9 +75,6 @@
     <ClCompile Include="imgui_widgets.cpp">
       <Filter>Archivos de recursos\imGui</Filter>
     </ClCompile>
-    <ClCompile Include="GLDebugDrawer.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imconfig.h">
@@ -173,20 +170,11 @@
     <ClInclude Include="Shader.h">
       <Filter>Archivos de encabezado\Application</Filter>
     </ClInclude>
-    <ClInclude Include="Aula.h">
-      <Filter>Archivos de encabezado\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Lighting.h">
       <Filter>Archivos de encabezado\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Archivos de encabezado\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="TV.h">
-      <Filter>Archivos de encabezado\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="GLDebugDrawer.hpp">
-      <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Archivos de encabezado\Text</Filter>
@@ -258,12 +246,6 @@
     </None>
     <None Include="assets\shaders\instanceModel.vert">
       <Filter>Archivos de encabezado\Model</Filter>
-    </None>
-    <None Include="assets\shaders\practica.frag">
-      <Filter>Archivos de origen</Filter>
-    </None>
-    <None Include="assets\shaders\practica.vert">
-      <Filter>Archivos de origen</Filter>
     </None>
     <None Include="assets\shaders\sol.frag">
       <Filter>Archivos de encabezado\GameObjects</Filter>

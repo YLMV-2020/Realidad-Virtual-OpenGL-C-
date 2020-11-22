@@ -25,7 +25,7 @@ namespace Cogravi {
 
 		Tablet()
 		{
-			ModelController::Instance()->addModel(glm::vec3(20.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "tablet/tablet.obj", ColliderType::BOX, glm::vec3(0.63f, 0.94f, 0.09f), glm::vec3(0.0f, -0.95f, 0.0f));
+			ModelController::Instance()->addModel(glm::vec3(50.0f, 0.0f, 50.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.f, 10.f, 10.f), "tablet/tablet.obj", ColliderType::BOX, glm::vec3(0.63f, 0.94f, 0.09f), glm::vec3(0.0f, -0.95f, 0.0f));
 			model = ModelController::Instance()->getModelPhysics(ID);
 		}
 

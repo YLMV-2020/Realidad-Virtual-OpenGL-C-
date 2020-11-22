@@ -58,7 +58,6 @@ namespace Cogravi
 			transform = transform * physicsMatrix;
 			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
 
-
 			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 			transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -84,10 +83,8 @@ namespace Cogravi
 			transform = glm::mat4(1.0f);
 
 			transform = transform * physicsMatrix;
-			//transform = glm::translate(transform, glm::vec3(position.x , position.y , position.z ));
 			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
-			//transform = glm::translate(transform, glm::vec3(position.x + translate.x, position.y + translate.y, position.z + translate.z));
-
+		
 			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 			transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -114,9 +111,7 @@ namespace Cogravi
 			transform = glm::mat4(1.0f);
 
 			transform = transform * physicsMatrix;
-			//transform = glm::translate(transform, glm::vec3(position.x , position.y , position.z ));
 			transform = glm::translate(transform, glm::vec3(translate.x, translate.y, translate.z));
-			//transform = glm::translate(transform, glm::vec3(position.x + translate.x, position.y + translate.y, position.z + translate.z));
 
 			transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -235,7 +230,7 @@ namespace Cogravi
 			body->setLinearFactor(btVector3(linearFactor.x, linearFactor.y, linearFactor.z));
 
 			//Por defecto, todos los modelos están bloqueados en el espacio en X,Z así como sus ejes de rotación
-			body->setAngularFactor(btVector3(angularFactor.x, angularFactor.y, angularFactor.z));
+			body->setAngularFactor(btVector3(0, 0, 0));
 			body->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
 
 			body->setActivationState(DISABLE_DEACTIVATION);
@@ -296,7 +291,7 @@ namespace Cogravi
 
 		void changeAngularFactor() 
 		{ 
-			body->setAngularFactor(btVector3(angularFactor.x, angularFactor.y, angularFactor.z));
+			body->setAngularFactor(btVector3(angularFactor[0] ? 1.0f : 0.0f, angularFactor[1] ? 1.0f : 0.0f, angularFactor[2] ? 1.0f : 0.0f));
 		}
 
 		void changeLinearVelocity() 
@@ -310,24 +305,10 @@ namespace Cogravi
 			//shape->calculateLocalInertia(mass, btVector3(localInertia.x, localInertia.y, localInertia.z));
 		}
 
-		void changeMargin()
-		{
-			shape->setMargin(margin);
-		}
-
 		void changeScalar()
 		{
 			shape->setLocalScaling(btVector3(shapeScalar.x, shapeScalar.y, shapeScalar.z));
 		}
-
-		void change()
-		{
-			btTransform t;
-			t.setIdentity();			
-			t.setFromOpenGLMatrix(glm::value_ptr(transform));
-			body->setCenterOfMassTransform(t);
-		}
-
 
 	};
 }

@@ -18,9 +18,11 @@ namespace Cogravi {
 
         vector<Model*> modelsPhysics;
         vector<GameObject*> models;
+        vector<GameObject*> modelsInstance;
 
         GLuint modelsDynamicSize = 0;
         GLuint modelStaticSize = 0;
+        GLuint modelInstanceSize = 0;
 
         ModelController()
         {
@@ -30,9 +32,6 @@ namespace Cogravi {
         void update()
         {
             for (Model*& model : modelsPhysics)
-                model->update();
-
-            for (GameObject*& model : models)
                 model->update();
         }
 
@@ -44,6 +43,12 @@ namespace Cogravi {
             for (GameObject*& model : models)
                 model->render(camera, shader);
 
+        }
+
+        void renderInstance(Camera& camera, Shader& shader)
+        {
+            for (GameObject*& model : modelsInstance)
+                model->renderInstance(camera, shader);
         }
 
         void render(Avatar& avatar, Shader& shader)
@@ -104,7 +109,12 @@ namespace Cogravi {
             modelStaticSize++;
         }
 
-        
+        void addModelInstance(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, int cantidad, glm::mat4* modelMatrices, vector<Texture> textures = {})
+        {
+            GameObject* model = new GameObject(position, rotation, scale, "assets/objects/" + path, textures, cantidad, modelMatrices);
+            modelsInstance.push_back(model);
+            modelInstanceSize++;
+        }     
 
         void removeModel(Model*& model)
         {

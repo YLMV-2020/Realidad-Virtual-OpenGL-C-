@@ -28,7 +28,7 @@ namespace Cogravi {
 		unsigned int cantidad;
 
 
-		GameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>textures = {}, int cantidad = 1)
+		GameObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, vector<Texture>textures = {}, int cantidad = 1, glm::mat4* modelMatrices = NULL)
 		{
 			this->position = position;
 			this->rotation = rotation;
@@ -37,10 +37,12 @@ namespace Cogravi {
 			this->textureAssimp = this->textures.size() == 0 ? true : false;
 			this->cantidad = cantidad;
 
-			if (this->cantidad > 1)
-				configureInstance();
-
 			loadModel(path);
+
+			if (this->cantidad > 1)
+			{
+				configureInstance(modelMatrices);
+			}
 		}
 
 		~GameObject() {}
@@ -100,40 +102,13 @@ namespace Cogravi {
 			drawInstance(shader);
 		}
 
-		void configureInstance()
+		void configureInstance(glm::mat4 matriz[])
 		{		
-			glm::mat4* modelMatrices;
-			modelMatrices = new glm::mat4[cantidad];
-			srand(time(NULL)); 
-			float radius = 65.0f;
-			float offset = 25.0f;
-			for (unsigned int i = 0; i < cantidad; i++)
-			{
-				glm::mat4 model = glm::mat4(1.0f);
-				
-				float angle = (float)i / (float)cantidad * 360.0f;
-				float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-				float x = sin(angle) * radius + displacement;
-				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-				float y = 0.0f;
-				displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-				float z = cos(angle) * radius + displacement;
-				model = glm::translate(model, glm::vec3(x, y, z));
-
-				float scale = (rand() % 20) / 100.0f + 0.05;
-				model = glm::scale(model, glm::vec3(scale*2));
-
-				float rotAngle = (rand() % 360);
-				//model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
-
-				modelMatrices[i] = model;
-			}
-
-
+			
 			unsigned int buffer;
 			glGenBuffers(1, &buffer);
 			glBindBuffer(GL_ARRAY_BUFFER, buffer);
-			glBufferData(GL_ARRAY_BUFFER, cantidad * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, cantidad * sizeof(glm::mat4), &matriz[0], GL_STATIC_DRAW);
 			
 			for (unsigned int i = 0; i < meshes.size(); i++)
 			{

@@ -37,16 +37,14 @@ using namespace std;
 #include "DebugDrawer.h"
 #include "AnimationController.h"
 #include "ModelController.h"
+#include "Tablet.h"
 #include "PokebolaController.h"
 #include "AvatarController.h"
 #include "PlayerController.h"
-#include "Aula.h"
 #include "InputProcessor.h"
 #include "Lighting.h"
 #include "Player.h"
-#include "TV.h"
 #include "Text.h"
-#include "Tablet.h"
 
 using namespace Cogravi;
 
@@ -71,6 +69,9 @@ namespace Cogravi
 
         GLuint framebufferTablet;
         GLuint textureTablet;
+
+        GLuint framebufferVR;
+        GLuint textureVR;
 
         long long frameIndex = 0;
         GLint lastFont = 0;
@@ -116,6 +117,8 @@ namespace Cogravi
         bool isDrawWireframe = true;
         bool isDrawAABB = false;
         bool isWireframe = false;
+
+        Model* modelSelect = NULL;
 
         //VR
         int WIDTH_VR = 1920;

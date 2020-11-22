@@ -28,9 +28,6 @@ namespace Cogravi {
         {
             for (Animation*& animation : animationsPhysics)
                 animation->update();
-
-            for (DynamicGameObject*& animation : animations)
-                animation->update();
         }
 
         void render(Camera& camera, Shader& shader, float currentFrame)

@@ -35,9 +35,9 @@ namespace Cogravi
 
 		void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
 		{
-			glEnable(GL_CULL_FACE);
+			//glEnable(GL_CULL_FACE);
 			glEnable(GL_BLEND);
-			glDepthFunc(GL_ALWAYS);
+			//glDepthFunc(GL_ALWAYS);
 			shader.use();
 
 			glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
@@ -80,9 +80,9 @@ namespace Cogravi
 			glBindVertexArray(0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
-			glDisable(GL_CULL_FACE);
-			glDisable(GL_BLEND);
-			glDepthFunc(GL_LESS);
+			//glDisable(GL_CULL_FACE);
+			//glDisable(GL_BLEND);
+			//glDepthFunc(GL_LESS);
 		}
 
 		void setOptions()

@@ -1,16 +1,17 @@
 #ifndef AVATAR_CONTROLLER_HEADER
 #define AVATAR_CONTROLLER_HEADER
 
-
-namespace Cogravi {
-
+namespace Cogravi 
+{
     class AvatarController
     {
 
     public:
 
         Avatar* avatar;
-        float bulletTime;
+        Tablet* tablet;
+        ModelController* modelController;
+        PokebolaController* pokebolaController;
 
         static AvatarController* Instance()
         {
@@ -21,6 +22,9 @@ namespace Cogravi {
         AvatarController()
         {
             avatar = Avatar::Instance();
+            tablet = Tablet::Instance();
+            modelController = ModelController::Instance();
+            pokebolaController = PokebolaController::Instance();
         }
        
         void input(ovrSession session)
@@ -34,9 +38,13 @@ namespace Cogravi {
             }
         }
 
-        void addPokebola(float force)
+        void objectTracking()
         {
-            PokebolaController* pokebolaController = PokebolaController::Instance();
+             //avatar->
+        }
+
+        void addPokebola(float force)
+        {           
             pokebolaController->addPokebola(_glmFromOvrVector(avatar->leftHandPosition) + avatar->eyeForward, avatar->eyeForward * force);
         }
 

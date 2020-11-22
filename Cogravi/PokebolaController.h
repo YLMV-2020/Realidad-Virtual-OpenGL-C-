@@ -17,6 +17,7 @@ namespace Cogravi
         BulletWorldController* bulletWorldController;
 
         int index;
+        float secondsDelete = 7.0f;
 
         static PokebolaController* Instance()
         {
@@ -48,7 +49,7 @@ namespace Cogravi
                     }
                 }
 
-                if (pokebola->time >= 6.0f)
+                if (pokebola->time >= secondsDelete)
                 {
                     removePokebola(pokebola);
                 }

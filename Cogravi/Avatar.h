@@ -21,8 +21,9 @@ namespace Cogravi
 		glm::vec3 eyeForward;
 		glm::vec3 eyeUp;
 		
+		const int ID_R = 2020;
+		const int ID_L = 2021;
 
-		int userIndex[2];
 		float Yaw = 0.0f;
 
 		Vector3f position;
@@ -60,14 +61,14 @@ namespace Cogravi
 			addBodyPhysicsBox();
 		}
 
-		void Init() 
+		void init() 
 		{
 			_skinnedMeshProgram = Util::Instance()->myShaders[ShaderType::AVATAR]->ID;
 			ovrAvatar_Initialize(MIRROR_SAMPLE_APP_ID);
 			ovrAvatar_RequestAvatarSpecification(0);
 		}
 
-		void Prerender(ovrSession session, float deltaTime) 
+		void prerender(ovrSession session, float deltaTime) 
 		{
 
 			while (ovrAvatarMessage* message = ovrAvatarMessage_Pop())
@@ -170,7 +171,7 @@ namespace Cogravi
 			}
 		}
 
-		void Render(ovrPosef eye, ovrMatrix4f proj) {
+		void render(ovrPosef eye, ovrMatrix4f proj) {
 
 			bool renderJoints = false;
 
@@ -207,43 +208,34 @@ namespace Cogravi
 			glFrontFace(GL_CW);
 		}
 
-		void Update()
+		void update()
 		{
-			if (!isCollision[0])
-			{
+			btTransform transform;
+			transform.setIdentity();
+			transform.setOrigin(btVector3(leftHandPosition.x, leftHandPosition.y, leftHandPosition.z));
 
-				btTransform transform;
-				transform.setIdentity();
-				transform.setOrigin(btVector3(leftHandPosition.x, leftHandPosition.y, leftHandPosition.z));
+			float x, y, z;
 
-				float x, y, z;
+			leftHandRotation.GetYawPitchRoll(&x, &y, &z);
 
-				leftHandRotation.GetYawPitchRoll(&x, &y, &z);
+			btQuaternion quat;
+			quat.setEulerZYX(btScalar(z), btScalar(-y), btScalar(x));
+			transform.setRotation(btQuaternion(quat));
 
-				btQuaternion quat;
-				quat.setEulerZYX(btScalar(z), btScalar(-y), btScalar(x));
-				transform.setRotation(btQuaternion(quat));
+			body[0]->setWorldTransform(transform);
 
-				body[0]->setWorldTransform(transform);
-			}
+			//btTransform transform;
+			transform.setIdentity();
+			transform.setOrigin(btVector3(rightHandPosition.x, rightHandPosition.y, rightHandPosition.z));
 
-			if (!isCollision[1])
-			{
-				btTransform transform;
-				transform.setIdentity();
-				transform.setOrigin(btVector3(rightHandPosition.x, rightHandPosition.y, rightHandPosition.z));
 
-				float x, y, z;
+			rightHandRotation.GetYawPitchRoll(&x, &y, &z);
 
-				rightHandRotation.GetYawPitchRoll(&x, &y, &z);
+			//btQuaternion quat;
+			quat.setEulerZYX(btScalar(z), btScalar(-y), btScalar(x));
+			transform.setRotation(btQuaternion(quat));
 
-				btQuaternion quat;
-				quat.setEulerZYX(btScalar(z), btScalar(-y), btScalar(x));
-				transform.setRotation(btQuaternion(quat));
-
-				body[1]->setWorldTransform(transform);
-			}
-
+			body[1]->setWorldTransform(transform);
 		}
 
 		void addBodyPhysicsBox()
@@ -268,7 +260,6 @@ namespace Cogravi
 			for (int i = 0; i < 2; i++)
 			{
 				float mass = 1.f;
-				userIndex[i] = 200 + i;
 
 				shape[i]->calculateLocalInertia(mass, inertia);
 
@@ -277,7 +268,7 @@ namespace Cogravi
 
 				body[i] = new btRigidBody(info);
 				body[i]->setRestitution(1.0f);
-				body[i]->setUserIndex(this->userIndex[i]);
+				body[i]->setUserIndex(2020 + i);
 				body[i]->setLinearFactor(btVector3(1.0f, 1.0f, 1.0f));
 
 				body[i]->setActivationState(DISABLE_DEACTIVATION);
@@ -298,10 +289,6 @@ namespace Cogravi
 		{
 			return view;
 		}
-
-
-	private:
-
 	};
 }
 
