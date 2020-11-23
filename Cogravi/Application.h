@@ -3,8 +3,6 @@
 
 #include "ApplicationAttributes.h"
 
-#include <irrKlang.h>
-
 namespace Cogravi
 {
     class Application :public ApplicationAttributes
@@ -78,6 +76,7 @@ namespace Cogravi
                     float force = 50.0f;
                     glm::vec3 impulse = camera->Front * force;
                     pokebolaController->addPokebola(camera->Position + camera->Front, impulse); 
+                    SoundEngine->play2D("assets/audio/powerup.wav", false);
                 }
 
                 if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -170,16 +169,15 @@ namespace Cogravi
 
         void addAnimations()
         {
-
             animationController->addAnimationInstance(glm::vec3(0.0f, 0.0f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "alien/alien.dae", *shaderInstanceDynamic, NPC1->cantidad, NPC1->transform);
             animationController->loadAnimationInstance("Walking.dae");
-            animationController->loadAnimationInstance("Zombie Neck Bite.dae");
-            
+            animationController->loadAnimationInstance("Zombie Neck Bite.dae"); 
         }
 
         void loadTexturesImGui()
         {
             texturesImGui.push_back(Util::loadTexture("assets\\textures\\imgui\\VR.png"));
+            texturesImGui.push_back(Util::loadTexture("assets\\textures\\imgui\\luz.png"));
         }
 
         void loadTextureObjects()
@@ -264,6 +262,7 @@ namespace Cogravi
             input = new InputProcessor(window, camera);
 
             NPC1 = new NPC(0, 10);
+            SoundEngine = createIrrKlangDevice();
 
             addModels();
             addAnimations();
@@ -403,6 +402,8 @@ namespace Cogravi
             util->vincularFrambuffer(framebufferTablet, textureTablet);
 
             tablet->updateTexture(textureTablet);
+            SoundEngine->play2D("assets/audio/bleep.mp3", true);
+
         }
 
         void renderRV()
@@ -772,18 +773,35 @@ namespace Cogravi
 
                 if (modelSelect->shape_current == 1)
                 {
-                    if (ImGui::DragFloat("Radius", glm::value_ptr(modelSelect->shapeScalar), 0.1f))
+                    if (ImGui::DragFloat("Radius", glm::value_ptr(modelSelect->shapeScalar), 0.01f, 0.01f, 100.0f))
                     {
                         modelSelect->changeScalar();
                     }
                 }
-                else
+                else if (modelSelect->shape_current == 2 || modelSelect->shape_current == 4)
+                {
+                    if (ImGui::DragFloat("Radius", &modelSelect->shapeScalar.x, 0.01f, 0.01f, 100.0f))
+                    {
+                        modelSelect->changeScalar();
+                    }
+
+                    if (ImGui::DragFloat("Height", &modelSelect->shapeScalar.y, 0.01f, 0.01f, 100.0f))
+                    {
+                        modelSelect->changeScalar();
+                    }
+                }
+                else if (modelSelect->shape_current == 0 || modelSelect->shape_current == 3)
                 {
                     if (ImGui::DragFloat3("Size", glm::value_ptr(modelSelect->shapeScalar), 0.01f, 0.01f, 100.0f))
                     {
                         modelSelect->changeScalar();
                     }
                 }
+                else
+                {
+                    modelSelect->translate = glm::vec3(0.0f);
+                }
+
 
                 ImGui::Text("Rigidbody");
 
@@ -791,9 +809,6 @@ namespace Cogravi
                 {
                     modelSelect->changeMass();
                 }
-
-                
-
 
                 if (ImGui::Checkbox("X", &modelSelect->angularFactor[0]))
                 {
@@ -815,13 +830,11 @@ namespace Cogravi
                 }
                 
                 ImGui::SameLine(180);
-
                 ImGui::Text("Angular Factor");
-
                 ImGui::Separator();
                 ImGui::Text("Font");
-                static const char* fonts[] = { "Arial", "Retro Computer"};
-                static const string format[] = { ".ttf", ".otf" };
+                static const char* fonts[] = { "Arial", "Retro Computer", "Homework", "Transformers"};
+                static const string format[] = { ".ttf", ".otf", ".otf", ".ttf" };
 
                 if (ImGui::Combo("Type", &modelSelect->description.font, fonts, IM_ARRAYSIZE(fonts)))
                 {
@@ -1104,7 +1117,7 @@ namespace Cogravi
 
                     ImGui::Separator();
                 }
-                if (ImGui::ImageButton((void*)texturesImGui[0], ImVec2(50, 50)))
+                if (ImGui::ImageButton((void*)texturesImGui[1], ImVec2(50, 50)))
                 {
                     luz->addSol(camera->Position + camera->Front, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.50f, 3.50f, 3.50f));
                 }

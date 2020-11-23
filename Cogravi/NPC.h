@@ -74,8 +74,6 @@ namespace Cogravi
 
 			this->currentSpeed = RUN_SPEED;
 
-			
-
 			if (indexR == 1)
 			{
 				this->currentTurnSpeed = TURN_SPEED;

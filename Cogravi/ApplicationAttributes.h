@@ -18,6 +18,9 @@ const int HEIGHT = 800;
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <irrKlang.h>
+using namespace irrklang;
+
 #include <iostream>
 using namespace std;
 
@@ -116,6 +119,7 @@ namespace Cogravi
         Shader* shaderSol;
 
         NPC* NPC1;
+        ISoundEngine* SoundEngine;
 
         bool isDrawWireframe = true;
         bool isDrawAABB = false;
