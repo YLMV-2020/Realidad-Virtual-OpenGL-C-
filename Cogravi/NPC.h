@@ -67,49 +67,14 @@ namespace Cogravi
 			animationController = AnimationController::Instance();
 		}		
 
-		void input(float deltaTime)
-		{
-
-			/*if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-			{
-				this->currentSpeed = RUN_SPEED;
-				
-			}
-			else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-			{
-				
-				this->currentSpeed = -RUN_SPEED;
-			}
-			else
-			{
-				
-				this->currentSpeed = 0.0f;
-			}
-
-			if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-			{
-				
-				this->currentTurnSpeed = TURN_SPEED;
-			}
-			else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-			{
-				
-				this->currentTurnSpeed = -TURN_SPEED;
-			}
-			else
-			{
-				
-				this->currentTurnSpeed = 0.0f;
-			}
-			move(deltaTime);*/
-		}
-
 		void move(int i, float deltaTime)
 		{
 			srand(time(NULL));
 			int indexR = rand() % 100;
 
 			this->currentSpeed = RUN_SPEED;
+
+			
 
 			if (indexR == 1)
 			{
@@ -128,6 +93,12 @@ namespace Cogravi
 			}
 
 			rotation[i] += glm::vec3(0, currentTurnSpeed * deltaTime, 0);
+
+			if (position[i].x < -85.0f || position[i].x > 85.0f || position[i].z < -85.0f || position[i].z > 85.0f)
+			{
+				rotation[i].y = rotation[i].y + 180.f;
+			}
+
 			float distance = currentSpeed * deltaTime;
 
 			float dx = distance * glm::sin(glm::radians(rotation[i].y));
