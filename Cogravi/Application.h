@@ -128,7 +128,7 @@ namespace Cogravi
         {
             vector<Texture> texturesLoad;
             modelController->addModel(glm::vec3(0.0f, 0.10f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "tunel/tunel.obj");        
-            modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "lizard/adult.obj", ColliderType::BOX/* glm::vec3(0.62f, 1.130f, 1.47f), glm::vec3(0, -1.12, 0.0)*/);
+            //modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "lizard/adult.obj", ColliderType::BOX/* glm::vec3(0.62f, 1.130f, 1.47f), glm::vec3(0, -1.12, 0.0)*/);
             modelController->addModel(glm::vec3(0.0f, 0.01f, -20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Luxurious/untitled.obj");
             modelController->addModel(glm::vec3(-30.0f, 0.01f, 0.0f), glm::vec3(0.0f, 00.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "maquina/whale.obj");
             modelController->addModel(glm::vec3(60.0f, 0.0f, -60.0f), glm::vec3(0.0f, 00.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Siro-Stagenum-022/Siro-Stagenum-022.obj");
@@ -218,6 +218,19 @@ namespace Cogravi
             textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\wood.png"));
             textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\brick.jpg"));
             textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\brick.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\matrix.jpg"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\brickwall.jpg"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\clay.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\diamond.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\grass.jpg"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\ice.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\metal.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\pavement.jpg"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\prismarine_dark.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\rocky_terrain.jpg"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\sand.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\snow.png"));
+            textureFloors.push_back(Util::loadTexture("assets\\textures\\terrain\\white_marble.jpg"));
         }
 
         void inicializarScene()
