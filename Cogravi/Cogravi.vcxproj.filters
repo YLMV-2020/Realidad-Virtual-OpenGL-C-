@@ -49,6 +49,9 @@
     <Filter Include="Archivos de encabezado\Pokebola">
       <UniqueIdentifier>{dafa11ce-5cd3-43c7-8693-8e3e785232ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\NPC">
+      <UniqueIdentifier>{37e0dd21-79d6-4424-8777-af6a426f81c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OVR_PlatformLoader.cpp">
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="PokebolaController.h">
       <Filter>Archivos de encabezado\Pokebola</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.h">
+      <Filter>Archivos de encabezado\NPC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

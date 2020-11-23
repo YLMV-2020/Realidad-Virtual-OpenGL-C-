@@ -1,3 +1,6 @@
+# Blender MTL File: 'siro.blend'
+# Material Count: 22
+
 newmtl Shape
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
@@ -6,7 +9,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd RedWood.png
 
 newmtl Shape.001
@@ -17,7 +20,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd MuralDoor.png
 
 newmtl Shape.002
@@ -28,7 +31,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd DarkFloor.png
 
 newmtl Shape.003
@@ -39,7 +42,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrightFloor.png
 
 newmtl Shape.004
@@ -50,7 +53,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrightFloor.png
 
 newmtl Shape.005
@@ -61,7 +64,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrownWall2.png
 
 newmtl Shape.006
@@ -72,7 +75,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrownWall2.png
 
 newmtl Shape.007
@@ -83,7 +86,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrownWall.png
 
 newmtl Shape.008
@@ -94,7 +97,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrownWall.png
 
 newmtl Shape.038
@@ -105,7 +108,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrownWall3.png
 
 newmtl Shape.039
@@ -116,7 +119,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrownWall3.png
 
 newmtl Shape.040
@@ -127,7 +130,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrownWall4.png
 
 newmtl Shape.041
@@ -138,7 +141,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd BrownWall4.png
 
 newmtl Shape.042
@@ -149,7 +152,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd DoorFrames.png
 
 newmtl Shape.051
@@ -160,7 +163,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd DoorFrames.png
 
 newmtl Shape.052
@@ -171,7 +174,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd FloorMat.png
 
 newmtl Shape.053
@@ -182,7 +185,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd Roof.png
 
 newmtl Shape.054
@@ -193,7 +196,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd Black.png
 
 newmtl Shape.3246
@@ -204,7 +207,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd MuralDoor2.png
 
 newmtl Shape.3247
@@ -215,7 +218,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd Black.png
 
 newmtl Shape.3248
@@ -226,7 +229,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd MuralDoor2.png
 
 newmtl Shape.3249
@@ -237,27 +240,5 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd Black.png
-
-newmtl Shape.3250
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
-Kd 0.478125 0.478125 0.478125
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd YellowDoor.png
-
-newmtl Shape.3251
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
-Kd 0.478125 0.478125 0.478125
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd YellowDoor.png

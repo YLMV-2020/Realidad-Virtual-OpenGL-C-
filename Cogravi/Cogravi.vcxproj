@@ -173,6 +173,7 @@
     <ClInclude Include="AnimationController.h" />
     <ClInclude Include="ModelAttributes.h" />
     <ClInclude Include="ModelController.h" />
+    <ClInclude Include="NPC.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Pokebola.h" />
     <ClInclude Include="PokebolaController.h" />

@@ -35,6 +35,18 @@ namespace Cogravi {
                 model->update();
         }
 
+        void renderInstance(Camera& camera, Shader& shader)
+        {
+            for (GameObject*& model : modelsInstance)
+                model->renderInstance(camera, shader);
+        }
+
+        void renderInstance(Avatar& avatar, Shader& shader)
+        {
+            for (GameObject*& model : modelsInstance)
+                model->renderInstance(avatar, shader);
+        }
+
         void render(Camera& camera, Shader& shader)
         {
             for (unsigned int i = 1; i < modelsDynamicSize; i++)
@@ -43,12 +55,6 @@ namespace Cogravi {
             for (GameObject*& model : models)
                 model->render(camera, shader);
 
-        }
-
-        void renderInstance(Camera& camera, Shader& shader)
-        {
-            for (GameObject*& model : modelsInstance)
-                model->renderInstance(camera, shader);
         }
 
         void render(Avatar& avatar, Shader& shader)

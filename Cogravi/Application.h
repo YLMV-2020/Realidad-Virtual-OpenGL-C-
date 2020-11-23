@@ -129,18 +129,20 @@ namespace Cogravi
         {
             vector<Texture> texturesLoad;
             modelController->addModel(glm::vec3(0.0f, 0.10f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f), "tunel/tunel.obj");        
-            modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "chimpanzee/adult.obj", ColliderType::BOX/* glm::vec3(0.62f, 1.130f, 1.47f), glm::vec3(0, -1.12, 0.0)*/);
-            modelController->addModel(glm::vec3(0.0f, 0.01f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Luxurious/untitled.obj");
+            modelController->addModel(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "lizard/adult.obj", ColliderType::BOX/* glm::vec3(0.62f, 1.130f, 1.47f), glm::vec3(0, -1.12, 0.0)*/);
+            modelController->addModel(glm::vec3(0.0f, 0.01f, -20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Luxurious/untitled.obj");
             modelController->addModel(glm::vec3(-30.0f, 0.01f, 0.0f), glm::vec3(0.0f, 00.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "maquina/whale.obj");
+            modelController->addModel(glm::vec3(60.0f, 0.0f, -60.0f), glm::vec3(0.0f, 00.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Siro-Stagenum-022/Siro-Stagenum-022.obj");
+            modelController->addModel(glm::vec3(60.0f, 0.0f, 70.0f), glm::vec3(0.0f, 90.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Siro-Stagenum-021/Siro-Stagenum-021.obj");
 
 
-            int cantidadArbol = 400;
+            int cantidadArbol = 350;
 
             glm::mat4* modelMatrices;
             modelMatrices = new glm::mat4[cantidadArbol];
             srand(time(NULL));
-            float radius = 65.0f;
-            float offset = 25.0f;
+            float radius = 50.0f;
+            float offset = 15.0f;
             for (unsigned int i = 0; i < cantidadArbol; i++)
             {
                 glm::mat4 model = glm::mat4(1.0f);
@@ -168,7 +170,11 @@ namespace Cogravi
 
         void addAnimations()
         {
-            //animationController->addAnimation(glm::vec3(-30.0f, 0.00f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "doctora/doctora.dae", *shaderAnimation);        
+
+            animationController->addAnimationInstance(glm::vec3(0.0f, 0.0f, 40.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.04f, 0.04f, 0.04f), "alien/alien.dae", *shaderInstanceDynamic, NPC1->cantidad, NPC1->transform);
+            animationController->loadAnimationInstance("Walking.dae");
+            animationController->loadAnimationInstance("Zombie Neck Bite.dae");
+            
         }
 
         void loadTexturesImGui()
@@ -182,6 +188,16 @@ namespace Cogravi
             textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\lion.png"));
             textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\elefant.png"));
             textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\chimpanzee.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\giraffe.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\jaguar.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\bear.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\ibex.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\leopard.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\zebra.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\crab.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\penguin.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\turtle.png"));
+            textureObjects.push_back(Util::loadTexture("assets\\textures\\objects\\lizard.png"));
         }
 
         void loadTextureSkyboxs()
@@ -246,6 +262,8 @@ namespace Cogravi
             player = new Player(*shaderAnimation);
             camera = new Camera(player->body);
             input = new InputProcessor(window, camera);
+
+            NPC1 = new NPC(0, 10);
 
             addModels();
             addAnimations();
@@ -433,7 +451,9 @@ namespace Cogravi
                     terrain->render(*avatar, luz->isLightDirectional ? luz->luzDireccional.ambient : glm::vec3(1));
 
                     modelController->render(*avatar, *shaderModel);
+                    modelController->renderInstance(*avatar, *shaderInstance);
                     animationController->render(*avatar, *shaderAnimation, lastFrame);
+                    animationController->renderInstance(*avatar, *shaderInstanceDynamic, lastFrame);
                     pokebolaController->render(*avatar, *shaderModel);
 
                     tablet->render(*avatar, *shaderModel);
@@ -570,6 +590,7 @@ namespace Cogravi
                 modelController->render(*camera, *shaderModel);
                 modelController->renderInstance(*camera, *shaderInstance);
                 animationController->render(*camera, *shaderAnimation, lastFrame);
+                animationController->renderInstance(*camera, *shaderInstanceDynamic, lastFrame);
                 pokebolaController->render(*camera, *shaderModel);
                 player->render(*camera, *shaderAnimation);
                 tablet->render(*camera, *shaderModel);
@@ -624,6 +645,11 @@ namespace Cogravi
                 if (pokebolaController->update(modelSelect, lastFrame))
                 {
                     renderFont();
+                }
+
+                for (int i = 0; i < NPC1->cantidad; i++)
+                {
+                    NPC1->move(i, deltaTime);
                 }
 
                 if (isEngine)
@@ -905,28 +931,94 @@ namespace Cogravi
 
             if (ImGui::ImageButton((void*)textureObjects[0], ImVec2(140, 120)))
             {
-                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "allosarus/allo.obj", ColliderType::BOX, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0, -2.5, 0.39));           
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "allosarus/allo.obj", ColliderType::BOX, glm::vec3(1.48f, 2.47f, 5.57f), glm::vec3(0.0f, -2.5f, 0.39f));           
             }
 
             ImGui::SameLine();
 
             if (ImGui::ImageButton((void*)textureObjects[1], ImVec2(140, 120)))
             {
-                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Lion/Lion.obj", ColliderType::BOX, glm::vec3(0.62f, 1.130f, 1.47f), glm::vec3(0, -1.12, 0.0));
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "Lion/Lion.obj", ColliderType::BOX, glm::vec3(0.62f, 1.130f, 1.47f), glm::vec3(0.0f, -1.12f, 0.0f));
             }
 
             ImGui::SameLine();
 
             if (ImGui::ImageButton((void*)textureObjects[2], ImVec2(140, 120)))
             {
-                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "elefant/African Elefant Calf.obj", ColliderType::BOX, glm::vec3(1.71f, 2.58f, 3.31f), glm::vec3(0, -2.5, 0.0));
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "elefant/African Elefant Calf.obj", ColliderType::BOX, glm::vec3(1.71f, 2.58f, 3.31f), glm::vec3(0.0f, -2.5f, 0.0f));
             }
             
             ImGui::SameLine();
 
             if (ImGui::ImageButton((void*)textureObjects[3], ImVec2(140, 120)))
             {
-                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "chimpanzee/adult.obj", ColliderType::BOX, glm::vec3(0.69f, 0.46f, 0.59f), glm::vec3(0, -0.46, 0.0));
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "chimpanzee/adult.obj", ColliderType::BOX, glm::vec3(0.69f, 0.46f, 0.59f), glm::vec3(0.0f, -0.46f, 0.0f));
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::ImageButton((void*)textureObjects[4], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "giraffe/adult.obj", ColliderType::BOX, glm::vec3(1.24f, 2.66f, 2.72f), glm::vec3(0.0f, -2.68f, -1.77f));
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::ImageButton((void*)textureObjects[5], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "jaguar/JaguarAdult.obj", ColliderType::BOX, glm::vec3(0.51f, 0.82f, 1.51f), glm::vec3(0.0f, -0.81f, 0.0f));
+            }
+
+            if (ImGui::ImageButton((void*)textureObjects[6], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "bear/male.obj", ColliderType::BOX, glm::vec3(0.57f, 0.9f, 1.54f), glm::vec3(0.0f, -0.89f, -0.39f));
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::ImageButton((void*)textureObjects[7], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "ibex/female.obj", ColliderType::BOX, glm::vec3(0.54f, 1.17f, 1.29f), glm::vec3(0.0f, -1.19f, -0.06f));
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::ImageButton((void*)textureObjects[8], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "leopard/adult.obj", ColliderType::BOX, glm::vec3(0.64f, 0.92f, 1.81f), glm::vec3(0.0f, -1.01f, 0.24f));
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::ImageButton((void*)textureObjects[9], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "zebra/male.obj", ColliderType::BOX, glm::vec3(0.42f, 1.0f, 1.37f), glm::vec3(0.0f, -1.01f, -0.21f));
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::ImageButton((void*)textureObjects[10], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "crab/rockc.obj", ColliderType::BOX, glm::vec3(0.23f, 0.08f, 0.150f), glm::vec3(0.0f, -0.08f, 0.0f));
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::ImageButton((void*)textureObjects[11], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "penguin/adult.obj", ColliderType::BOX, glm::vec3(0.45f, 0.62f, 0.34f), glm::vec3(0.0f, -0.63f, 0.0f));
+            }
+
+            if (ImGui::ImageButton((void*)textureObjects[12], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "turtle/Galapagos Tortoise.obj", ColliderType::BOX, glm::vec3(0.71f, 0.49f, 1.0f), glm::vec3(0.0f, -0.47f, -0.28f));
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::ImageButton((void*)textureObjects[13], ImVec2(140, 120)))
+            {
+                modelController->addModel(camera->Front + camera->Position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.f, 1.f, 1.f), "lizard/adult.obj", ColliderType::BOX, glm::vec3(0.64f, 0.24f, 1.49f), glm::vec3(0.0f, -0.25f, 0.0f));
             }
 
             ImGui::End();
@@ -974,18 +1066,18 @@ namespace Cogravi
         {
             ImGui::Begin("Lighting", NULL);
 
-            ImGui::Checkbox("Luz Direccional", &luz->isLightDirectional);
-            ImGui::Checkbox("Luz Puntual", &luz->isLightPoint);
-            ImGui::Checkbox("Luz Focal", &luz->isLightSpot);
+            ImGui::Checkbox("Directional light", &luz->isLightDirectional);
+            ImGui::Checkbox("Point light", &luz->isLightPoint);
+            ImGui::Checkbox("Spotlight", &luz->isLightSpot);
 
             if (luz->isLightDirectional)
             {
-                ImGui::Text("Luz Direccional");
+                ImGui::Text("Directional light");
 
-                ImGui::DragFloat3("Direccion", glm::value_ptr(luz->luzDireccional.direction), 0.001f, 0.0f, 0.01f);
-                ImGui::ColorEdit3("Ambiental", glm::value_ptr(luz->luzDireccional.ambient));
-                ImGui::ColorEdit3("Difusa", glm::value_ptr(luz->luzDireccional.diffuse));
-                ImGui::ColorEdit3("Especular", glm::value_ptr(luz->luzDireccional.specular));
+                ImGui::DragFloat3("Direction", glm::value_ptr(luz->luzDireccional.direction), 0.001f, 0.0f, 0.01f);
+                ImGui::ColorEdit3("Ambient", glm::value_ptr(luz->luzDireccional.ambient));
+                ImGui::ColorEdit3("Difusse", glm::value_ptr(luz->luzDireccional.diffuse));
+                ImGui::ColorEdit3("Specular", glm::value_ptr(luz->luzDireccional.specular));
 
                 ImGui::Separator();
             }
@@ -994,12 +1086,12 @@ namespace Cogravi
             {
                 for (int i = 0; i < luz->sizeSol(); i++)
                 {
-                    ImGui::Text("Luz Puntual %d", i + 1);
+                    ImGui::Text("Point light %d", i + 1);
 
                     ImGui::DragFloat3((to_string(i + 1) + ".Position").c_str(), glm::value_ptr(luz->getSol(i)->position), 0.05f);
-                    ImGui::ColorEdit3((to_string(i + 1) + ".Ambiental").c_str(), glm::value_ptr(luz->luzPuntual[i].ambient));
-                    ImGui::ColorEdit3((to_string(i + 1) + ".Difusa").c_str(), glm::value_ptr(luz->luzPuntual[i].diffuse));
-                    ImGui::ColorEdit3((to_string(i + 1) + ".Especular").c_str(), glm::value_ptr(luz->luzPuntual[i].specular));
+                    ImGui::ColorEdit3((to_string(i + 1) + ".Ambient").c_str(), glm::value_ptr(luz->luzPuntual[i].ambient));
+                    ImGui::ColorEdit3((to_string(i + 1) + ".Difusse").c_str(), glm::value_ptr(luz->luzPuntual[i].diffuse));
+                    ImGui::ColorEdit3((to_string(i + 1) + ".Specular").c_str(), glm::value_ptr(luz->luzPuntual[i].specular));
                     ImGui::DragFloat((to_string(i + 1) + ".Constant").c_str(), &luz->luzPuntual[i].constant, 0.001f, 0.0f, 1.0f);
                     ImGui::DragFloat((to_string(i + 1) + ".Linear").c_str(), &luz->luzPuntual[i].linear, 0.001f, 0.0f, 1.0f);
                     ImGui::DragFloat((to_string(i + 1) + ".Quadratic").c_str(), &luz->luzPuntual[i].quadratic, 0.001f, 0.0f, 1.0f);
@@ -1020,28 +1112,24 @@ namespace Cogravi
 
             if (luz->isLightSpot)
             {
-
-                ImGui::Text("Luz Focal");
+                ImGui::Text("Spotlight");
 
                 ImGui::DragFloat3("Position F", glm::value_ptr(camera->Position), 0.05f);
                 ImGui::DragFloat3("Direction F", glm::value_ptr(camera->Front), 0.05f);
-                ImGui::ColorEdit3("Ambiental F", glm::value_ptr(luz->luzFocal.ambient));
-                ImGui::ColorEdit3("Difusa F", glm::value_ptr(luz->luzFocal.diffuse));
-                ImGui::ColorEdit3("Especular F", glm::value_ptr(luz->luzFocal.specular));
+                ImGui::ColorEdit3("Ambient F", glm::value_ptr(luz->luzFocal.ambient));
+                ImGui::ColorEdit3("Difusse F", glm::value_ptr(luz->luzFocal.diffuse));
+                ImGui::ColorEdit3("Specular F", glm::value_ptr(luz->luzFocal.specular));
                 ImGui::DragFloat("Constant F", &luz->luzFocal.constant, 0.001f, 0.0f, 256.0f);
                 ImGui::DragFloat("Linear F", &luz->luzFocal.linear, 0.001f, 0.0f, 256.0f);
                 ImGui::DragFloat("Quadratic F", &luz->luzFocal.quadratic, 0.001f, 0.0f, 256.0f);
                 ImGui::DragFloat("OuterCutOff F", &luz->luzFocal.outerCutOff, 0.05f, 0.0f, 256.0f);
                 ImGui::DragFloat("CutOff F", &luz->luzFocal.cutOff, 0.05f, 0.0f, luz->luzFocal.outerCutOff);
-
-
             }
 
             luz->loadShader(*camera, *shaderAnimation, *shaderSol);
             luz->loadShader(*camera, *shaderModel, *shaderSol);
             luz->loadShader(*camera, *shaderInstance, *shaderSol);
-            //luz->loadShader(*camera, *shaderInstanceDynamic);
-
+            luz->loadShader(*camera, *shaderInstanceDynamic, *shaderSol);
 
             ImGui::End();
         }

@@ -45,6 +45,7 @@ using namespace std;
 #include "Lighting.h"
 #include "Player.h"
 #include "Text.h"
+#include "NPC.h"
 
 using namespace Cogravi;
 
@@ -113,6 +114,8 @@ namespace Cogravi
 
         Lighting* luz;
         Shader* shaderSol;
+
+        NPC* NPC1;
 
         bool isDrawWireframe = true;
         bool isDrawAABB = false;

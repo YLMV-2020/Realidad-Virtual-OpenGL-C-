@@ -1,3 +1,6 @@
+# Blender MTL File: 'siro.blend'
+# Material Count: 39
+
 newmtl Shape.8163
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
@@ -6,7 +9,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleSignScrool.png
 
 newmtl Shape.8164
@@ -17,7 +20,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleSignScrool.png
 
 newmtl Shape.8165
@@ -28,7 +31,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodTexture2.png
 
 newmtl Shape.8166
@@ -39,7 +42,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodTexture.png
 
 newmtl Shape.8167
@@ -50,7 +53,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodTexture.png
 
 newmtl Shape.8168
@@ -61,7 +64,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodTexture.png
 
 newmtl Shape.8169
@@ -72,7 +75,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodTexture.png
 
 newmtl Shape.8170
@@ -83,7 +86,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodTexture.png
 
 newmtl Shape.8171
@@ -94,7 +97,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodTexture.png
 
 newmtl Shape.8172
@@ -105,7 +108,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodTexture.png
 
 newmtl Shape.8173
@@ -116,7 +119,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodTexture2.png
 
 newmtl Shape.8174
@@ -127,7 +130,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodOrangeTexture.png
 
 newmtl Shape.8175
@@ -138,7 +141,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWoodOrangeTexture.png
 
 newmtl Shape.8176
@@ -149,7 +152,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWallParts.png
 
 newmtl Shape.8177
@@ -160,7 +163,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWallParts2.png
 
 newmtl Shape.8178
@@ -171,7 +174,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWallParts2.png
 
 newmtl Shape.8179
@@ -182,7 +185,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWall14.png
 
 newmtl Shape.8180
@@ -193,7 +196,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWall14.png
 
 newmtl Shape.8181
@@ -204,7 +207,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWall10.png
 
 newmtl Shape.8182
@@ -215,7 +218,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWall10.png
 
 newmtl Shape.8183
@@ -226,7 +229,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWall11.png
 
 newmtl Shape.8184
@@ -237,7 +240,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWall11.png
 
 newmtl Shape.8185
@@ -248,7 +251,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWall12.png
 
 newmtl Shape.8186
@@ -259,7 +262,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWall12.png
 
 newmtl Shape.8187
@@ -270,7 +273,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleWall9.png
 
 newmtl Shape.8188
@@ -281,7 +284,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleSign2.png
 
 newmtl Shape.8189
@@ -292,7 +295,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleDoorFrame.png
 
 newmtl Shape.8190
@@ -303,7 +306,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd PlatformBase.png
 
 newmtl Shape.8191
@@ -314,7 +317,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd PlatformLegs.png
 
 newmtl Shape.8192
@@ -325,7 +328,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleFloorMat.png
 
 newmtl Shape.8193
@@ -336,7 +339,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd PlatformFront.png
 
 newmtl Shape.8194
@@ -347,7 +350,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd CastleRoof2.png
 
 newmtl Shape.8195
@@ -358,7 +361,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd PlatformFront.png
 
 newmtl Shape.8196
@@ -369,19 +372,8 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd PlatformCorner.png
-
-newmtl Shape.8197
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
-Kd 0.000000 0.000000 0.000000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd Black.png
 
 newmtl Shape.8198
 Ns 0.000000
@@ -391,7 +383,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd DarkBrown.png
 
 newmtl Shape.8199
@@ -402,7 +394,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 
 newmtl Shape.8200
 Ns 0.000000
@@ -412,7 +404,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd DarkBrown.png
 
 newmtl Shape.8201
@@ -423,7 +415,7 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd Red.png
 
 newmtl Shape.8202
@@ -434,27 +426,5 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
 map_Kd Red.png
-
-newmtl Shape.8214
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
-Kd 0.562500 0.562500 0.562500
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd CastleGoldDoor.png
-
-newmtl Shape.8215
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
-Kd 0.796875 0.796875 0.796875
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd CastleGoldDoor.png

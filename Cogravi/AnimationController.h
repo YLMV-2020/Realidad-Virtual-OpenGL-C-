@@ -18,6 +18,7 @@ namespace Cogravi {
 
         vector<Animation*> animationsPhysics;
         vector<DynamicGameObject*> animations;
+        vector<DynamicGameObject*> animationsInstance;
 
         AnimationController()
         {
@@ -28,6 +29,24 @@ namespace Cogravi {
         {
             for (Animation*& animation : animationsPhysics)
                 animation->update();
+        }
+
+        void renderInstance(Camera& camera, Shader& shader, float currentFrame)
+        {
+            for (DynamicGameObject*& animation : animationsInstance)
+            {
+                animation->updateTime(currentFrame);
+                animation->renderInstance(camera, shader);
+            }
+        }
+
+        void renderInstance(Avatar& avatar, Shader& shader, float currentFrame)
+        {
+            for (DynamicGameObject*& animation : animationsInstance)
+            {
+                animation->updateTime(currentFrame);
+                animation->renderInstance(avatar, shader);
+            }
         }
 
         void render(Camera& camera, Shader& shader, float currentFrame)
@@ -102,11 +121,34 @@ namespace Cogravi {
             animations.push_back(animation);
         }
 
-        void loadAnimation(const string& path, int index)
+        void addAnimationInstance(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, string const& path, Shader& shader, int cantidad, glm::mat4* modelMatrices, vector<Texture> textures = {})
+        {
+            DynamicGameObject* animation = new DynamicGameObject(position, rotation, scale, "assets/animations/" + path, shader, textures, cantidad, modelMatrices);
+            animationsInstance.push_back(animation);
+        }
+
+        void loadAnimationInstance(const string& path)
+        {
+            animationsInstance.back()->addAnimation(path);
+        }
+
+        void loadAnimation(const string& path)
+        {
+            animations.back()->addAnimation(path);
+        }
+
+        void changeAnimationInstance(int index, int numAnimation)
+        {
+            int tam = animationsInstance.size();
+            if (tam <= index && index < 0) return;
+            animationsInstance[index]->currentAnimation = numAnimation;
+        }
+
+        void changeAnimation(int index, int numAnimation)
         {
             int tam = animations.size();
             if (tam <= index && index < 0) return;
-            animations[index]->addAnimation(path);
+            animations[index]->currentAnimation = numAnimation;
         }
 
         void removeModel(Animation*& animation, BulletWorldController* worldController)

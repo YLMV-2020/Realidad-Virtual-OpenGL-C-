@@ -40,9 +40,8 @@ namespace Cogravi {
 			loadModel(path);
 
 			if (this->cantidad > 1)
-			{
 				configureInstance(modelMatrices);
-			}
+			
 		}
 
 		~GameObject() {}

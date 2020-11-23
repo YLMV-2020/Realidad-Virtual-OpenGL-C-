@@ -13,7 +13,7 @@ namespace Cogravi
 
 	public:
 
-		float RUN_SPEED = 30.0f;
+		float RUN_SPEED = 3.0f;
 		float TURN_SPEED = 160.0f;
 
 		Player(Shader& shader):
