@@ -1,4 +1,3 @@
-# Realidad Virtual 
+# Education Engine RV
  Proyecto de Computación Gráfica y Visual  
- Probando una imagen  
-![Alt text](/Cogravi/assets/textures/block.png?raw=true "Textura")
+https://www.youtube.com/watch?v=_sgnHN6B7Xg&t=338s 
